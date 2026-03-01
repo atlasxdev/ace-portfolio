@@ -1,47 +1,52 @@
-<div align="center">
-<img alt="Portfolio" src="https://github.com/dillionverma/portfolio/assets/16860528/57ffca81-3f0a-4425-b31d-094f61725455" width="90%">
-</div>
+# Ace Guevarra — Professional Portfolio
 
-# Portfolio [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fdillionverma%2Fportfolio)
+A modern, high-performance portfolio website built to showcase my journey as an Associate System Developer, featuring full-stack projects, workflow automations, and an interactive AI assistant.
 
-Built with next.js, [shadcn/ui](https://ui.shadcn.com/), and [magic ui](https://magicui.design/), deployed on Vercel.
+## 🚀 Key Features
 
-# Features
+- **AI Chat Assistant**: Integrated with **Gemini 2.0 Flash** to answer questions about my experience, skills, and technical background in real-time.
+- **Dynamic UI**: Theme-aware components, including a custom avatar that switches based on light/dark mode preference.
+- **Responsive Design**: Optimized for all devices using **Tailwind CSS** and **Shadcn UI**.
+- **Performance**: Built on **Next.js 15** with App Router for optimal speed and SEO.
+- **Content-Driven**: Integrated blog and project showcase managed via structured data.
 
-- Setup only takes a few minutes by editing the [single config file](./src/data/resume.tsx)
-- Built using Next.js 14, React, Typescript, Shadcn/UI, TailwindCSS, Framer Motion, Magic UI
-- Includes a blog
-- Responsive for different devices
-- Optimized for Next.js and Vercel
+## 🛠️ Tech Stack
 
-# Getting Started Locally
+- **Framework**: [Next.js 15](https://nextjs.org/) (React 19)
+- **Styling**: [Tailwind CSS 4](https://tailwindcss.com/), [Shadcn UI](https://ui.shadcn.com/)
+- **Animations**: [Framer Motion](https://www.framer.com/motion/), [Magic UI](https://magicui.design/)
+- **AI**: [@google/genai](https://www.npmjs.com/package/@google/genai) (Gemini API)
+- **Icons**: [Lucide React](https://lucide.dev/), Custom SVGs
+- **Deployment**: [Vercel](https://vercel.com/)
 
-1. Clone this repository to your local machine:
+## 🏁 Getting Started Locally
 
+1. **Clone the repository**:
    ```bash
-   git clone https://github.com/dillionverma/portfolio
+   git clone https://github.com/aceguevarra/ace-portfolio.git
    ```
 
-2. Move to the cloned directory
-
+2. **Install dependencies**:
    ```bash
-   cd portfolio
-   ```
-
-3. Install dependencies:
-
-   ```bash
+   npm install
+   # or
    pnpm install
    ```
 
-4. Start the local Server:
-
-   ```bash
-   pnpm dev
+3. **Set up Environment Variables**:
+   Create a `.env.local` file and add your Gemini API key:
+   ```env
+   NEXT_PUBLIC_GOOGLE_GENERATIVE_AI_API_KEY=your_api_key_here
    ```
 
-5. Open the [Config file](./src/data/resume.tsx) and make changes
+4. **Run the development server**:
+   ```bash
+   npm run dev
+   ```
 
-# License
+5. **Configuration**:
+   Update your professional details in `src/data/resume.tsx`.
 
-Licensed under the [MIT license](https://github.com/dillionverma/portfolio/blob/main/LICENSE.md).
+## 📄 License
+
+This project is licensed under the [MIT License](./LICENSE).
