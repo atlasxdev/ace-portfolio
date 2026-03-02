@@ -17,9 +17,12 @@ Ace Guevarra's Profile:
   - Website Development & Maintenance for vizserve.com and hfse.edu.sg.
 - Internship: Frontend Developer Intern at Lamina Studios (Laravel, BladewindUI).
 - Skills:
-  - Languages: TypeScript, JavaScript, Supabase, MySQL, PostgreSQL, Basic Shell Scripting.
-  - Frameworks & UI: React (Next.js, Vite), ShadCN UI, Zustand, TanStack Query, Zod, React Hook Form, WordPress (Elementor).
-  - Tools & Automation: n8n, Directus, Manatal ATS, Git/GitHub, Postman, Vitest, Cypress, ClickUp, Slack, Microsoft 365.
+  - Languages & Frameworks: TypeScript, JavaScript, React (Next.js), Express.js, PHP (Laravel).
+  - Backend & Databases: Supabase, MySQL, PostgreSQL, MongoDB, REST API, JWT.
+  - CMS: WordPress (Elementor), Directus.
+  - Tools & Automation: n8n, Git/GitHub, Postman, Vite, Zod, TanStack Query, Zustand, Framer Motion.
+  - Developer Tools: VS Code, Prettier, ESLint.
+  - Collaboration: ClickUp, Slack, Microsoft Teams, Discord.
 - Key Strengths: Full-Stack Development, API Integration, Workflow Automation, ATS Configuration.
 
 Instructions:

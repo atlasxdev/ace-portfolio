@@ -72,3 +72,66 @@ _(January 2024 – May 2024)_
 ### Key Strengths
 
 - Full-Stack Development, API Integration, Workflow Automation, ATS Configuration (Manatal)
+
+---
+
+# Licenses & Certifications
+
+## Certificate of Completion - Frontend Developer
+
+![Codebility Logo](https://media.licdn.com/dms/image/v2/D560BAQH099gqRo76cw/company-logo_200_200/company-logo_200_200/0/1714364703710?e=1773878400&v=beta&t=W1zNdfCrO-Ha6pvgVJ55i6RwYZNxxwUxpj4sOT5PFpY)
+
+**Issuing Organization:** [Codebility](https://www.codebility.tech/)
+**Issued:** December 2024
+**Certificate:** https://media.licdn.com/dms/image/sync/v2/D5627AQH2hebLTOWyzQ/articleshare-shrink_800/articleshare-shrink_800/0/1733743380409?e=1773021600&v=beta&t=lBcR_1dTwsV1TiEU7s28YjCjz-eKXwnfVADr7DrGEn0
+
+---
+
+## Responsive Web Design
+
+![freeCodeCamp Logo](https://media.licdn.com/dms/image/v2/C4E0BAQGLKj3JHcof0w/company-logo_200_200/company-logo_200_200/0/1630639684997/free_code_camp_logo?e=1773878400&v=beta&t=9ATnoJap4A07Po06UcpkgpRqYRUcpbuGVoL-uTs-f_c)
+
+**Issuing Organization:** [freeCodeCamp](https://www.freecodecamp.org/)
+**Issued:** August 2024
+**Credential ID:** `fcc605edcd8-ef96-4788-9703-10f2cef1b54c-rwd`
+**Skills:** HTML, Responsive Web Design
+**Credential:** https://www.freecodecamp.org/certification/fcc605edcd8-ef96-4788-9703-10f2cef1b54c/responsive-web-design
+
+---
+
+# My Journey
+
+## 🖥️ Hello, World!
+
+Every developer has a beginning — mine was a simple `Hello, World!` printed on a screen. That one line of output was enough to ignite a passion for coding that I've carried ever since throughout my studies and career.
+
+---
+
+## 🏆 Frontend Competition — 4th Place
+
+While studying at **Laguna University**, I joined a school frontend development competition and placed **4th**. It was my first taste of competitive programming and pushed me to take web development more seriously, sharpening both my skills and my drive to improve.
+
+---
+
+## 💻 Capstone Project — IGotYou: Multimedia Booking System
+
+For our capstone project, I took on the role of **sole developer** for our entire group — handling everything from system design to implementation. The project, **IGotYou: Multimedia Booking System**, is a full-featured platform for managing and reserving multimedia services.
+
+- **Role:** Sole Developer
+- **Project:** IGotYou: Multimedia Booking System
+- **GitHub:** <!-- Add repo link here -->
+- **Tech Stack:** <!-- Add tech stack here -->
+
+> Building IGotYou end-to-end on my own was a defining milestone — it proved I could take a project from concept to completion independently.
+
+---
+
+## 🎓 Graduation
+
+After five years at **Laguna University** (Aug 2019 – July 2024), I earned my **Bachelor of Science in Information Technology**. Graduating as the sole developer behind our capstone project was a proud moment that marked the end of one chapter and the start of the next.
+
+---
+
+## 💼 Hired at VizServe
+
+Shortly after graduating, I was hired at **VizServe Private Limited** as an **Associate System Developer** in January 2025. Since then, I've been building and revamping real-world systems — from online admission platforms and recruitment automation to WordPress sites serving thousands of users monthly.

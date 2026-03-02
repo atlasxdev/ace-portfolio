@@ -20,7 +20,7 @@ export function HeroAvatar() {
   const avatarUrl = mounted ? dynamicAvatarUrl : DATA.avatarUrl;
 
   return (
-    <Avatar className="size-32 md:size-48 border rounded-full shadow-lg ring-4 ring-muted">
+    <Avatar className="size-40 md:size-48 border rounded-xl shadow-lg ring-4 ring-muted">
       <AvatarImage
         className={cn("object-cover scale-[120%]", {
           "object-contain scale-[300%]": theme === "light",

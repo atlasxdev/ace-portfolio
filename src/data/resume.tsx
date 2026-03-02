@@ -16,22 +16,57 @@ export const DATA = {
   summary:
     "Bachelor of Science in Information Technology graduate from Laguna University (2024). Currently an Associate System Developer at VizServe Private Limited, focusing on revamping admission systems and recruitment process automation. Experienced in full-stack development with React, Next.js, and Supabase, and workflow automation using n8n.",
   avatarUrl: "/me-light.jpg",
-  skills: [
-    { name: "React", icon: ReactLight },
+  skills: {
+    Frontend: [
+      { name: "React", icon: ReactLight },
+      { name: "Next.js", icon: NextjsIconDark },
+      { name: "Typescript", icon: Typescript },
+      { name: "TailwindCSS", icon: Icons.tailwindcss },
+      { name: "Framer Motion", icon: Icons.framermotion },
+      { name: "Zustand", icon: Icons.zustand },
+      { name: "TanStack Query", icon: Icons.tanstackquery },
+      { name: "Vite", icon: Icons.vite },
+    ],
+    Backend: [
+      { name: "Postgres", icon: Postgresql },
+      { name: "Supabase", icon: Icons.supabase },
+      { name: "MySQL", icon: Icons.mysql },
+      { name: "Express.js", icon: Icons.express },
+      { name: "MongoDB", icon: Icons.mongodb },
+      { name: "JWT", icon: Icons.jwt },
+      { name: "REST API", icon: Icons.globe },
+    ],
+    CMS: [
+      { name: "WordPress", icon: Icons.wordpress },
+      { name: "Directus", icon: Icons.directus },
+    ],
+    "Developer Tools": [
+      { name: "n8n", icon: Icons.n8n },
+      { name: "Git", icon: Icons.git },
+      { name: "GitHub", icon: Icons.github },
+      { name: "Zod", icon: Icons.zod },
+      { name: "Postman", icon: Icons.postman },
+      { name: "VS Code", icon: Icons.vscode },
+      { name: "Prettier", icon: Icons.prettier },
+      { name: "ESLint", icon: Icons.eslint },
+    ],
+    Collaboration: [
+      { name: "ClickUp", icon: Icons.clickup },
+      { name: "Slack", icon: Icons.slack },
+      { name: "Teams", icon: Icons.teams },
+      { name: "Discord", icon: Icons.discord },
+    ],
+  },
+  majorSkills: [
     { name: "Next.js", icon: NextjsIconDark },
+    { name: "React", icon: ReactLight },
     { name: "Typescript", icon: Typescript },
     { name: "Postgres", icon: Postgresql },
     { name: "Supabase", icon: Icons.supabase },
-    { name: "MySQL", icon: Icons.mysql },
+    { name: "n8n", icon: Icons.n8n },
+    { name: "Directus", icon: Icons.directus },
     { name: "WordPress", icon: Icons.wordpress },
     { name: "TailwindCSS", icon: Icons.tailwindcss },
-    { name: "Framer Motion", icon: Icons.framermotion },
-    { name: "Zustand", icon: Icons.zustand },
-    { name: "TanStack Query", icon: Icons.tanstackquery },
-    { name: "Zod", icon: Icons.zod },
-    { name: "n8n", icon: Icons.n8n },
-    { name: "Git", icon: Icons.github },
-    { name: "Directus", icon: Icons.directus },
   ],
   navbar: [
     { href: "/", icon: HomeIcon, label: "Home" },
@@ -172,5 +207,107 @@ export const DATA = {
       image: "/diabetes-meal-assistant.png",
       video: "",
     },
+    {
+      title: "Shop Quickie",
+      href: "https://shop-quickie.vercel.app/",
+      dates: "December 2024",
+      active: true,
+      description:
+        "A high-performance, modern e-commerce web application engineered for speed and reliability. Features a fully responsive interface with optimized page loads, product browsing by category, cart management, multi-step checkout with delivery address and payment details, order tracking, and user profile management. Built with a focus on efficiency and a streamlined shopping experience for contemporary online retail needs.",
+      technologies: [
+        "Next.js",
+        "ShadCN UI",
+        "Zustand",
+        "TanStack Query",
+        "React Hook Form",
+        "Zod",
+        "Axios",
+        "Orama Search",
+      ],
+      links: [
+        {
+          type: "Website",
+          href: "https://shop-quickie.vercel.app/",
+          icon: <Icons.globe className="size-3" />,
+        },
+        {
+          type: "Source",
+          href: "https://github.com/atlasxdev/shop-quickie",
+          icon: <Icons.github className="size-3" />,
+        },
+      ],
+      image: "/shop-quickie.png",
+      video: "",
+    },
   ],
-} as const;
+  certifications: [
+    {
+      title: "Certificate of Completion - Frontend Developer",
+      issuer: "Codebility",
+      issuerUrl: "https://www.codebility.tech/",
+      date: "December 2024",
+      logoUrl:
+        "https://media.licdn.com/dms/image/v2/D560BAQH099gqRo76cw/company-logo_200_200/company-logo_200_200/0/1714364703710?e=1773878400&v=beta&t=W1zNdfCrO-Ha6pvgVJ55i6RwYZNxxwUxpj4sOT5PFpY",
+      credentialUrl:
+        "https://media.licdn.com/dms/image/sync/v2/D5627AQH2hebLTOWyzQ/articleshare-shrink_800/articleshare-shrink_800/0/1733743380409?e=1773021600&v=beta&t=lBcR_1dTwsV1TiEU7s28YjCjz-eKXwnfVADr7DrGEn0",
+    },
+    {
+      title: "Responsive Web Design",
+      issuer: "freeCodeCamp",
+      issuerUrl: "https://www.freecodecamp.org/",
+      date: "August 2024",
+      logoUrl:
+        "https://media.licdn.com/dms/image/v2/C4E0BAQGLKj3JHcof0w/company-logo_200_200/company-logo_200_200/0/1630639684997/free_code_camp_logo?e=1773878400&v=beta&t=9ATnoJap4A07Po06UcpkgpRqYRUcpbuGVoL-uTs-f_c",
+      credentialUrl:
+        "https://www.freecodecamp.org/certification/fcc605edcd8-ef96-4788-9703-10f2cef1b54c/responsive-web-design",
+      credentialId: "fcc605edcd8-ef96-4788-9703-10f2cef1b54c-rwd",
+    },
+  ],
+  journey: [
+    {
+      title: "Hello, World!",
+      dates: "Early Beginnings",
+      location: "Calamba City, Laguna",
+      description:
+        "Every developer has a beginning — mine was a simple `Hello, World!` printed on a screen. That one line of output was enough to ignite a passion for coding that I've carried ever since throughout my studies and career.",
+      image: "",
+      links: [],
+    },
+    {
+      title: "Frontend Competition — 4th Place",
+      dates: "2022",
+      location: "Laguna University",
+      description:
+        "While studying at Laguna University, I joined a school frontend development competition and placed 4th. It was my first taste of competitive programming and pushed me to take web development more seriously, sharpening both my skills and my drive to improve.",
+      image: "",
+      links: [],
+    },
+    {
+      title: "Capstone Project — IGotYou: Multimedia Booking System",
+      dates: "2023 - 2024",
+      location: "Laguna University",
+      description:
+        "For our capstone project, I took on the role of sole developer for our entire group — handling everything from system design to implementation. Building IGotYou end-to-end on my own was a defining milestone — it proved I could take a project from concept to completion independently.",
+      image: "",
+      links: [],
+    },
+    {
+      title: "Graduation",
+      dates: "July 2024",
+      location: "Laguna University",
+      description:
+        "After five years at Laguna University (Aug 2019 – July 2024), I earned my Bachelor of Science in Information Technology. Graduating as the sole developer behind our capstone project was a proud moment that marked the end of one chapter and the start of the next.",
+      image: "",
+      links: [],
+    },
+    {
+      title: "Hired at VizServe",
+      dates: "January 2025",
+      location: "VizServe Private Limited",
+      description:
+        "Shortly after graduating, I was hired at VizServe Private Limited as an Associate System Developer. Since then, I've been building and revamping real-world systems — from online admission platforms and recruitment automation to WordPress sites serving thousands of users monthly.",
+      image: "",
+      links: [],
+    },
+  ],
+};

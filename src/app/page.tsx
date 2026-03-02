@@ -1,12 +1,15 @@
 /* eslint-disable @next/next/no-img-element */
+import { HeroAvatar } from "@/components/hero-avatar";
 import BlurFade from "@/components/magicui/blur-fade";
 import BlurFadeText from "@/components/magicui/blur-fade-text";
+import CertificationsSection from "@/components/section/certifications-section";
 import ContactSection from "@/components/section/contact-section";
+import JourneySection from "@/components/section/journey-section";
 import ProjectsSection from "@/components/section/projects-section";
 import WorkSection from "@/components/section/work-section";
-import { HeroAvatar } from "@/components/hero-avatar";
+import { Button } from "@/components/ui/button";
 import { DATA } from "@/data/resume";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Calendar, ChevronRight, Mail, MapPin } from "lucide-react";
 import Link from "next/link";
 import Markdown from "react-markdown";
 
@@ -25,11 +28,33 @@ export default function Page() {
                 yOffset={8}
                 text={`Hi, I'm ${DATA.name.split(" ")[0]}`}
               />
+              <BlurFade delay={BLUR_FADE_DELAY}>
+                <div className="flex items-center gap-1.5 text-muted-foreground text-sm font-medium">
+                  <MapPin className="size-4" />
+                  <span>Laguna, Philippines</span>
+                </div>
+              </BlurFade>
               <BlurFadeText
                 className="text-muted-foreground max-w-150 md:text-lg lg:text-xl"
                 delay={BLUR_FADE_DELAY}
                 text={DATA.description}
               />
+              <div className="flex flex-wrap gap-3 pt-2">
+                <BlurFade delay={BLUR_FADE_DELAY * 2}>
+                  <Button size={"sm"} asChild className="rounded-full h-10 px-5 group">
+                    <Link href="#">
+                      <Calendar className="mr-2 h-4 w-4" /> Schedule a call
+                    </Link>
+                  </Button>
+                </BlurFade>
+                <BlurFade delay={BLUR_FADE_DELAY * 2}>
+                  <Button size={"sm"} variant="outline" asChild className="rounded-full h-10 px-5">
+                    <Link href={`mailto:${DATA.contact.email}`}>
+                      <Mail className="mr-2 h-4 w-4" /> Send email
+                    </Link>
+                  </Button>
+                </BlurFade>
+              </div>
             </div>
             <BlurFade delay={BLUR_FADE_DELAY} className="order-1 md:order-2">
               <HeroAvatar />
@@ -109,23 +134,44 @@ export default function Page() {
           <BlurFade delay={BLUR_FADE_DELAY * 9}>
             <h2 className="text-xl font-bold">Skills</h2>
           </BlurFade>
-          <div className="flex flex-wrap gap-2">
-            {DATA.skills.map((skill, id) => (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {DATA.majorSkills.map((skill, id) => (
               <BlurFade key={skill.name} delay={BLUR_FADE_DELAY * 10 + id * 0.05}>
-                <div className="border bg-background border-border ring-2 ring-border/20 rounded-xl h-8 w-fit px-4 flex items-center gap-2">
-                  {skill.icon && <skill.icon className="size-4 rounded overflow-hidden object-contain" />}
+                <div className="border bg-background border-border ring-2 ring-border/20 rounded-xl h-10 w-full px-4 flex items-center gap-3 hover:bg-accent transition-colors">
+                  {skill.icon && <skill.icon className="size-5 rounded overflow-hidden object-contain flex-none" />}
                   <span className="text-foreground text-sm font-medium">{skill.name}</span>
                 </div>
               </BlurFade>
             ))}
           </div>
+          <BlurFade delay={BLUR_FADE_DELAY * 11}>
+            <div className="flex justify-center mt-2">
+              <Button
+                variant="ghost"
+                asChild
+                size="sm"
+                className="rounded-full hover:bg-transparent hover:underline group">
+                <Link href="/tech-stacks" className="flex items-center gap-1">
+                  View All Tech Stacks{" "}
+                  <ChevronRight className="size-4 group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </Button>
+            </div>
+          </BlurFade>
         </div>
       </section>
-      <section id="projects">
-        <BlurFade delay={BLUR_FADE_DELAY * 11}>
-          <ProjectsSection />
+      <BlurFade delay={BLUR_FADE_DELAY * 11}>
+        <ProjectsSection />
+      </BlurFade>
+      <div className="grid gap-14">
+        <BlurFade delay={BLUR_FADE_DELAY * 13}>
+          <CertificationsSection />
         </BlurFade>
-      </section>
+
+        <BlurFade delay={BLUR_FADE_DELAY * 12}>
+          <JourneySection />
+        </BlurFade>
+      </div>
       <section id="contact">
         <BlurFade delay={BLUR_FADE_DELAY * 16}>
           <ContactSection />
