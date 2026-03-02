@@ -44,7 +44,7 @@ export default function ContactSection() {
             variant="outline"
             size="lg"
             className="rounded-full px-8 shadow-xl hover:scale-105 transition-transform duration-200">
-            <Link target="_blank" href="https://calendly.com/aceguevarra-dev/30min">
+            <Link target="_blank" href="https://calendly.com/aceguevarra-dev/15min">
               <Calendar className="mr-2 h-4 w-4" />
               Schedule a Call
             </Link>

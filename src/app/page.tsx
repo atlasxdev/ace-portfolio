@@ -42,7 +42,7 @@ export default function Page() {
               <div className="flex flex-wrap gap-3 pt-2">
                 <BlurFade delay={BLUR_FADE_DELAY * 2}>
                   <Button size={"sm"} asChild className="rounded-full h-10 px-5 group">
-                    <Link href="#">
+                    <Link target="_blank" href="https://calendly.com/aceguevarra-dev/15min">
                       <Calendar className="mr-2 h-4 w-4" /> Schedule a call
                     </Link>
                   </Button>
