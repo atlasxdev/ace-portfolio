@@ -71,7 +71,7 @@ export default function Chatbot() {
   };
 
   return (
-    <div className="fixed bottom-12 right-6 z-50 flex flex-col items-end gap-4">
+    <div className="fixed bottom-24 lg:bottom-16 right-6 z-50 flex flex-col items-end gap-4">
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -129,6 +129,7 @@ export default function Chatbot() {
               <CardFooter className="p-3 border-t">
                 <form onSubmit={handleSubmit} className="flex w-full items-center gap-2">
                   <input
+                    autoFocus
                     placeholder="Type a message..."
                     className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
                     value={inputValue}
@@ -153,7 +154,7 @@ export default function Chatbot() {
         <Button
           onClick={toggleChat}
           size="lg"
-          className="rounded-full size-14 shadow-xl flex items-center justify-center p-0 border-2 border-primary/20 overflow-hidden">
+          className=" cursor-pointer rounded-full size-14 shadow-xl flex items-center justify-center p-0 border-2 border-primary/20 overflow-hidden">
           <AnimatePresence mode="wait">
             {isOpen ? (
               <motion.div
