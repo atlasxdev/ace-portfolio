@@ -116,8 +116,7 @@ export const DATA = {
       badges: [],
       location: "Remote",
       title: "Frontend Developer Intern",
-      logoUrl:
-        "https://scontent.fmnl4-2.fna.fbcdn.net/v/t39.30808-6/366680620_675706191268363_2149820249301358376_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=1d70fc&_nc_eui2=AeHg_Mg8KbBmuBx_w8FRftwiXZonxg9bosldmifGD1uiyS0nH6OU-VYpiXSIcK6YA45-UdHb7CRP5FIEyUDWey_U&_nc_ohc=yMVErE29MnMQ7kNvwFclNEC&_nc_oc=AdlsoS-T_GiCicDZ0Yd_IqkqfLtTYsIfFey-p9qePNKshjtJjj985jbO8-zCvknWVDk&_nc_zt=23&_nc_ht=scontent.fmnl4-2.fna&_nc_gid=pYLecPPQIWfQBiBj1yJxQA&_nc_ss=8&oh=00_Afsq7z2-uMNSoOf66AevvU-AP65ErYpGzojnOVafPboQHQ&oe=69A9F0C1",
+      logoUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTS9yhAOzIiTBPch0Afq6HEXU5u0-pOkVzbwQ&s",
       start: "January 2024",
       end: "May 2024",
       description:
