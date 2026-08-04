@@ -1,10 +1,18 @@
- 
-
+/* eslint-disable @next/next/no-img-element -- These routes render to PNG
+   server-side via Satori (next/og), not to the DOM. next/image cannot run
+   inside ImageResponse; a plain <img> with an inlined data URI is correct
+   here. See the getAvatar() helper below. */
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
 import { ImageResponse } from "next/og";
 import { allPosts } from "content-collections";
 import { DATA } from "@/data/resume";
 
-export const runtime = "edge";
+// Deliberately NOT the edge runtime. Edge can't read from the filesystem, which
+// forced the fonts and the avatar to be fetched over the network — the avatar
+// was pulled from the live domain on every request, and a single failed fetch
+// took the whole card down. Node runtime reads both off disk and lets this
+// route prerender at build time.
 
 export const alt = "Blog Post";
 export const size = {
@@ -13,26 +21,35 @@ export const size = {
 };
 export const contentType = "image/png";
 
+const readPublic = (...segments: string[]) =>
+    readFile(join(process.cwd(), "public", ...segments));
+
 const getFontData = async () => {
     try {
         const [cabinetGrotesk, clashDisplay] = await Promise.all([
-            fetch(
-                new URL(
-                    "../../../../public/fonts/CabinetGrotesk-Medium.ttf",
-                    import.meta.url
-                )
-            ).then((res) => res.arrayBuffer()),
-            fetch(
-                new URL(
-                    "../../../../public/fonts/ClashDisplay-Semibold.ttf",
-                    import.meta.url
-                )
-            ).then((res) => res.arrayBuffer()),
+            readPublic("fonts", "CabinetGrotesk-Medium.ttf"),
+            readPublic("fonts", "ClashDisplay-Semibold.ttf"),
         ]);
         return { cabinetGrotesk, clashDisplay };
     } catch (error) {
         console.error("Failed to load fonts:", error);
         return null;
+    }
+};
+
+// Satori needs the bytes, not a URL. Reading the local file and inlining it as
+// a data URI keeps this route independent of the deployed site being reachable.
+const getAvatar = async () => {
+    if (!DATA.avatarUrl) return undefined;
+    try {
+        const file = DATA.avatarUrl.replace(/^\//, "");
+        const bytes = await readPublic(file);
+        const ext = file.split(".").pop()?.toLowerCase();
+        const mime = ext === "png" ? "image/png" : "image/jpeg";
+        return `data:${mime};base64,${bytes.toString("base64")}`;
+    } catch (error) {
+        console.error("Failed to load avatar:", error);
+        return undefined;
     }
 };
 
@@ -71,6 +88,25 @@ const styles = {
         left: "40px",
         display: "flex",
         alignItems: "center",
+        zIndex: "2",
+    },
+    // Brand mark, opposite the avatar.
+    monogram: {
+        position: "absolute",
+        top: "40px",
+        right: "40px",
+        width: "72px",
+        height: "72px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#141414",
+        color: "#fafafa",
+        borderRadius: "16px",
+        fontFamily: "Clash Display",
+        fontSize: "31px",
+        fontWeight: "600",
+        letterSpacing: "-0.03em",
         zIndex: "2",
     },
     mainContainer: {
@@ -128,11 +164,9 @@ export default async function Image({
 }) {
     try {
         const fontData = await getFontData();
+        const avatar = await getAvatar();
         const { slug } = await params;
         const post = allPosts.find((p) => p._meta.path.replace(/\.mdx$/, "") === slug);
-        const imageUrl = DATA.avatarUrl
-            ? new URL(DATA.avatarUrl, DATA.url).toString()
-            : undefined;
 
         if (!post) {
             return new ImageResponse(
@@ -140,11 +174,12 @@ export default async function Image({
                     <div style={styles.outerWrapper}>
                         <div style={styles.middleWrapper}>
                             <div style={styles.wrapper}>
-                                {imageUrl && (
+                                {avatar && (
                                     <div style={styles.imageSection}>
-                                        <img src={imageUrl} alt="Blog Post" style={styles.image} />
+                                        <img src={avatar} alt={DATA.name} style={styles.image} />
                                     </div>
                                 )}
+                                <div style={styles.monogram}>AG</div>
                                 <div style={styles.mainContainer}>
                                     <div style={styles.title}>Post Not Found</div>
                                 </div>
@@ -184,11 +219,12 @@ export default async function Image({
                 <div style={styles.outerWrapper}>
                     <div style={styles.middleWrapper}>
                         <div style={styles.wrapper}>
-                            {imageUrl && (
+                            {avatar && (
                                 <div style={styles.imageSection}>
-                                    <img src={imageUrl} alt={title} style={styles.image} />
+                                    <img src={avatar} alt={title} style={styles.image} />
                                 </div>
                             )}
+                            <div style={styles.monogram}>AG</div>
                             <div style={styles.mainContainer}>
                                 <div style={styles.title}>{title}</div>
                                 {description && (

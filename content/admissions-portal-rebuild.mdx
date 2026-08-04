@@ -1,0 +1,62 @@
+---
+title: "Rebuilding a School's Admissions Portal: 1,539 Applications Later"
+publishedAt: "2026-04-09"
+updatedAt: "2026-04-09"
+author: "Ace Guevarra"
+summary: "The interesting problems weren't technical. They were re-enrolment, incomplete applications, and parents filling in the same form for the third year running."
+---
+
+The old admissions portal worked, in the sense that applications did eventually arrive. Everything around it was manual: staff chased missing documents by email, parents re-entered details they'd already given the year before, and nobody could see the state of an application without asking someone.
+
+The replacement is a self-service portal for parents. It has since handled **1,539 enrolment applications** across three academic years, served **888 parents and guardians** in AY2025, and taken in **11,368 document uploads**.
+
+Three decisions did most of the work.
+
+## Re-enrolment is not enrolment
+
+The first thing I noticed reading the old data: most applications weren't new families. They were existing parents enrolling the same child for the next year, or a sibling — retyping an address, contact numbers and medical details the school already held.
+
+So re-enrolment became a different flow. Prior-year data carries over pre-filled, and the parent's job changes from *fill in this form* to *confirm this is still correct*.
+
+Same underlying data, dramatically less work, and better accuracy — people proof-read pre-filled fields more carefully than they re-type them.
+
+{/* TODO: mention which fields are deliberately NOT carried over (medical
+    info, consents) and why they need fresh confirmation each year. That's
+    a genuinely interesting design constraint if it applies. */}
+
+## Long forms need a save button you never press
+
+An enrolment form is long, and it's often filled in on a phone, at night, by a parent who gets interrupted. Losing that to a closed tab is the kind of thing that turns into a support email — or an abandoned application.
+
+Drafts save automatically across all four enrolment flows. Come back tomorrow, on a different device, and it's where you left it.
+
+{/* TODO: describe the save trigger (debounced on change vs on step
+    transition) and where an in-progress draft lives. */}
+
+## Documents are where applications go to die
+
+Every document upload is a chance for something to go wrong: a photo of a passport that's 14MB, a file in a format nothing opens, three separate pages of one document uploaded as three files.
+
+So uploads are validated at submission — type and size checked before anything is accepted, and multi-page documents merged into a single PDF server-side rather than asking a parent to do it.
+
+Doing the merge server-side was a deliberate choice. It's the kind of task that's trivial for a developer and genuinely difficult for a parent on a phone, and every step you push onto the applicant is a step where the application stalls.
+
+{/* TODO: name the PDF merge library and where it runs (serverless function
+    vs long-running process), plus how files are stored and served. File
+    handling is the part other developers will want detail on. */}
+
+## The dashboard that removed the chasing
+
+This is the piece I'd point to first, and it's the least technically interesting.
+
+Most applications don't fail — they stall. A document is missing, nobody notices for a week, and staff spend their time writing "we still need X" emails.
+
+So the portal has a **Pending Actions** view: the parent sees exactly what's outstanding on their own application, and staff see the same thing across all applications. The chase-up email stopped being necessary because the information was already visible to the person who could act on it.
+
+No automation replaced that work. Making the state visible removed the work entirely.
+
+## What I'd take to the next one
+
+- **Read the existing data before designing anything.** The re-enrolment insight came from looking at what was actually being submitted, not from a requirements call.
+- **Validate at the boundary.** A bad file rejected at upload is a message; a bad file discovered a week later is a phone call.
+- **Visibility beats notification.** The cheapest fix for "staff keep chasing people" was showing people what they owed.

@@ -1,23 +1,30 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { MoonIcon, SunIcon } from "@radix-ui/react-icons";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 
+/**
+ * Which icon shows is decided by CSS `dark:` variants rather than by reading
+ * the resolved theme in JS. next-themes only knows the real theme after mount,
+ * so rendering conditionally would either mismatch on hydration or flash the
+ * wrong icon.
+ */
 export function ModeToggle({ className }: { className?: string }) {
-  const { theme, setTheme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
 
   return (
-    <Button
+    <button
       type="button"
-      variant="link"
-      size="icon"
-      className={cn(className)}
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      aria-label="Toggle colour theme"
+      className={cn(
+        "grid cursor-pointer place-items-center transition-colors",
+        className
+      )}
+      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
     >
-      <SunIcon className="h-full w-full" />
-      <MoonIcon className="hidden h-full w-full" />
-    </Button>
+      <MoonIcon className="size-3.5 dark:hidden" aria-hidden />
+      <SunIcon className="hidden size-3.5 dark:block" aria-hidden />
+    </button>
   );
 }

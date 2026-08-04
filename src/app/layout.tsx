@@ -1,30 +1,21 @@
-import { FlickeringGrid } from "@/components/magicui/flickering-grid";
-import Navbar from "@/components/navbar";
 import Chatbot from "@/components/chatbot";
+import { PageWipe } from "@/components/motion/page-wipe";
+import { OpeningProvider } from "@/components/motion/opening";
+import { Preloader } from "@/components/preloader";
+import { SiteFooter } from "@/components/site-footer";
+import { SiteHeader } from "@/components/site-header";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { DATA } from "@/data/resume";
+import { clashDisplay, geist, geistMono } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-
-const geist = Geist({
-  subsets: ["latin"],
-  variable: "--font-sans",
-  weight: ["400", "500", "600", "700"],
-});
-
-const geistMono = Geist_Mono({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-mono",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL(DATA.url),
   title: {
-    default: `${DATA.name} - Associate System Developer`,
+    default: `${DATA.name} - Full-Stack & Automation Engineer`,
     template: `%s | ${DATA.name}`,
   },
   description: DATA.description,
@@ -51,9 +42,8 @@ export const metadata: Metadata = {
     title: `${DATA.name}`,
     card: "summary_large_image",
   },
-  icons: {
-    icon: "/icon.jpg",
-  },
+  // Icons come from the app/ file conventions (icon.svg, apple-icon.tsx).
+  // Declaring them here as well would emit duplicate <link> tags.
   verification: {
     google: "",
     yandex: "",
@@ -68,23 +58,38 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={cn("min-h-screen bg-background font-sans antialiased relative", geist.variable, geistMono.variable)}>
-        <ThemeProvider attribute="class" defaultTheme="light">
+        className={cn(
+          "min-h-screen bg-background font-sans antialiased",
+          geist.variable,
+          geistMono.variable,
+          clashDisplay.variable
+        )}
+      >
+        {/* Dark is the design's primary register, but a visitor whose OS says
+            light should get light. `system` respects that; the header toggle
+            still overrides it per-visitor. */}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
           <TooltipProvider delayDuration={0}>
-            <div className="absolute inset-0 top-0 left-0 right-0 h-25 overflow-hidden z-0">
-              <FlickeringGrid
-                className="h-full w-full"
-                squareSize={2}
-                gridGap={2}
-                style={{
-                  maskImage: "linear-gradient(to bottom, black, transparent)",
-                  WebkitMaskImage: "linear-gradient(to bottom, black, transparent)",
-                }}
-              />
+            <OpeningProvider>
+            {/* Gives the glass surfaces something to refract. */}
+            <div id="ambient" aria-hidden />
+
+            <Preloader />
+            <PageWipe />
+
+            <div className="flex min-h-screen flex-col">
+              <SiteHeader />
+              <main className="flex-1">{children}</main>
+              <SiteFooter />
             </div>
-            <div className="relative z-10 max-w-2xl mx-auto py-12 pb-24 sm:py-24 px-6">{children}</div>
-            <Navbar />
+
             <Chatbot />
+            </OpeningProvider>
           </TooltipProvider>
         </ThemeProvider>
       </body>

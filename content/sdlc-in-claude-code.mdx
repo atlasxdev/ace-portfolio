@@ -1,0 +1,59 @@
+---
+title: "Running the Whole SDLC in Claude Code, Not Just the Coding Part"
+publishedAt: "2026-07-15"
+updatedAt: "2026-07-15"
+author: "Ace Guevarra"
+summary: "Most AI-assisted development stops at generating functions. The leverage is further upstream — in requirements, architecture, and the context you set up before writing anything."
+---
+
+Most writing about AI-assisted development is about generating code: describe a function, get a function. That's the narrowest possible use, and it's the part where the tool helps least — writing the function was rarely the bottleneck.
+
+The work that actually consumes a project sits upstream and downstream of that. Understanding what's being asked for. Choosing an architecture you won't regret. Keeping documentation aligned with reality. Setting up tests and deployment. That's where I use Claude Code, and it's why my workflow looks different from an autocomplete loop.
+
+## Requirements first, and they come from the call
+
+Projects start with a stakeholder conversation, recorded in Fathom. I built an [MCP server](/blog/fathom-mcp-server) that exposes those notes and action items directly, so requirements move from the call into the work without being re-typed.
+
+Getting this right matters more than any prompt technique. A model working from the actual decisions made in a meeting produces something useful; a model working from my half-remembered summary produces something plausible.
+
+## Context engineering is the real skill
+
+The thing people call prompt engineering is mostly not about the prompt. It's about what the model can see.
+
+For each project I set up:
+
+- **Project rules** — conventions, structure, the patterns this codebase uses. Written once; applies to everything after.
+- **Skills** — reusable procedures for recurring work, so a task done well once is done the same way next time.
+- **Custom commands** — the operations I run constantly, given a name.
+- **Markdown documentation** — architecture decisions and phase plans, in the repo, where they're read rather than in a doc nobody opens.
+
+The payoff isn't speed on any single task. It's that the output stops drifting from the codebase's conventions, which is where most AI-generated code quietly costs you time in review.
+
+{/* TODO: quote one real rule, skill or custom command from your setup.
+    Concrete beats abstract here, and it's the part readers will remember. */}
+
+## Architecture and phasing before implementation
+
+Before code, I settle the stack and cut the work into phases. Not because a plan survives contact, but because forcing the sequence out loud exposes the dependency you'd otherwise hit halfway through.
+
+Working through architecture with a model is genuinely useful for one specific reason: it will articulate the trade-off you were about to make implicitly. That's worth something even when you disagree with the conclusion.
+
+## Testing, CI/CD, deployment, and the boring rest
+
+Test setup, pipeline configuration, deployment, monitoring, maintenance — the parts that are well-understood, tedious, and quietly skipped under time pressure.
+
+These are where AI assistance pays most reliably, precisely *because* they're well-understood. There's a right answer, it's just laborious. Reducing the cost of doing them properly means they actually get done rather than deferred.
+
+{/* TODO: name which projects run real CI and what the pipeline does
+    (typecheck, Vitest, Cypress, preview deploy). Otherwise this section
+    stays abstract while the rest of the post is concrete. */}
+
+## What it doesn't do
+
+It doesn't decide what to build. Every genuinely consequential decision on my projects — [re-enrolment being a distinct flow](/blog/admissions-portal-rebuild), the Pending Actions dashboard, [mapping the hiring pipeline before automating it](/blog/recruitment-automation) — came from looking at real data and talking to the people affected.
+
+It also doesn't remove the need to understand your own code. I review everything that lands. The value isn't in trusting output; it's in getting to a reviewable draft faster, across the whole lifecycle rather than just the middle of it.
+
+## The summary
+
+If you're using AI to write functions, you're using it at the point of least leverage. The gains are in requirements, context, and the unglamorous infrastructure work at the end — the parts of the lifecycle that usually get compressed the moment a deadline arrives.

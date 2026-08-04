@@ -1,0 +1,408 @@
+/* ===========================================================================
+   Ace Guevarra — shared resume stylesheet
+   Single-column, ATS-safe, tuned for browser print-to-PDF at A4 and Letter.
+
+   Density knobs, in the order you should reach for them if a variant ever
+   spills onto a second page:
+     1. --lh          1.16 is at the floor; go to --fs-base next
+     2. --gap-section 1.9mm -> 1.6mm
+     3. --fs-base     9.7pt -> 9.4pt (floor: 9.2pt, below that it reads cramped)
+   =========================================================================== */
+
+:root {
+  --ink: #14171a;
+  --ink-soft: #3d444b;
+  --ink-mute: #5c646d;
+  --accent: #16354f;
+  --rule: #c9cfd6;
+  --rule-strong: #16354f;
+
+  --fs-base: 9.7pt;
+  --lh: 1.16;
+
+  --page-w: 210mm;
+  --page-h: 297mm;
+  --pad-x: 10mm;
+  --pad-y: 8.2mm;
+
+  --gap-section: 1.6mm;
+  --gap-entry: 2.4mm;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+    Arial, sans-serif;
+  font-size: var(--fs-base);
+  line-height: var(--lh);
+  color: var(--ink);
+  background: #fff;
+  font-variant-ligatures: none;
+}
+
+.page {
+  width: var(--page-w);
+  min-height: var(--page-h);
+  margin: 0 auto;
+  padding: var(--pad-y) var(--pad-x);
+  background: #fff;
+}
+
+/* --- Header ------------------------------------------------------------- */
+
+header {
+  margin-bottom: 2.8mm;
+}
+
+h1 {
+  margin: 0;
+  font-size: 20pt;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.04;
+  color: var(--ink);
+}
+
+.headline {
+  margin: 1mm 0 0;
+  font-size: 10.1pt;
+  font-weight: 600;
+  letter-spacing: 0.015em;
+  color: var(--accent);
+}
+
+.contact {
+  margin: 1.5mm 0 0;
+  font-size: 8.5pt;
+  line-height: 1.4;
+  color: var(--ink-soft);
+}
+
+.contact a {
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+
+.contact .sep {
+  color: var(--rule);
+  padding: 0 0.7mm;
+}
+
+header::after {
+  content: "";
+  display: block;
+  height: 1.3pt;
+  background: var(--rule-strong);
+  margin-top: 2.2mm;
+}
+
+/* --- Sections ----------------------------------------------------------- */
+
+section {
+  margin-top: var(--gap-section);
+}
+
+h2 {
+  margin: 0 0 1.6mm;
+  padding-bottom: 0.7mm;
+  border-bottom: 0.6pt solid var(--rule);
+  font-size: 9pt;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.summary {
+  margin: 0;
+  font-size: 9.5pt;
+  color: var(--ink-soft);
+}
+
+.summary strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* --- Skills ------------------------------------------------------------- */
+
+.skills {
+  margin: 0;
+}
+
+.skill-row {
+  display: flex;
+  gap: 2.6mm;
+  margin-bottom: 0.7mm;
+  font-size: 9.3pt;
+  line-height: 1.24;
+}
+
+.skill-row:last-child {
+  margin-bottom: 0;
+}
+
+.skill-row dt {
+  flex: 0 0 31mm;
+  font-weight: 700;
+  white-space: nowrap;
+  color: var(--ink);
+}
+
+.skill-row dd {
+  margin: 0;
+  flex: 1;
+  color: var(--ink-soft);
+}
+
+/* --- Experience --------------------------------------------------------- */
+
+.entry {
+  margin-bottom: var(--gap-entry);
+}
+
+.entry:last-child {
+  margin-bottom: 0;
+}
+
+.entry-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4mm;
+}
+
+.entry-head h3 {
+  margin: 0;
+  font-size: 10.3pt;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.entry-head .meta {
+  flex: none;
+  font-size: 8.8pt;
+  font-weight: 600;
+  color: var(--ink-mute);
+  white-space: nowrap;
+}
+
+.role {
+  margin: 0.2mm 0 0;
+  font-size: 9.6pt;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+/* Role progression within one employer — current role first, prior
+   role beneath it, so the promotion reads at a glance. */
+
+.role-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4mm;
+}
+
+.role-line .when-sm {
+  flex: none;
+  font-size: 8.5pt;
+  font-weight: 600;
+  color: var(--ink-mute);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.role-prev {
+  margin: 0.35mm 0 0;
+  font-size: 9.2pt;
+  font-weight: 500;
+  color: var(--ink-mute);
+}
+
+.scope {
+  margin: 0.8mm 0 0;
+  font-size: 9.2pt;
+  color: var(--ink-soft);
+}
+
+/* Project blocks nested under an employer */
+
+.project {
+  margin-top: 1.7mm;
+  padding-left: 2.8mm;
+  border-left: 1.2pt solid var(--rule);
+}
+
+.project-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4mm;
+}
+
+.project-head h4 {
+  margin: 0;
+  font-size: 9.6pt;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.project-head .meta {
+  flex: none;
+  font-size: 8.4pt;
+  font-weight: 600;
+  color: var(--ink-mute);
+  white-space: nowrap;
+}
+
+.stack {
+  margin: 0.3mm 0 0;
+  font-size: 8.5pt;
+  line-height: 1.26;
+  color: var(--ink-mute);
+}
+
+.stack b {
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+/* --- Bullets ------------------------------------------------------------ */
+
+/* Native list markers on purpose: an absolutely-positioned ::before bullet
+   makes Chrome emit every <li> at the END of the PDF content stream, which
+   detaches the bullets from their project when an ATS reads the text layer. */
+
+ul {
+  margin: 0.7mm 0 0;
+  padding-left: 3.9mm;
+  list-style: disc outside;
+}
+
+li {
+  margin-bottom: 0.55mm;
+  color: var(--ink-soft);
+}
+
+li:last-child {
+  margin-bottom: 0;
+}
+
+li::marker {
+  color: var(--rule-strong);
+  font-size: 0.85em;
+}
+
+li strong {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+/* --- Compact one-line list (projects, education) ------------------------ */
+
+.line {
+  margin-bottom: 1.3mm;
+}
+
+.line:last-child {
+  margin-bottom: 0;
+}
+
+.line-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4mm;
+}
+
+.line-head .name {
+  font-size: 9.6pt;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.line-head .meta {
+  flex: none;
+  font-size: 8.5pt;
+  font-weight: 600;
+  color: var(--ink-mute);
+  white-space: nowrap;
+}
+
+.line p {
+  margin: 0.25mm 0 0;
+  font-size: 9.2pt;
+  color: var(--ink-soft);
+}
+
+.line a {
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+
+.note {
+  margin: 1.1mm 0 0;
+  font-size: 9.1pt;
+  line-height: 1.25;
+  color: var(--ink-soft);
+}
+
+.note b {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+/* --- Screen preview ----------------------------------------------------- */
+
+@media screen {
+  body {
+    background: #eef1f4;
+    padding: 10mm 0;
+  }
+
+  .page {
+    box-shadow: 0 2px 18px rgba(20, 23, 26, 0.16);
+    border-radius: 2px;
+  }
+}
+
+/* --- Print -------------------------------------------------------------- */
+
+@page {
+  size: A4;
+  margin: 0;
+}
+
+@media print {
+  body {
+    background: #fff;
+    padding: 0;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page {
+    width: auto;
+    min-height: 0;
+    margin: 0;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  section,
+  .entry,
+  .project,
+  .line {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

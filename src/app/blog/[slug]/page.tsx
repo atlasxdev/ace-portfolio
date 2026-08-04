@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { MDXContent } from "@content-collections/mdx/react";
 import { mdxComponents } from "@/mdx-components";
 import Link from "next/link";
+import { Reveal } from "@/components/motion/reveal";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 function getSortedPosts() {
@@ -114,80 +115,75 @@ export default async function Blog({
   }).replace(/</g, "\\u003c");
 
   return (
-    <section id="blog">
+    <div className="mx-auto max-w-[760px] px-group pt-7 pb-20">
       <script
         type="application/ld+json"
         suppressHydrationWarning
-        dangerouslySetInnerHTML={{
-          __html: jsonLdContent,
-        }}
+        dangerouslySetInnerHTML={{ __html: jsonLdContent }}
       />
-      <div className="flex justify-start gap-4 items-center">
-        <Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors border border-border rounded-lg px-2 py-1 inline-flex items-center gap-1 mb-6 group" aria-label="Back to Blog">
-          <ChevronLeft className="size-3 group-hover:-translate-x-px transition-transform" />
-          Back to Blog
-        </Link>
-      </div>
-      <div className="flex flex-col gap-4">
-        <h1 className="title font-semibold text-3xl md:text-4xl tracking-tighter leading-tight">
-          {post.title}
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          {formatDate(post.publishedAt)}
-        </p>
-      </div>
-      <div className="my-6 flex w-full items-center">
-        <div
-          className="flex-1 h-px bg-border"
-          style={{
-            maskImage:
-              "linear-gradient(90deg, transparent, black 8%, black 92%, transparent)",
-            WebkitMaskImage:
-              "linear-gradient(90deg, transparent, black 8%, black 92%, transparent)",
-          }}
-        />
-      </div>
-      <article className="prose max-w-full text-pretty font-sans leading-relaxed text-muted-foreground dark:prose-invert">
-        <MDXContent code={post.mdx} components={mdxComponents} />
-      </article>
 
-      <nav className="mt-12 pt-8 max-w-2xl">
-        <div className="flex flex-col sm:flex-row justify-between gap-4">
+      <Reveal kind="fade">
+        <Link
+          href="/blog"
+          className="label group inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
+          aria-label="Back to all posts"
+        >
+          <ChevronLeft className="size-3 transition-transform group-hover:-translate-x-0.5" />
+          All posts
+        </Link>
+      </Reveal>
+
+      <Reveal delay={0.06}>
+        <article className="glass mt-5 p-group md:p-entry">
+          <h1 className="font-display text-[clamp(1.9rem,5vw,2.75rem)] leading-[1.08] font-semibold tracking-[-0.02em] text-balance">
+            {post.title}
+          </h1>
+          <p className="label mt-5 mb-8 text-ink-faint">
+            {formatDate(post.publishedAt)}
+          </p>
+          <div className="prose max-w-full font-sans leading-relaxed text-pretty text-muted-foreground dark:prose-invert">
+            <MDXContent code={post.mdx} components={mdxComponents} />
+          </div>
+        </article>
+      </Reveal>
+
+      <Reveal kind="fade" delay={0.1}>
+        <nav className="mt-4 flex flex-col gap-3 sm:flex-row">
           {previousPost ? (
             <Link
               href={`/blog/${getSlug(previousPost)}`}
-              className="group flex-1 flex flex-col gap-1 p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors"
+              className="glass glass-hover group flex flex-1 flex-col gap-1 p-4"
             >
-              <span className="flex items-center gap-1 text-xs text-muted-foreground">
+              <span className="label flex items-center gap-1">
                 <ChevronLeft className="size-3" />
                 Previous
               </span>
-              <span className="text-sm font-medium group-hover:text-foreground transition-colors whitespace-normal wrap-break-word">
+              <span className="text-sm font-medium wrap-break-word">
                 {previousPost.title}
               </span>
             </Link>
           ) : (
-            <div className="hidden sm:block flex-1" />
+            <div className="hidden flex-1 sm:block" />
           )}
 
           {nextPost ? (
             <Link
               href={`/blog/${getSlug(nextPost)}`}
-              className="group flex-1 flex flex-col gap-1 p-4 rounded-lg border border-border hover:bg-accent/50 transition-colors text-right"
+              className="glass glass-hover group flex flex-1 flex-col gap-1 p-4 text-right"
             >
-              <span className="flex items-center justify-end gap-1 text-xs text-muted-foreground">
+              <span className="label flex items-center justify-end gap-1">
                 Next
                 <ChevronRight className="size-3" />
               </span>
-              <span className="text-sm font-medium group-hover:text-foreground transition-colors whitespace-normal wrap-break-word">
+              <span className="text-sm font-medium wrap-break-word">
                 {nextPost.title}
               </span>
             </Link>
           ) : (
-            <div className="hidden sm:block flex-1" />
+            <div className="hidden flex-1 sm:block" />
           )}
-        </div>
-      </nav>
-    </section>
+        </nav>
+      </Reveal>
+    </div>
   );
 }

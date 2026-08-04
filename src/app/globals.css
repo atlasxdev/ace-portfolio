@@ -5,6 +5,52 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
+  --font-display: var(--font-clash), var(--font-sans), sans-serif;
+
+  /* Breakpoints from the reference system: phone < 810, tablet 810–1199,
+     desktop >= 1200. These replace Tailwind's 768/1024 defaults. */
+  --breakpoint-sm: 480px;
+  --breakpoint-md: 810px;
+  --breakpoint-lg: 1200px;
+  --breakpoint-xl: 1200px;
+  --breakpoint-2xl: 1200px;
+
+  /* Six-step spacing scale. The 24 -> 48 -> 96 jump is what gives the page its
+     cadence; nothing should sit between these steps. */
+  --spacing-tight: 10px;   /* tight pairings — nav clusters, label + value  */
+  --spacing-snug: 16px;    /* compact internal stacks                       */
+  --spacing-group: 24px;   /* card content groups                           */
+  --spacing-entry: 48px;   /* between entries — projects, work history      */
+  --spacing-section: 96px; /* between major sections                        */
+
+  /* Reading measure: a 720px content module, with the label gutter beside it. */
+  --container-module: 720px;
+  --container-gutter: 144px;
+  --container-row: 1008px; /* 144 gutter + 48 gap + 720 module + 2x48 page padding */
+
+  /* Type scale */
+  --text-display: 96px;
+  --text-display--line-height: 100px;
+  --text-display--letter-spacing: -0.03em;
+  --text-h2: 64px;
+  --text-h2--line-height: 72px;
+  --text-h2--letter-spacing: -0.02em;
+  --text-h3: 24px;
+  --text-h3--line-height: 30px;
+  --text-h3--letter-spacing: -0.01em;
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 28px;
+  --text-body: 16px;
+  --text-body--line-height: 26px;
+  --text-body-sm: 14px;
+  --text-body-sm--line-height: 22px;
+  --text-label: 12px;
+  --text-label--line-height: 16px;
+  --color-ink-faint: var(--ink-faint);
+  --color-rule: var(--rule);
+  --color-available: var(--available);
+  /* Compact controls take 4px; cards keep the larger --radius. */
+  --radius-control: 4px;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -43,72 +89,94 @@
 }
 
 :root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --radius: 0.875rem;
+
+  /* Editorial neutrals. Not pure greys — each carries a slight cool bias so the
+     ground reads as chosen rather than inherited. */
+  --background: #fafaf9;
+  --foreground: #141414;
+  --card: #ffffff;
+  --card-foreground: #141414;
+  --popover: #ffffff;
+  --popover-foreground: #141414;
+  --primary: #141414;
+  --primary-foreground: #fafaf9;
+  --secondary: #f0f0ef;
+  --secondary-foreground: #141414;
+  --muted: #f0f0ef;
+  --muted-foreground: #6b6b6b;
+  --accent: #f0f0ef;
+  --accent-foreground: #141414;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --border: #e4e4e4;
+  --input: #e4e4e4;
+  --ring: #9a9a9a;
+
+  /* design-system extras */
+  --ink-faint: #6f6f6f;
+  --rule: #e4e4e4;
+  --available: #8f6216;
+  --glass-bg: color-mix(in srgb, var(--card) 52%, transparent);
+  --glass-brd: color-mix(in srgb, var(--foreground) 12%, transparent);
+  --glass-hi: color-mix(in srgb, var(--foreground) 6%, transparent);
+  --ambient: 0.16;
+
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: #ffffff;
+  --sidebar-foreground: #141414;
+  --sidebar-primary: #141414;
+  --sidebar-primary-foreground: #fafaf9;
+  --sidebar-accent: #f0f0ef;
+  --sidebar-accent-foreground: #141414;
+  --sidebar-border: #e4e4e4;
+  --sidebar-ring: #9a9a9a;
 }
 
 .dark {
-  --background: oklch(0.18 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --background: #0e0e0e;
+  --foreground: #f2f2f2;
+  --card: #141414;
+  --card-foreground: #f2f2f2;
+  --popover: #141414;
+  --popover-foreground: #f2f2f2;
+  --primary: #f2f2f2;
+  --primary-foreground: #141414;
+  --secondary: #1c1c1c;
+  --secondary-foreground: #f2f2f2;
+  --muted: #1c1c1c;
+  --muted-foreground: #a8a8a8;
+  --accent: #1c1c1c;
+  --accent-foreground: #f2f2f2;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --border: #242424;
+  --input: #2a2a2a;
+  --ring: #565656;
+
+  --ink-faint: #8f8f8f;
+  --rule: #242424;
+  --available: #d9a441;
+  --glass-bg: color-mix(in srgb, var(--card) 52%, transparent);
+  --glass-brd: color-mix(in srgb, var(--foreground) 12%, transparent);
+  --glass-hi: color-mix(in srgb, var(--foreground) 6%, transparent);
+  --ambient: 0.42;
+
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --sidebar: #141414;
+  --sidebar-foreground: #f2f2f2;
+  --sidebar-primary: #f2f2f2;
+  --sidebar-primary-foreground: #141414;
+  --sidebar-accent: #1c1c1c;
+  --sidebar-accent-foreground: #f2f2f2;
+  --sidebar-border: #242424;
+  --sidebar-ring: #565656;
 }
 
 @layer base {
@@ -118,6 +186,8 @@
 
   body {
     @apply bg-background text-foreground;
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
   }
 
   /* Shiki dual theme support */
@@ -233,4 +303,180 @@
     @apply border-b-0;
   }
 
+}
+/* ===========================================================================
+   Editorial design system
+   =========================================================================== */
+
+@layer components {
+  /* --- Glass ---------------------------------------------------------------
+     Frosted panels only read as glass when there is something behind them to
+     refract, which is what #ambient below provides. The ::before is a specular
+     top edge — it is what makes the surface look lit rather than merely
+     translucent. */
+
+  .glass {
+    position: relative;
+    background: var(--glass-bg);
+    -webkit-backdrop-filter: blur(24px) saturate(1.8);
+    backdrop-filter: blur(24px) saturate(1.8);
+    border: 1px solid var(--glass-brd);
+    border-radius: var(--radius);
+    box-shadow:
+      inset 0 1px 0 var(--glass-hi),
+      0 1px 28px -10px rgb(0 0 0 / 0.4);
+  }
+
+  .glass::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 45%;
+    border-radius: inherit;
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--foreground) 5%, transparent),
+      transparent
+    );
+    pointer-events: none;
+  }
+
+  .glass-hover {
+    transition:
+      transform 0.35s var(--ease-spring),
+      border-color 0.3s ease,
+      background-color 0.3s ease;
+  }
+
+  .glass-hover:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--foreground) 22%, transparent);
+    background: color-mix(in srgb, var(--card) 68%, transparent);
+  }
+
+  /* --- Editorial layout ---------------------------------------------------- */
+
+  /* Label: 12/16, weight 500, uppercase with wide tracking. Kept in the mono
+     face — that's a skin choice; the metrics come from the reference. */
+  .label {
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    line-height: var(--text-label--line-height);
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+  }
+
+  /* Label gutter beside a 720px content module. Below the tablet breakpoint
+     the gutter collapses and the module goes fluid — the reference adds
+     vertical separation on mobile rather than compressing the content. */
+  .row {
+    display: grid;
+    grid-template-columns: var(--container-gutter) minmax(0, var(--container-module));
+    gap: var(--spacing-entry);
+    align-items: start;
+  }
+
+  @media (max-width: 809px) {
+    .row {
+      grid-template-columns: 1fr;
+      gap: var(--spacing-snug);
+    }
+  }
+
+  /* The page shell: the row width, centred, with the page gutter. */
+  .shell {
+    width: 100%;
+    max-width: var(--container-row);
+    margin-inline: auto;
+    padding-inline: var(--spacing-group);
+  }
+
+  @media (min-width: 810px) {
+    .shell {
+      padding-inline: var(--spacing-entry);
+    }
+  }
+}
+
+/* --- Ambient field ---------------------------------------------------------
+   Fixed behind everything, tinted from the stack's own brand hues and held at
+   very low saturation so it reads as atmosphere rather than decoration. */
+
+#ambient {
+  position: fixed;
+  inset: -20vmax;
+  z-index: -1;
+  pointer-events: none;
+  opacity: var(--ambient);
+  background:
+    radial-gradient(38vmax 38vmax at 18% 12%, #3178c6 0%, transparent 62%),
+    radial-gradient(34vmax 34vmax at 82% 30%, #3ecf8e 0%, transparent 60%),
+    radial-gradient(40vmax 40vmax at 62% 72%, #d97757 0%, transparent 62%),
+    radial-gradient(30vmax 30vmax at 22% 88%, #ea4b71 0%, transparent 58%);
+  filter: blur(64px) saturate(0.7);
+  animation: ambient-drift 34s ease-in-out infinite alternate;
+}
+
+/* Preloader bloom — the same four brand hues as #ambient, but gathered toward
+   the middle instead of pushed into the corners, so it reads as a wash behind
+   the name rather than as page atmosphere. Opacity is animated by the
+   component; this is only the artwork. */
+.preload-glow {
+  position: absolute;
+  inset: -28vmax;
+  pointer-events: none;
+  background:
+    radial-gradient(30vmax 30vmax at 33% 38%, #3178c6 0%, transparent 60%),
+    radial-gradient(26vmax 26vmax at 67% 36%, #3ecf8e 0%, transparent 58%),
+    radial-gradient(32vmax 32vmax at 54% 66%, #d97757 0%, transparent 60%),
+    radial-gradient(24vmax 24vmax at 39% 70%, #ea4b71 0%, transparent 56%);
+  filter: blur(72px) saturate(0.75);
+  animation: ambient-drift 34s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .preload-glow {
+    animation: none;
+  }
+}
+
+@keyframes ambient-drift {
+  0% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(2%, -2.5%, 0) scale(1.06);
+  }
+  100% {
+    transform: translate3d(-2%, 2%, 0) scale(1.02);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #ambient {
+    animation: none;
+  }
+}
+
+/* --- Outgoing page drift -----------------------------------------------
+   The wipe overlay handles the mask; this is the other half of the page
+   transition — the outgoing page lifts slightly and fades beneath it.
+   `data-leaving` is set on <html> by PageWipe for the duration of the cover. */
+
+html[data-leaving] main {
+  opacity: 0;
+  transform: translateY(-24px);
+  transition:
+    opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-leaving] main {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }

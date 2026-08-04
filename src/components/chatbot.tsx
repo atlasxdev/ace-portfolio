@@ -1,12 +1,13 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { DATA } from "@/data/resume";
 import { Loader2, MessageCircle, Send, X } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
+
+import { Monogram } from "@/components/monogram";
+import { CARD_STATE, SPRING } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
@@ -21,6 +22,7 @@ export default function Chatbot() {
   const [inputValue, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const reduced = useReducedMotion();
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -71,111 +73,112 @@ export default function Chatbot() {
   };
 
   return (
-    <div className="fixed bottom-24 lg:bottom-16 right-6 z-50 flex flex-col items-end gap-4">
+    <div className="fixed right-group bottom-group z-50 flex flex-col items-end gap-snug">
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9, y: 20, transformOrigin: "bottom right" }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
-            className="w-87.5 sm:w-100 overflow-hidden shadow-2xl will-change-transform">
-            <Card className="border-border/50 bg-card shadow-none">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 p-4 bg-primary text-primary-foreground rounded-t-2xl">
-                <div className="flex items-center gap-3">
-                  <div className="relative">
-                    <Avatar className="size-9 border-2 border-primary-foreground/20">
-                      <AvatarImage src={DATA.avatarUrl} alt={DATA.name} />
-                      <AvatarFallback>{DATA.initials}</AvatarFallback>
-                    </Avatar>
-                    <span className="absolute bottom-0 right-0 size-2.5 bg-green-500 border-2 border-primary rounded-full"></span>
-                  </div>
-                  <div>
-                    <CardTitle className="text-sm font-bold">Chat with {DATA.name.split(" ")[0]}</CardTitle>
-                    <p className="text-[10px] text-primary-foreground/70">AI Assistant</p>
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 16 }}
+            transition={reduced ? { duration: 0.2 } : CARD_STATE}
+            style={{ transformOrigin: "bottom right" }}
+            className="glass w-[min(92vw,380px)] overflow-hidden bg-background/80 backdrop-blur-xl backdrop-saturate-150">
+            {/* header — label-led, divider instead of an inverted bar */}
+            <div className="flex items-center justify-between gap-snug border-b border-rule px-group py-snug">
+              <div className="flex items-center gap-2.5">
+                <Monogram className="size-5" />
+                <div className="leading-tight">
+                  <p className="text-body-sm font-semibold">Ask about {DATA.name.split(" ")[0]}</p>
+                  <p className="label text-ink-faint">AI assistant</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={toggleChat}
+                aria-label="Close chat"
+                className="grid size-7 place-items-center rounded-control border border-rule text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground">
+                <X className="size-3.5" aria-hidden />
+              </button>
+            </div>
+
+            {/* transcript */}
+            <div className="flex h-90 flex-col gap-snug overflow-y-auto px-group py-group">
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={cn("flex", message.role === "assistant" ? "justify-start" : "justify-end")}>
+                  <div
+                    className={cn(
+                      "max-w-[85%] rounded-control px-3 py-2 text-body-sm leading-5",
+                      message.role === "assistant"
+                        ? "border border-rule bg-foreground/4 whitespace-pre-wrap text-muted-foreground"
+                        : "bg-foreground text-background",
+                    )}>
+                    {message.content}
                   </div>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-8 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground rounded-full"
-                  onClick={toggleChat}>
-                  <X className="size-4" />
-                </Button>
-              </CardHeader>
-              <CardContent className="h-100 overflow-y-auto p-4 flex flex-col gap-4 scrollbar-thin scrollbar-thumb-muted">
-                {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex ${message.role === "assistant" ? "justify-start" : "justify-end"}`}>
-                    <div
-                      className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm ${
-                        message.role === "assistant"
-                          ? "bg-muted text-foreground rounded-tl-none whitespace-pre-wrap"
-                          : "bg-primary text-primary-foreground rounded-tr-none"
-                      }`}>
-                      {message.content}
-                    </div>
+              ))}
+              {isLoading && (
+                <div className="flex justify-start">
+                  <div className="rounded-control border border-rule bg-foreground/4 px-3 py-2 text-muted-foreground">
+                    <Loader2 className="size-3.5 animate-spin" aria-hidden />
+                    <span className="sr-only">Thinking</span>
                   </div>
-                ))}
-                {isLoading && (
-                  <div className="flex justify-start">
-                    <div className="bg-muted text-foreground rounded-2xl rounded-tl-none px-4 py-2 text-sm">
-                      <Loader2 className="size-4 animate-spin" />
-                    </div>
-                  </div>
+                </div>
+              )}
+              <div ref={scrollRef} />
+            </div>
+
+            {/* composer */}
+            <form onSubmit={handleSubmit} className="flex items-center gap-snug border-t border-rule px-group py-snug">
+              <input
+                autoFocus
+                placeholder="Type a message…"
+                className="flex-1 bg-transparent text-body-sm outline-none placeholder:text-ink-faint"
+                value={inputValue}
+                onChange={(e) => setInput(e.target.value)}
+                disabled={isLoading}
+              />
+              <button
+                type="submit"
+                aria-label="Send message"
+                disabled={!inputValue.trim() || isLoading}
+                className="grid size-7 shrink-0 place-items-center rounded-control border border-rule text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground disabled:pointer-events-none disabled:opacity-40">
+                {isLoading ? (
+                  <Loader2 className="size-3.5 animate-spin" aria-hidden />
+                ) : (
+                  <Send className="size-3.5" aria-hidden />
                 )}
-                <div ref={scrollRef} />
-              </CardContent>
-              <CardFooter className="p-3 border-t">
-                <form onSubmit={handleSubmit} className="flex w-full items-center gap-2">
-                  <input
-                    autoFocus
-                    placeholder="Type a message..."
-                    className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-                    value={inputValue}
-                    onChange={(e) => setInput(e.target.value)}
-                    disabled={isLoading}
-                  />
-                  <Button
-                    type="submit"
-                    size="icon"
-                    className="size-8 rounded-full shrink-0"
-                    disabled={!inputValue.trim() || isLoading}>
-                    {isLoading ? <Loader2 className="size-4 animate-spin" /> : <Send className="size-4" />}
-                  </Button>
-                </form>
-              </CardFooter>
-            </Card>
+              </button>
+            </form>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-        <Button
-          onClick={toggleChat}
-          size="lg"
-          className=" cursor-pointer rounded-full size-14 shadow-xl flex items-center justify-center p-0 border-2 border-primary/20 overflow-hidden">
-          <AnimatePresence mode="wait">
+      <motion.button
+        type="button"
+        onClick={toggleChat}
+        aria-label={isOpen ? "Close chat" : "Chat with Ace's AI assistant"}
+        whileHover={reduced ? undefined : { y: -2 }}
+        whileTap={reduced ? undefined : { scale: 0.96 }}
+        transition={SPRING}
+        className="glass grid size-12 cursor-pointer place-items-center rounded-full">
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.span
+            key={isOpen ? "close" : "chat"}
+            initial={{ opacity: 0, rotate: isOpen ? -90 : 90 }}
+            animate={{ opacity: 1, rotate: 0 }}
+            exit={{ opacity: 0, rotate: isOpen ? 90 : -90 }}
+            transition={reduced ? { duration: 0.15 } : SPRING}
+            className="grid place-items-center">
             {isOpen ? (
-              <motion.div
-                key="close"
-                initial={{ rotate: -90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: 90, opacity: 0 }}>
-                <X className="size-6 text-primary-foreground" />
-              </motion.div>
+              <X className="size-5 text-foreground" aria-hidden />
             ) : (
-              <motion.div
-                key="chat"
-                initial={{ rotate: 90, opacity: 0 }}
-                animate={{ rotate: 0, opacity: 1 }}
-                exit={{ rotate: -90, opacity: 0 }}>
-                <MessageCircle className="size-6 text-primary-foreground" />
-              </motion.div>
+              <MessageCircle className="size-5 text-foreground" aria-hidden />
             )}
-          </AnimatePresence>
-        </Button>
-      </motion.div>
+          </motion.span>
+        </AnimatePresence>
+      </motion.button>
     </div>
   );
 }

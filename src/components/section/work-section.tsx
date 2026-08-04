@@ -1,90 +1,71 @@
-/* eslint-disable @next/next/no-img-element */
-"use client";
-import { useState } from "react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 import { DATA } from "@/data/resume";
-import { ChevronDown, ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils";
-import Markdown from "react-markdown";
+import { Reveal } from "@/components/motion/reveal";
+import { OrgLogo } from "@/components/org-logo";
 
-function LogoImage({ src, alt }: { src: string; alt: string }) {
-  const [imageError, setImageError] = useState(false);
+/**
+ * Work experience: employer, role, and what was achieved there.
+ *
+ * Deliberately no project breakdowns — those are their own section, and the
+ * promotion is a milestone on the timeline. This answers "where has he worked
+ * and what came of it", nothing else.
+ */
+const BULLET =
+  "relative pl-5 before:absolute before:left-0 before:top-[0.62em] before:size-[5px] before:rounded-full before:bg-ink-faint";
+const BODY = "max-w-[72ch] text-sm leading-[1.7] text-muted-foreground";
 
-  if (!src || imageError) {
-    return (
-      <div className="size-8 md:size-10 p-1 border rounded-full shadow ring-2 ring-border bg-muted flex-none" />
-    );
-  }
-
-  return (
-    <img
-      src={src}
-      alt={alt}
-      className="size-8 md:size-10 p-1 border rounded-full shadow ring-2 ring-border overflow-hidden object-contain flex-none"
-      onError={() => setImageError(true)}
-    />
-  );
+/** Descriptions are authored as "- item" lines; prose entries stay one block. */
+function toBullets(description: string): string[] {
+  return description
+    .split("\n")
+    .map((line) => line.replace(/^-\s*/, "").trim())
+    .filter(Boolean);
 }
 
-export default function WorkSection() {
+export function ExperienceSection() {
   return (
-    <Accordion type="single" collapsible className="w-full grid gap-6">
-      {DATA.work.map((work) => (
-        <AccordionItem
-          key={work.company}
-          value={work.company}
-          className="w-full border-b-0 grid gap-2"
-        >
-          <AccordionTrigger className="hover:no-underline p-0 cursor-pointer transition-colors rounded-none group [&>svg]:hidden">
-            <div className="flex items-center gap-x-3 justify-between w-full text-left">
-              <div className="flex items-center gap-x-3 flex-1 min-w-0">
-                <LogoImage src={work.logoUrl} alt={work.company} />
-                <div className="flex-1 min-w-0 gap-0.5 flex flex-col">
-                  <div className="font-semibold leading-none flex items-center gap-2">
-                    {work.company}
-                    <span className="relative inline-flex items-center w-3.5 h-3.5">
-                      <ChevronRight
-                        className={cn(
-                          "absolute h-3.5 w-3.5 shrink-0 text-muted-foreground stroke-2 transition-all duration-300 ease-out",
-                          "translate-x-0 opacity-0",
-                          "group-hover:translate-x-1 group-hover:opacity-100",
-                          "group-data-[state=open]:opacity-0 group-data-[state=open]:translate-x-0"
-                        )}
-                      />
-                      <ChevronDown
-                        className={cn(
-                          "absolute h-3.5 w-3.5 shrink-0 text-muted-foreground stroke-2 transition-all duration-200",
-                          "opacity-0 rotate-0",
-                          "group-data-[state=open]:opacity-100 group-data-[state=open]:rotate-180"
-                        )}
-                      />
-                    </span>
-                  </div>
-                  <div className="font-sans text-sm text-muted-foreground">
-                    {work.title}
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center gap-1 text-xs tabular-nums text-muted-foreground text-right flex-none">
-                <span>
-                  {work.start} - {work.end ?? "Present"}
+    <div className="flex flex-col gap-4">
+      {DATA.work.map((job, i) => {
+        const bullets = toBullets(job.description);
+
+        return (
+          <Reveal
+            key={job.company}
+            delay={i * 0.08}
+            className="glass p-group md:p-entry"
+          >
+            <div className="flex items-start gap-4">
+              <OrgLogo src={job.logoUrl} alt={job.company} />
+
+              <div className="flex min-w-0 flex-1 items-baseline justify-between gap-6 max-md:flex-col max-md:items-start max-md:gap-1.5">
+                <h3 className="text-[17px] leading-snug font-semibold tracking-[-0.01em]">
+                  {job.company}
+                  <span className="mx-2.5 font-normal text-ink-faint">/</span>
+                  <span className="font-normal whitespace-nowrap text-muted-foreground">
+                    {job.title}
+                  </span>
+                </h3>
+                <span className="label shrink-0 text-ink-faint">
+                  {job.start} — {job.end}
                 </span>
               </div>
             </div>
-          </AccordionTrigger>
-          <AccordionContent className="p-0 ml-13 text-xs sm:text-sm text-muted-foreground">
-            <div className="prose max-w-full text-pretty font-sans leading-relaxed text-muted-foreground dark:prose-invert text-xs sm:text-sm">
-              <Markdown>{work.description}</Markdown>
-            </div>
-          </AccordionContent>
-        </AccordionItem>
-      ))}
-    </Accordion>
+
+            {bullets.length > 1 ? (
+              <ul className="mt-6 flex flex-col gap-3">
+                {bullets.map((bullet) => (
+                  <li key={bullet} className={`${BULLET} ${BODY}`}>
+                    {bullet}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className={`mt-5 ${BODY}`}>{bullets[0]}</p>
+            )}
+          </Reveal>
+        );
+      })}
+    </div>
   );
 }
 
+export default ExperienceSection;

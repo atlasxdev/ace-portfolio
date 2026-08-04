@@ -1,0 +1,55 @@
+---
+title: "Building an MCP Server for Fathom AI Before There Was One"
+publishedAt: "2026-06-18"
+updatedAt: "2026-06-18"
+author: "Ace Guevarra"
+summary: "Client requirements live in meeting recordings. Getting them into the editor meant re-typing notes by hand, so I built the bridge myself."
+---
+
+Every project I work on starts the same way: a call with stakeholders where the actual requirements get decided. I record those calls with Fathom, which does a good job of producing notes and action items afterward.
+
+Then came the part that wasted the most time. I'd open the notes in one window, my editor in another, and re-type the decisions into a spec by hand. Every time. The information already existed in a structured form — it just had no path into the place I was writing code.
+
+There was no official Fathom integration for Claude at the time. So I built one.
+
+## What MCP actually is
+
+The Model Context Protocol is a standard way to expose external data and actions to an AI client. You run a small server that declares a set of **tools**; the client discovers them and can call them mid-conversation. The important part is that it's a protocol, not a plugin format — the same server works in Claude Desktop and Claude Code without changes.
+
+Practically, it means the model can go and fetch something instead of waiting for me to paste it in.
+
+## The design
+
+I kept the surface deliberately small. Three things I actually needed:
+
+- **List recent meetings** — so I can say "the HFSE call from Tuesday" and have it resolve.
+- **Get meeting notes** — the full summary for a given meeting.
+- **Get action items** — the structured to-dos, separate from prose notes.
+
+It's tempting to expose everything an API offers. I'd argue against it. Each tool you add is another thing the model has to choose between, and a wrong choice costs a round trip. Three well-named tools beat a dozen vague ones.
+
+{/* TODO: add a code block showing the actual tool registration — the tool
+    names, descriptions and input schemas. This is the single most useful
+    thing you can add for other developers building their own server. */}
+
+## Running it locally
+
+It runs as a local process, which matters more than it sounds. Meeting recordings contain client names, commercial discussions, internal problems. A local server means that content goes from Fathom's API to my machine to the model, and nowhere else. Nothing sits on a third-party host I don't control.
+
+That's not a small consideration when the meetings belong to a client rather than to you.
+
+{/* TODO: add the client config snippet (secrets redacted) showing how the
+    server is registered with Claude Desktop / Claude Code, plus how the
+    Fathom API key is supplied. */}
+
+## What changed
+
+The gap between "we agreed on this in the call" and "this is implemented" collapsed. A typical exchange now looks like: pull the action items from Monday's call, check them against what's actually in the codebase, tell me what's missing.
+
+That last part turned out to be the real value, and I didn't anticipate it. I built this to get requirements *in*. What I use it for most is reviewing work *against* those requirements — catching the thing that got discussed, agreed, and then quietly forgotten three days later.
+
+## Was it worth building?
+
+An official integration exists now, which makes this particular server less necessary. I'd still build it again. It took an afternoon, and it taught me where the boundaries of the protocol are — knowledge I've reused on every AI-assisted project since.
+
+The broader point: if you're doing a piece of manual translation between two systems more than a few times a week, that's a tool waiting to be written. MCP just makes the AI-facing version of it unusually cheap.

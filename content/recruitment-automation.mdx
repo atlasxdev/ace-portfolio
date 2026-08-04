@@ -1,0 +1,58 @@
+---
+title: "Three Days to Same-Day: Automating a Hiring Pipeline"
+publishedAt: "2026-05-22"
+updatedAt: "2026-05-22"
+author: "Ace Guevarra"
+summary: "200+ applicants a month, screened by hand. Configuring the ATS was the easy part — the real win came from removing the keyboard between the form and the database."
+---
+
+When I picked this up, applying for a job here worked like this: a candidate filled in a form, the submission arrived as an email, and someone on the team re-typed the details into the applicant tracking system. Then screening happened when somebody had time.
+
+End to end, a candidate waited about **three days** to hear whether they'd move forward. At **200+ applicants a month**, the re-typing alone was close to a part-time job.
+
+Three things changed that.
+
+## 1. Making the ATS match the actual process
+
+We used Manatal. Out of the box it has a sensible default pipeline, and the default was wrong for us — it described a hiring process nobody here followed.
+
+So the first work wasn't technical at all. I sat with the people doing the hiring and mapped what they *actually* did: which stages existed, who decided what at each one, what caused a candidate to stall. Then I configured Manatal to look like that.
+
+This is the step that's easy to skip and expensive to skip. Automating a process nobody follows produces a system everybody works around.
+
+## 2. Deleting the re-typing step
+
+The application form lives on the careers site, built in WordPress with Elementor. Rather than have it send an email that a human then transcribes, the form posts directly into Manatal through its REST API.
+
+A candidate submits, and the record exists in the ATS. No inbox, no copy-paste, no transcription typo in someone's surname.
+
+That one change removed about **80%** of the manual data entry in the whole process. It isn't a clever piece of engineering — it's an API call. The value was in noticing that a human was being used as an integration layer.
+
+{/* TODO: worth describing the failure path — what happens when the Manatal
+    call fails? Retry, queue, fall back to email? Experienced readers will
+    look for this, and it's the difference between a demo and a system. */}
+
+## 3. Chasing references without chasing references
+
+Background and reference checks were the remaining bottleneck — not because they're hard, but because they're a sequence of small, easily-forgotten follow-ups.
+
+I built the sequence in **n8n**: when a candidate reaches the relevant stage, requests go out automatically, responses are tracked, and non-responses get chased on a schedule rather than when someone remembers.
+
+It now handles **100+ candidates a week**, and response rates went up **25%** — almost entirely because the follow-up reliably happens now.
+
+{/* TODO: name the trigger (Manatal webhook vs polling schedule vs stage
+    change) and the retry/timeout policy. A screenshot of the workflow graph
+    would carry this section. */}
+
+## Where it landed
+
+- Screening: **3 days → same-day**
+- Manual data entry: **down 80%**
+- Reference-check response rate: **up 25%**
+- **100+** candidates processed weekly without manual chasing
+
+## The part I'd emphasise
+
+None of this was difficult engineering. There's no clever algorithm — it's platform configuration, one REST integration, and a workflow tool.
+
+The work that mattered was mapping the real process before automating it, and spotting that a person was doing a computer's job in the middle of it. Both of those are conversations, not code. I think that's true of most automation worth doing.

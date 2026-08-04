@@ -1,8 +1,4 @@
 import { Icons } from "@/components/icons";
-import { NextjsIconDark } from "@/components/ui/svgs/nextjsIconDark";
-import { Postgresql } from "@/components/ui/svgs/postgresql";
-import { ReactLight } from "@/components/ui/svgs/reactLight";
-import { Typescript } from "@/components/ui/svgs/typescript";
 import { HomeIcon, NotebookIcon } from "lucide-react";
 
 export const DATA = {
@@ -12,62 +8,10 @@ export const DATA = {
   location: "Calamba City, Laguna",
   locationLink: "https://www.google.com/maps/place/Calamba,+Laguna",
   description:
-    "Associate System Developer at VizServe Private Limited. I love building things and automating workflows.",
+    "System Engineer I at VizServe Private Limited. I build production systems end-to-end — full-stack, automation, and AI-augmented delivery.",
   summary:
-    "Bachelor of Science in Information Technology graduate from Laguna University (2024). Currently an Associate System Developer at VizServe Private Limited, focusing on revamping admission systems and recruitment process automation. Experienced in full-stack development with React, Next.js, and Supabase, and workflow automation using n8n.",
+    "I'm a **full-stack engineer** at VizServe Private Limited — hired as an Associate System Developer in 2025 and **promoted to System Engineer I** a year later. I take systems from stakeholder requirements through to production: architecture, build, test, deploy, maintain.\n\nThat's meant replacing a legacy admissions portal that now handles **1,539 applications**, automating a recruitment pipeline that **cut manual data entry 80%**, and consolidating a school's spreadsheet operations into a single platform.\n\nI work across the whole lifecycle rather than one layer: **REST APIs and Postgres** on one side, **React and Next.js** on the other, and n8n, CRM and ATS configuration where software meets business process. I use **Claude Code** throughout my development lifecycle, and built a **custom MCP server for Fathom AI** before an official one existed.",
   avatarUrl: "/me-light.jpg",
-  skills: {
-    Frontend: [
-      { name: "React", icon: ReactLight },
-      { name: "Next.js", icon: NextjsIconDark },
-      { name: "Typescript", icon: Typescript },
-      { name: "TailwindCSS", icon: Icons.tailwindcss },
-      { name: "Framer Motion", icon: Icons.framermotion },
-      { name: "Zustand", icon: Icons.zustand },
-      { name: "TanStack Query", icon: Icons.tanstackquery },
-      { name: "Vite", icon: Icons.vite },
-    ],
-    Backend: [
-      { name: "Postgres", icon: Postgresql },
-      { name: "Supabase", icon: Icons.supabase },
-      { name: "MySQL", icon: Icons.mysql },
-      { name: "Express.js", icon: Icons.express },
-      { name: "MongoDB", icon: Icons.mongodb },
-      { name: "JWT", icon: Icons.jwt },
-      { name: "REST API", icon: Icons.globe },
-    ],
-    CMS: [
-      { name: "WordPress", icon: Icons.wordpress },
-      { name: "Directus", icon: Icons.directus },
-    ],
-    "Developer Tools": [
-      { name: "n8n", icon: Icons.n8n },
-      { name: "Git", icon: Icons.git },
-      { name: "GitHub", icon: Icons.github },
-      { name: "Zod", icon: Icons.zod },
-      { name: "Postman", icon: Icons.postman },
-      { name: "VS Code", icon: Icons.vscode },
-      { name: "Prettier", icon: Icons.prettier },
-      { name: "ESLint", icon: Icons.eslint },
-    ],
-    Collaboration: [
-      { name: "ClickUp", icon: Icons.clickup },
-      { name: "Slack", icon: Icons.slack },
-      { name: "Teams", icon: Icons.teams },
-      { name: "Discord", icon: Icons.discord },
-    ],
-  },
-  majorSkills: [
-    { name: "Next.js", icon: NextjsIconDark },
-    { name: "React", icon: ReactLight },
-    { name: "Typescript", icon: Typescript },
-    { name: "Postgres", icon: Postgresql },
-    { name: "Supabase", icon: Icons.supabase },
-    { name: "n8n", icon: Icons.n8n },
-    { name: "Directus", icon: Icons.directus },
-    { name: "WordPress", icon: Icons.wordpress },
-    { name: "TailwindCSS", icon: Icons.tailwindcss },
-  ],
   navbar: [
     { href: "/", icon: HomeIcon, label: "Home" },
     { href: "/blog", icon: NotebookIcon, label: "Blog" },
@@ -75,6 +19,8 @@ export const DATA = {
   contact: {
     email: "aceguevarra.dev@gmail.com",
     tel: "0907 925 1189",
+    // Booking link — used by the hero CTA and the footer.
+    calendly: "https://calendly.com/aceguevarra-dev/15min",
     social: {
       GitHub: {
         name: "GitHub",
@@ -103,12 +49,13 @@ export const DATA = {
       href: "https://vizserve.com",
       badges: [],
       location: "Remote/Hybrid",
-      title: "Associate System Developer",
-      logoUrl: "https://vizserve.com/wp-content/uploads/2025/09/cropped-vizserve-logo.png",
+      title: "System Engineer I",
+      previousTitle: "Associate System Developer (Jan 2025 – Jan 2026)",
+      logoUrl: "/orgs/vizserve.png",
       start: "January 2025",
       end: "Present",
       description:
-        "- Revamped online admission system with Supabase authentication, reducing unauthorized access risks by 100%.\n- Implemented enrollment data carry-over, cutting repeated data entry by 60%.\n- Developed document upload feature with Zod validation, handling 1,000+ submissions monthly.\n- Configured Manatal ATS workflows, accelerating candidate screening from 3 days to same-day.\n- Automated background checks via n8n workflows for 100+ candidates weekly.",
+        "- Replaced a legacy admissions portal with a self-service parent portal: 1,539 applications across 3 academic years, 888 parents served in AY2025, 11,368 documents digitized.\n- Configured Manatal ATS and built a WordPress careers portal wired to its REST API, cutting screening from 3 days to same-day for 200+ monthly applicants and manual data entry by 80%.\n- Automated background and reference checks in n8n for 100+ candidates weekly, lifting response rates 25%.\n- Consolidated spreadsheet-based school operations into one platform, collapsing a multi-day per-term report card process to minutes.\n- Configured a HitPay online store and inventory for the group's uniform and supplies shop across 7 product categories, and designed the storefront.",
     },
     {
       company: "Lamina Studios",
@@ -116,7 +63,7 @@ export const DATA = {
       badges: [],
       location: "Remote",
       title: "Frontend Developer Intern",
-      logoUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTS9yhAOzIiTBPch0Afq6HEXU5u0-pOkVzbwQ&s",
+      logoUrl: "/orgs/lamina-studios.png",
       start: "January 2024",
       end: "May 2024",
       description:
@@ -128,51 +75,86 @@ export const DATA = {
       school: "Laguna University",
       href: "https://lu.edu.ph",
       degree: "Bachelor of Science in Information Technology",
-      logoUrl: "https://www.admin.lu.edu.ph/img/lu-logo.png",
+      logoUrl: "/orgs/laguna-university.png",
       start: "2019",
       end: "2024",
     },
   ],
   projects: [
     {
-      title: "Online Admission System Revamp",
-      href: "https://enrol.hfse.edu.sg/",
-      dates: "June 2025 - Present",
+      title: "HAPI Online Store",
+      href: "https://hapistore.hfse.edu.sg/",
+      dates: "2026 — Present",
       active: true,
       description:
-        "Architected a secure online admission system using Supabase Auth, eliminating unauthorized access risks. Developed enrollment data carry-over logic to cut repeated entry by 60% and implemented secure document uploads with Zod validation. Integrated Directus CMS for administrative tracking and utilized Directus Flows alongside Supabase Edge Functions to automate notifications for admission officers. Built a high-performance dashboard using React, ShadCN UI, and TanStack Query for optimal parent and admin UX.",
+        "Configured a HitPay storefront and inventory for HFSE Global Education Group's uniform and supplies shop — seven product categories across official, PE, Youngstarters and casual uniforms, plus school supplies, books and merchandise, with cart, search and checkout. Also designed the store page itself.",
+      technologies: ["HitPay", "E-commerce", "Inventory", "Payments"],
+      image: "",
+      links: [{ type: "Store", href: "https://hapistore.hfse.edu.sg/" }],
+    },
+    {
+      title: "Online Admission System",
+      href: "https://enrol.hfse.edu.sg/",
+      dates: "2025 — Present",
+      active: true,
+      description:
+        "Self-service enrollment portal replacing a legacy admissions system for HFSE International School. Auto-saved drafts and prior-year carry-over turn re-enrollment into a review-and-confirm step; uploads are validated and multi-page documents merged server-side. A Pending Actions dashboard shows parents and staff exactly what is outstanding, which removed the chase-up email entirely.",
       technologies: [
-        "React",
         "Next.js",
+        "TypeScript",
         "Supabase",
-        "Supabase Edge Functions",
-        "Directus",
-        "Directus Flows",
+        "PostgreSQL",
         "TanStack Query",
+        "React Hook Form",
         "Zod",
-      ],
-      links: [
-        {
-          type: "Website",
-          href: "https://enrol.hfse.edu.sg/",
-          icon: <Icons.globe className="size-3" />,
-        },
+        "Tailwind CSS",
       ],
       image: "/online-admission-login.png",
-      video: "",
+      links: [{ type: "Website", href: "https://enrol.hfse.edu.sg/" }],
     },
-
     {
-      title: "Recruitment Process Automation",
+      title: "Student Information System",
       href: "",
-      dates: "September 2025 - Present",
+      dates: "2026 — Present",
       active: true,
       description:
-        "Optimized recruitment workflows by tailoring Manatal ATS, reducing candidate screening time from 3 days to same-day for over 200 monthly applicants. Developed custom WordPress forms with direct API integration to Manatal, automating data entry and achieving an 80% reduction in manual processing. Leveraged n8n to architect automated background and reference check sequences for 100+ weekly candidates, successfully increasing candidate response rates by 25% while streamlining HR operations.",
-      technologies: ["n8n", "WordPress", "Manatal ATS", "Elementor", "API Integration", "PHP", "MySQL", "JavaScript"],
+        "Consolidated a school's spreadsheet-based operations into one platform — admissions, student records, grades, attendance and parent access all working off a single student record. Teachers enter raw scores and the system computes grades and renders the printable report card, collapsing a multi-day per-term process to minutes.",
+      technologies: ["Next.js", "TypeScript", "PostgreSQL", "Supabase", "Zod"],
+      image: "",
       links: [],
-      image: "/manatal process automation.png",
-      video: "",
+    },
+    {
+      title: "HFSE Web Properties",
+      href: "https://careers.hfse.edu.sg/",
+      dates: "2025 — Present",
+      active: true,
+      description:
+        "Redesigned the school's main website and built the GEG careers portal, whose Elementor application form posts candidates directly into Manatal over its REST API — removing the hand-keying step between applying and being screened. Maintain both sites: content, new pages and ongoing changes.",
+      technologies: ["WordPress", "Elementor", "Manatal", "REST API"],
+      image: "",
+      links: [{ type: "Website", href: "https://careers.hfse.edu.sg/" }],
+    },
+    {
+      title: "Fathom AI MCP Server",
+      href: "/blog/fathom-mcp-server",
+      dates: "2025",
+      active: true,
+      description:
+        "A local Model Context Protocol server exposing Fathom AI meeting notes and action items to Claude Desktop and Claude Code — built before an official integration existed. Requirements captured in client calls flow straight into implementation and code review instead of being re-typed from notes.",
+      technologies: ["MCP", "TypeScript", "Anthropic", "Fathom AI"],
+      image: "",
+      links: [{ type: "Write-up", href: "/blog/fathom-mcp-server" }],
+    },
+    {
+      title: "Recruitment Process Automation",
+      href: "/blog/recruitment-automation",
+      dates: "2025 — 2026",
+      active: true,
+      description:
+        "Manatal ATS configured around the real hiring process, plus n8n workflows that dispatch background and reference checks automatically. Screening dropped from three days to same-day for 200+ monthly applicants and manual data entry fell 80%.",
+      technologies: ["n8n", "Manatal", "REST API", "Webhooks", "WordPress"],
+      image: "/manatal-process-automation.png",
+      links: [{ type: "Write-up", href: "/blog/recruitment-automation" }],
     },
     {
       title: "Diabetes Meal Assistant",
@@ -180,64 +162,28 @@ export const DATA = {
       dates: "2025",
       active: true,
       description:
-        "An AI-powered web app that helps individuals managing Type 1, Type 2, and Gestational Diabetes make safer, balanced, and practical food choices. Uses Google Gemini AI to analyze meal descriptions and generate personalized feedback, portion guidance, and healthier food swap suggestions. Features feedback caching via Supabase to reduce repeated AI calls, a chat-like conversational interface, and cultural awareness for Filipino and international meals.",
-      technologies: [
-        "Next.js",
-        "Typescript",
-        "Supabase",
-        "Google Gemini AI",
-        "Zod",
-        "ShadCN UI",
-        "TailwindCSS",
-        "TanStack Query",
-      ],
-      links: [
-        {
-          type: "Website",
-          href: "https://diabetes-meal-assistant.vercel.app/",
-          icon: <Icons.globe className="size-3" />,
-        },
-        {
-          type: "Source",
-          href: "https://github.com/atlasxdev/diabetes-meal-assistant",
-          icon: <Icons.github className="size-3" />,
-        },
-      ],
+        "An LLM app that analyzes free-text meal descriptions and returns portion guidance and healthier swaps, with Supabase-backed caching to cut repeat model calls. Handles Filipino and international meals.",
+      technologies: ["Next.js", "TypeScript", "Google Gemini", "Supabase", "Zod", "TanStack Query"],
       image: "/diabetes-meal-assistant.png",
-      video: "",
-    },
-    {
-      title: "Shop Quickie",
-      href: "https://shop-quickie.vercel.app/",
-      dates: "December 2024",
-      active: true,
-      description:
-        "A high-performance, modern e-commerce web application engineered for speed and reliability. Features a fully responsive interface with optimized page loads, product browsing by category, cart management, multi-step checkout with delivery address and payment details, order tracking, and user profile management. Built with a focus on efficiency and a streamlined shopping experience for contemporary online retail needs.",
-      technologies: [
-        "Next.js",
-        "ShadCN UI",
-        "Zustand",
-        "TanStack Query",
-        "React Hook Form",
-        "Zod",
-        "Axios",
-        "Orama Search",
-      ],
       links: [
-        {
-          type: "Website",
-          href: "https://shop-quickie.vercel.app/",
-          icon: <Icons.globe className="size-3" />,
-        },
-        {
-          type: "Source",
-          href: "https://github.com/atlasxdev/shop-quickie",
-          icon: <Icons.github className="size-3" />,
-        },
+        { type: "Website", href: "https://diabetes-meal-assistant.vercel.app/" },
+        { type: "Source", href: "https://github.com/atlasxdev/diabetes-meal-assistant" },
       ],
-      image: "/shop-quickie.png",
-      video: "",
     },
+    // {
+    //   title: "Shop Quickie",
+    //   href: "https://shop-quickie.vercel.app/",
+    //   dates: "2024",
+    //   active: true,
+    //   description:
+    //     "A fast, responsive e-commerce front end — category browsing, cart management, multi-step checkout with delivery and payment details, order tracking and profile management.",
+    //   technologies: ["Next.js", "Zustand", "TanStack Query", "React Hook Form", "Zod", "shadcn/ui"],
+    //   image: "/shop-quickie.png",
+    //   links: [
+    //     { type: "Website", href: "https://shop-quickie.vercel.app/" },
+    //     { type: "Source", href: "https://github.com/atlasxdev/shop-quickie" },
+    //   ],
+    // },
   ],
   certifications: [
     {
@@ -245,18 +191,19 @@ export const DATA = {
       issuer: "Codebility",
       issuerUrl: "https://www.codebility.tech/",
       date: "December 2024",
-      logoUrl:
-        "https://media.licdn.com/dms/image/v2/D560BAQH099gqRo76cw/company-logo_200_200/company-logo_200_200/0/1714364703710?e=1773878400&v=beta&t=W1zNdfCrO-Ha6pvgVJ55i6RwYZNxxwUxpj4sOT5PFpY",
-      credentialUrl:
-        "https://media.licdn.com/dms/image/sync/v2/D5627AQH2hebLTOWyzQ/articleshare-shrink_800/articleshare-shrink_800/0/1733743380409?e=1773021600&v=beta&t=lBcR_1dTwsV1TiEU7s28YjCjz-eKXwnfVADr7DrGEn0",
+      // Local copies — the old LinkedIn URLs were signed links that expired in
+      // March 2026. Both are white wordmarks, so they render on a dark chip.
+      logoUrl: "/certs/codebility.svg",
+      // The certificate itself, served locally. Replaces the old LinkedIn
+      // media link, which was a signed URL that expired in March 2026.
+      credentialUrl: "/certs/codebility-cert.jpg",
     },
     {
       title: "Responsive Web Design",
       issuer: "freeCodeCamp",
       issuerUrl: "https://www.freecodecamp.org/",
       date: "August 2024",
-      logoUrl:
-        "https://media.licdn.com/dms/image/v2/C4E0BAQGLKj3JHcof0w/company-logo_200_200/company-logo_200_200/0/1630639684997/free_code_camp_logo?e=1773878400&v=beta&t=9ATnoJap4A07Po06UcpkgpRqYRUcpbuGVoL-uTs-f_c",
+      logoUrl: "/certs/freecodecamp.svg",
       credentialUrl:
         "https://www.freecodecamp.org/certification/fcc605edcd8-ef96-4788-9703-10f2cef1b54c/responsive-web-design",
       credentialId: "fcc605edcd8-ef96-4788-9703-10f2cef1b54c-rwd",
@@ -299,12 +246,22 @@ export const DATA = {
       image: "",
       links: [],
     },
+
     {
       title: "Hired at VizServe",
       dates: "January 2025",
       location: "VizServe Private Limited",
       description:
-        "Shortly after graduating, I was hired at VizServe Private Limited as an Associate System Developer. Since then, I've been building and revamping real-world systems — from online admission platforms and recruitment automation to WordPress sites serving thousands of users monthly.",
+        "Shortly after graduating, I was hired at VizServe Private Limited as an Associate System Developer. Since then I've been building and revamping real-world systems — online admission platforms, recruitment automation, a student information system, and WordPress sites serving thousands of users monthly.",
+      image: "",
+      links: [],
+    },
+    {
+      title: "Promoted to System Engineer I",
+      dates: "January 2026",
+      location: "VizServe Private Limited",
+      description:
+        "Twelve months after joining, I moved up from Associate System Developer to System Engineer I — by then owning the admissions portal, the recruitment automation and the student information system end-to-end.",
       image: "",
       links: [],
     },
