@@ -36,15 +36,21 @@ export function ExperienceSection() {
             <div className="flex items-start gap-4">
               <OrgLogo src={job.logoUrl} alt={job.company} />
 
-              <div className="flex min-w-0 flex-1 items-baseline justify-between gap-6 max-md:flex-col max-md:items-start max-md:gap-1.5">
-                <h3 className="text-[17px] leading-snug font-semibold tracking-[-0.01em]">
+              <div className="flex min-w-0 flex-1 items-baseline justify-between gap-6 max-lg:flex-col max-lg:items-start max-lg:gap-1.5">
+                {/* Company and role share a line with a slash between them
+                    while there's room. On a phone that wrap left orphans like
+                    a lone "I" from "System Engineer I", so the role drops to
+                    its own line and the separator goes with it. */}
+                <h3 className="min-w-0 text-[17px] leading-snug font-semibold tracking-[-0.01em]">
                   {job.company}
-                  <span className="mx-2.5 font-normal text-ink-faint">/</span>
-                  <span className="font-normal whitespace-nowrap text-muted-foreground">
+                  <span className="mx-2.5 font-normal text-ink-faint max-md:hidden">
+                    /
+                  </span>
+                  <span className="font-normal text-muted-foreground max-md:mt-0.5 max-md:block">
                     {job.title}
                   </span>
                 </h3>
-                <span className="label shrink-0 text-ink-faint">
+                <span className="label text-ink-faint lg:shrink-0">
                   {job.start} — {job.end}
                 </span>
               </div>

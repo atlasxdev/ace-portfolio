@@ -34,10 +34,16 @@ function RowBody({
 }) {
   return (
     <>
-      <div className="flex items-baseline justify-between gap-group">
-        <h3 className="text-h3 font-semibold tracking-[-0.01em]">{title}</h3>
+      {/* Title and meta share a line only once the content module is at full
+          width. Below 1200px the 144px label gutter squeezes the module, and a
+          24px title beside a shrink-0 meta cannot fit — it pushed the whole
+          page wider than the viewport. */}
+      <div className="flex items-baseline justify-between gap-group max-lg:flex-col max-lg:items-start max-lg:gap-tight">
+        <h3 className="min-w-0 text-h3 font-semibold tracking-[-0.01em]">
+          {title}
+        </h3>
 
-        <span className="label flex shrink-0 items-center gap-group text-ink-faint">
+        <span className="label flex items-center gap-group text-ink-faint lg:shrink-0">
           {type && (
             <>
               <span className="transition-colors group-hover:text-foreground">

@@ -380,7 +380,10 @@
 
   @media (max-width: 809px) {
     .row {
-      grid-template-columns: 1fr;
+      /* minmax(0,...), not 1fr: grid items default to min-width:auto, so a
+         child with a wide min-content pushes the track past the container
+         instead of being contained by it. */
+      grid-template-columns: minmax(0, 1fr);
       gap: var(--spacing-snug);
     }
   }
