@@ -1,3 +1,6 @@
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+
 import Chatbot from "@/components/chatbot";
 import { PageWipe } from "@/components/motion/page-wipe";
 import { OpeningProvider } from "@/components/motion/opening";
@@ -27,6 +30,13 @@ export const metadata: Metadata = {
     locale: "en_US",
     type: "website",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: `${DATA.name}`,
+    description: DATA.description,
+    // No `creator` handle: there's no X account in DATA.contact.social, and a
+    // guessed @handle either 404s or credits somebody else's account.
+  },
   robots: {
     index: true,
     follow: true,
@@ -38,14 +48,38 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  twitter: {
-    title: `${DATA.name}`,
-    card: "summary_large_image",
-  },
+  applicationName: DATA.name,
+  authors: [{ name: DATA.name, url: DATA.url }],
+  creator: DATA.name,
+  publisher: DATA.name,
+  category: "technology",
+  keywords: [
+    "Ace Guevarra",
+    "full-stack engineer",
+    "automation engineer",
+    "AI engineer",
+    "system engineer",
+    "Next.js developer",
+    "TypeScript",
+    "React",
+    "Supabase",
+    "PostgreSQL",
+    "n8n",
+    "workflow automation",
+    "Model Context Protocol",
+    "MCP server",
+    "Claude Code",
+    "remote software engineer",
+    "Philippines",
+  ],
   // Feed discovery — this is what lets a reader hand the site URL to their
   // reader app and have it find the feed on its own.
+  //
+  // NOTE: no `canonical` here. A canonical set on the root layout becomes the
+  // default for every route that doesn't override it, so declaring the homepage
+  // URL here told Google that /blog, /tech-stacks and every post were
+  // duplicates of the homepage and should be dropped. Each route sets its own.
   alternates: {
-    canonical: DATA.url,
     types: { "application/rss+xml": `${DATA.url}/feed.xml` },
   },
   // Icons come from the app/ file conventions (icon.svg, apple-icon.tsx).
@@ -96,6 +130,14 @@ export default function RootLayout({
 
             <Chatbot />
             </OpeningProvider>
+
+            {/* Outside the providers: neither renders anything, and neither
+                should be re-rendered by a theme or tooltip state change.
+                Cookieless, so there's no consent banner to add. Speed Insights
+                reports real Core Web Vitals from actual visitors, which is the
+                only honest read on whether the preloader costs anything. */}
+            <Analytics />
+            <SpeedInsights />
           </TooltipProvider>
         </ThemeProvider>
       </body>

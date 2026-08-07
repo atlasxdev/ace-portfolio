@@ -1,4 +1,5 @@
 import { allPosts } from "content-collections";
+import type { Metadata } from "next";
 import { ArrowRight, Calendar, Mail } from "lucide-react";
 import Link from "next/link";
 
@@ -22,6 +23,10 @@ const HERO_LINKS = [
   { label: "GitHub", href: DATA.contact.social.GitHub.url, external: true },
   { label: "Blog", href: "/blog", external: false },
 ];
+
+export const metadata: Metadata = {
+  alternates: { canonical: DATA.url },
+};
 
 export default function Page() {
   const posts = allPosts

@@ -39,9 +39,10 @@ export async function generateMetadata({
     return undefined;
   }
 
-  let {
+  const {
     title,
     publishedAt: publishedTime,
+    updatedAt: modifiedTime,
     summary: description,
     image,
   } = post;
@@ -49,11 +50,20 @@ export async function generateMetadata({
   return {
     title,
     description,
+    // Each post is its own canonical. Without this they inherited whatever the
+    // root layout declared, which is how every route ended up pointing at the
+    // homepage.
+    alternates: { canonical: `${DATA.url}/blog/${slug}` },
+    authors: [{ name: post.author ?? DATA.name, url: DATA.url }],
     openGraph: {
       title,
       description,
       type: "article",
       publishedTime,
+      ...(modifiedTime && { modifiedTime }),
+      authors: [post.author ?? DATA.name],
+      siteName: DATA.name,
+      locale: "en_US",
       url: `${DATA.url}/blog/${slug}`,
       ...(image && {
         images: [
@@ -98,22 +108,53 @@ export default async function Blog({
   const getSlug = (post: (typeof sortedPosts)[0]) =>
     post._meta.path.replace(/\.mdx$/, "");
 
-  const jsonLdContent = JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": "BlogPosting",
-    headline: post.title,
-    datePublished: post.publishedAt,
-    dateModified: post.publishedAt,
-    description: post.summary,
-    image: post.image
-      ? `${DATA.url}${post.image}`
-      : `${DATA.url}/blog/${slug}/opengraph-image`,
-    url: `${DATA.url}/blog/${slug}`,
-    author: {
-      "@type": "Person",
-      name: DATA.name,
+  // Two graphs: the post itself, and the trail Google needs to render
+  // breadcrumbs in the result instead of a bare URL. `dateModified` reads the
+  // post's own updatedAt — it previously repeated publishedAt, which told
+  // crawlers nothing had ever been revised.
+  const jsonLdContent = JSON.stringify([
+    {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      headline: post.title,
+      datePublished: post.publishedAt,
+      dateModified: post.updatedAt ?? post.publishedAt,
+      description: post.summary,
+      image: post.image
+        ? `${DATA.url}${post.image}`
+        : `${DATA.url}/blog/${slug}/opengraph-image`,
+      url: `${DATA.url}/blog/${slug}`,
+      mainEntityOfPage: {
+        "@type": "WebPage",
+        "@id": `${DATA.url}/blog/${slug}`,
+      },
+      inLanguage: "en",
+      author: {
+        "@type": "Person",
+        name: post.author ?? DATA.name,
+        url: DATA.url,
+      },
+      publisher: {
+        "@type": "Person",
+        name: DATA.name,
+        url: DATA.url,
+      },
     },
-  }).replace(/</g, "\\u003c");
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: DATA.url },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: "Blog",
+          item: `${DATA.url}/blog`,
+        },
+        { "@type": "ListItem", position: 3, name: post.title },
+      ],
+    },
+  ]).replace(/</g, "\u003c");
 
   return (
     <div className="mx-auto max-w-[760px] px-group pt-7 pb-20">

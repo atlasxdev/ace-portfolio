@@ -49,8 +49,13 @@ export function SectionRow({
         )}
       >
         <div className={cn("row", wide && "row-wide")}>
+          {/* The label is the section heading, so it's an <h2>. As a styled
+              div the document went h1 -> h3 with nothing in between, which
+              costs a crawler the page's outline. Tailwind's reset drops
+              heading font-size and weight to inherit, so it takes the .label
+              treatment from the wrapper and looks identical. */}
           <Reveal kind="fade" className="label">
-            {label}
+            <h2>{label}</h2>
           </Reveal>
           <div>{children}</div>
         </div>

@@ -1,4 +1,6 @@
 import { allPosts } from "content-collections";
+
+import { DATA } from "@/data/resume";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { paginate, normalizePage } from "@/lib/pagination";
@@ -10,13 +12,18 @@ export const metadata: Metadata = {
   title: "Blog",
   description:
     "Notes from the build — an MCP server, a hiring pipeline, an admissions portal, and how the whole lifecycle gets run.",
+  alternates: { canonical: `${DATA.url}/blog` },
   openGraph: {
-    title: "Blog",
+    title: `Blog | ${DATA.name}`,
     description: "Notes from the build.",
+    url: `${DATA.url}/blog`,
+    siteName: DATA.name,
+    locale: "en_US",
+    type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Blog",
+    title: `Blog | ${DATA.name}`,
     description: "Notes from the build.",
   },
 };
