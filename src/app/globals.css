@@ -23,10 +23,17 @@
   --spacing-entry: 48px;   /* between entries — projects, work history      */
   --spacing-section: 96px; /* between major sections                        */
 
-  /* Reading measure: a 720px content module, with the label gutter beside it. */
-  --container-module: 720px;
+  /* Reading measure. The reference system specifies a 720px module; this runs
+     wider because the page's cards were reading cramped at that width. Body
+     text is unaffected — every paragraph carries its own `ch` cap, so the
+     measure stays readable and only the surfaces around it grow. */
+  --container-module: 900px;
   --container-gutter: 144px;
-  --container-row: 1008px; /* 144 gutter + 48 gap + 720 module + 2x48 page padding */
+  --container-row: 1188px; /* 144 gutter + 48 gap + 900 module + 2x48 page padding */
+  /* The Approach band runs wider still: five steps side by side need the room,
+     and it drops the label gutter to get it. Only ~60px per side beyond the
+     normal shell, so the edges don't read as a different page. */
+  --container-wide: 1400px;
 
   /* Type scale */
   --text-display: 96px;
@@ -437,6 +444,26 @@
   @media (min-width: 810px) {
     .shell {
       padding-inline: var(--spacing-entry);
+    }
+  }
+
+  /* Wide band. Below 1200px these do nothing at all, so a section marked wide
+     is indistinguishable from every other one on phone and tablet — it only
+     breaks out where there's genuinely room to. Declared after .shell/.row
+     because they override on source order, not specificity. */
+  @media (min-width: 1200px) {
+    .shell-wide {
+      max-width: var(--container-wide);
+    }
+
+    /* The label leaves the gutter and sits above the row: at this width the
+       content needs the full measure, and a 144px gutter would eat a column. */
+    .row-wide {
+      display: block;
+    }
+
+    .row-wide > .label {
+      margin-bottom: var(--spacing-group);
     }
   }
 }

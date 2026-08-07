@@ -40,7 +40,7 @@ export function JourneySection() {
                   <h3 className="mt-1.5 text-[16px] leading-snug font-semibold tracking-[-0.01em]">
                     {item.title}
                   </h3>
-                  <p className="mt-2.5 max-w-[70ch] text-sm leading-[1.7] text-muted-foreground">
+                  <p className="mt-2.5 max-w-[78ch] text-sm leading-[1.7] text-muted-foreground">
                     {item.description}
                   </p>
                 </div>

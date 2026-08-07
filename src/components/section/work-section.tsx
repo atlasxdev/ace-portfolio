@@ -11,7 +11,7 @@ import { OrgLogo } from "@/components/org-logo";
  */
 const BULLET =
   "relative pl-5 before:absolute before:left-0 before:top-[0.62em] before:size-[5px] before:rounded-full before:bg-ink-faint";
-const BODY = "max-w-[72ch] text-sm leading-[1.7] text-muted-foreground";
+const BODY = "max-w-[80ch] text-sm leading-[1.7] text-muted-foreground";
 
 /** Descriptions are authored as "- item" lines; prose entries stay one block. */
 function toBullets(description: string): string[] {

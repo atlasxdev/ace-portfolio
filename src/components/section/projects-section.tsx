@@ -66,7 +66,7 @@ function RowBody({
         </span>
       </div>
 
-      <p className="mt-group max-w-[64ch] text-body-sm leading-5 text-muted-foreground">
+      <p className="mt-group max-w-[72ch] text-body-sm leading-5 text-muted-foreground">
         {description}
       </p>
     </>

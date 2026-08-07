@@ -8,26 +8,32 @@
  *
  * These are ordered stages of a real lifecycle, which is the only reason they
  * carry numbers — the sequence is information, not decoration.
+ *
+ * Bodies are deliberately one sentence. The section renders them as a weaving
+ * step flow with the cards alternating above and below the path, and blocks
+ * that alternate can only be wider than their own column if they're short
+ * enough not to collide with the one two slots along. The full paragraph
+ * version of each is in the linked post.
  */
 export const APPROACH = [
   {
     title: "Requirements from the call",
-    body: "Projects start with a stakeholder conversation, recorded in Fathom. A custom MCP server exposes those notes and action items straight to the tools I build with, so decisions move from the call into the work without being re-typed or half-remembered.",
+    body: "Stakeholder calls are recorded in Fathom and surfaced by a custom MCP server, so decisions reach the work without being re-typed.",
   },
   {
     title: "Context before code",
-    body: "Project rules, reusable skills, custom commands and architecture notes live in the repo. Setting them up once is what keeps output on the codebase's conventions — drift from those conventions is where AI-assisted work quietly costs you the time it saved.",
+    body: "Project rules, reusable skills, custom commands and architecture notes live in the repo, so output stays on the codebase's conventions.",
   },
   {
     title: "Architecture before implementation",
-    body: "The stack and the phases get settled before anything is built. Not because the plan survives contact, but because forcing the sequence out loud surfaces the dependency you'd otherwise hit halfway through.",
+    body: "Stack and phases are settled up front — saying the sequence out loud surfaces the dependency you'd otherwise hit halfway through.",
   },
   {
     title: "Tests, pipelines, deploys",
-    body: "Test setup, CI, deployment and monitoring are the first things cut when a deadline arrives, and they're well-understood enough that the cost is effort rather than judgement. Lowering that cost is what makes them actually get done.",
+    body: "The laborious, well-understood parts are the first cut under a deadline. Lowering their cost is what gets them done at all.",
   },
   {
     title: "Review everything that lands",
-    body: "AI gets to a reviewable draft faster; it doesn't decide what to build. Every consequential call on these projects — re-enrolment as its own flow, the Pending Actions dashboard, mapping the hiring pipeline before automating it — came from real data and the people affected.",
+    body: "AI gets to a reviewable draft faster; it doesn't decide what to build. Real data and the people affected do.",
   },
 ] as const;

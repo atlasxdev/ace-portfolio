@@ -12,6 +12,7 @@ export function SectionRow({
   rule = true,
   ruleDelay = 0,
   ruleOnLoad = false,
+  wide = false,
   className,
   children,
 }: {
@@ -23,13 +24,19 @@ export function SectionRow({
   ruleDelay?: number;
   /** Play the divider on load rather than on scroll. */
   ruleOnLoad?: boolean;
+  /**
+   * Break out of the 720px reading module on desktop: the shell widens and the
+   * label moves above the content instead of sitting in the gutter. No effect
+   * below 1200px. Used by Approach, whose steps run horizontally there.
+   */
+  wide?: boolean;
   className?: string;
   children: React.ReactNode;
 }) {
   return (
     <>
       {rule && (
-        <div className="shell">
+        <div className={cn("shell", wide && "shell-wide")}>
           <Rule delay={ruleDelay} onLoad={ruleOnLoad} />
         </div>
       )}
@@ -37,10 +44,11 @@ export function SectionRow({
         id={id}
         className={cn(
           "shell py-section",
+          wide && "shell-wide",
           className
         )}
       >
-        <div className="row">
+        <div className={cn("row", wide && "row-wide")}>
           <Reveal kind="fade" className="label">
             {label}
           </Reveal>
@@ -87,7 +95,7 @@ export function ItemRow({
         )}
       </div>
       {children && (
-        <div className="mt-2 max-w-[68ch] text-sm text-muted-foreground">
+        <div className="mt-2 max-w-[76ch] text-sm text-muted-foreground">
           {children}
         </div>
       )}

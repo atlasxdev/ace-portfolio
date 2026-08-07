@@ -102,7 +102,7 @@ export default function Page() {
         <Reveal className="glass max-w-none p-group">
           <div className="flex flex-col gap-[1.15rem] text-muted-foreground [&_strong]:font-medium [&_strong]:text-foreground">
             {DATA.summary.split("\n\n").map((para, i) => (
-              <p key={i} className="max-w-[62ch]">
+              <p key={i} className="max-w-[70ch]">
                 {/* `**…**` in the summary marks the claim a skimming reader
                     should catch — the role, the numbers, the stack. Odd
                     segments of the split are the emphasised ones. */}
@@ -155,7 +155,7 @@ export default function Page() {
       </SectionRow>
 
       {/* ── Approach ─────────────────────────────────────────────────── */}
-      <SectionRow label="Approach" id="approach">
+      <SectionRow label="Approach" id="approach" wide>
         <ApproachSection />
         <Reveal kind="fade" delay={0.2}>
           <Link
