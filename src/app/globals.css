@@ -354,6 +354,44 @@
     background: color-mix(in srgb, var(--card) 68%, transparent);
   }
 
+  /* --- Approach step badge -------------------------------------------------
+     Each step carries its hue as `--step`, one of the four brand colours the
+     ambient field is already built from, so the colour reads as belonging to
+     the page rather than imported with the component.
+
+     Fill and ring are low-alpha mixes so the disc reads as tinted glass, not a
+     solid chip. The icon is darkened on the light ground: those hues are tuned
+     for a near-black page and several — the green worst — fall under the 3:1
+     non-text threshold on #fafaf9 if used raw. */
+
+  .step-badge {
+    background: color-mix(in srgb, var(--step) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--step) 34%, transparent);
+    color: color-mix(in srgb, var(--step) 68%, #000);
+    box-shadow: 0 0 22px -8px color-mix(in srgb, var(--step) 55%, transparent);
+    transition:
+      box-shadow 0.45s ease,
+      border-color 0.45s ease;
+  }
+
+  .dark .step-badge {
+    background: color-mix(in srgb, var(--step) 16%, transparent);
+    border-color: color-mix(in srgb, var(--step) 42%, transparent);
+    color: var(--step);
+  }
+
+  /* The one flourish: the step's hue blooms when its tile is hovered. */
+  .group:hover .step-badge {
+    border-color: color-mix(in srgb, var(--step) 62%, transparent);
+    box-shadow: 0 0 34px -6px color-mix(in srgb, var(--step) 75%, transparent);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .step-badge {
+      transition: none;
+    }
+  }
+
   /* --- Editorial layout ---------------------------------------------------- */
 
   /* Label: 12/16, weight 500, uppercase with wide tracking. Kept in the mono

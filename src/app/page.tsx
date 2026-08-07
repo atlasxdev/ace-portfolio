@@ -3,6 +3,7 @@ import { ArrowRight, Calendar, Mail } from "lucide-react";
 import Link from "next/link";
 
 import { Reveal } from "@/components/motion/reveal";
+import { ApproachSection } from "@/components/section/approach-section";
 import { CertificationsSection } from "@/components/section/certifications-section";
 import { EducationSection } from "@/components/section/education-section";
 import { JourneySection } from "@/components/section/journey-section";
@@ -149,6 +150,18 @@ export default function Page() {
             href="/tech-stacks"
             className="label mt-8 inline-flex items-center gap-2 transition-all hover:gap-3 hover:text-foreground">
             View all tech stacks <ArrowRight className="size-3" aria-hidden />
+          </Link>
+        </Reveal>
+      </SectionRow>
+
+      {/* ── Approach ─────────────────────────────────────────────────── */}
+      <SectionRow label="Approach" id="approach">
+        <ApproachSection />
+        <Reveal kind="fade" delay={0.2}>
+          <Link
+            href="/blog/sdlc-in-claude-code"
+            className="label mt-8 inline-flex items-center gap-2 transition-all hover:gap-3 hover:text-foreground">
+            Read the full write-up <ArrowRight className="size-3" aria-hidden />
           </Link>
         </Reveal>
       </SectionRow>

@@ -29,6 +29,7 @@ Ace Guevarra's Profile:
   - Automation & Platforms: n8n, GoHighLevel (CRM), Manatal (ATS), business process automation, WordPress (Elementor).
   - Cloud & Testing: Vercel, Azure App Service, CI/CD, Git, GitHub, Vitest, Cypress, Postman.
   - Production integrations: GoHighLevel, Manatal, Supabase, Anthropic, Cloudinary, Microsoft Outlook, Discord, Resend, Calendly, ClickUp, Fathom AI.
+- How he works (5 stages, see the Approach section on the site): requirements come from recorded stakeholder calls, surfaced via his own Fathom MCP server rather than re-typed; project rules, reusable skills, custom commands and architecture notes live in the repo so output stays on the codebase's conventions; stack and phases are settled before implementation; test setup, CI, deploys and monitoring are treated as part of the work rather than cut under deadline; and he reviews everything that lands — AI gets to a reviewable draft faster, it does not decide what to build.
 - Key Strengths: Full-stack development, end-to-end delivery ownership, API integration, workflow automation, CRM/ATS configuration, AI-augmented development.
 
 Instructions:
