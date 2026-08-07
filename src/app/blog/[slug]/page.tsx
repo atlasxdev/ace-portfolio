@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { MDXContent } from "@content-collections/mdx/react";
 import { mdxComponents } from "@/mdx-components";
 import Link from "next/link";
+import { CaseStudy } from "@/components/case-study";
 import { Reveal } from "@/components/motion/reveal";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -138,10 +139,20 @@ export default async function Blog({
           <h1 className="font-display text-[clamp(1.9rem,5vw,2.75rem)] leading-[1.08] font-semibold tracking-[-0.02em] text-balance">
             {post.title}
           </h1>
-          <p className="label mt-5 mb-8 text-ink-faint">
+          <p className="label mt-5 text-ink-faint">
             {formatDate(post.publishedAt)}
           </p>
-          <div className="prose max-w-full font-sans leading-relaxed text-pretty text-muted-foreground dark:prose-invert">
+
+          {/* Above the prose on the pieces that have a before-and-after: the
+              four beats someone deciding whether to read this needs. */}
+          <CaseStudy
+            problem={post.problem}
+            constraint={post.constraint}
+            decision={post.decision}
+            outcome={post.outcome}
+          />
+
+          <div className="prose mt-8 max-w-full font-sans leading-relaxed text-pretty text-muted-foreground dark:prose-invert">
             <MDXContent code={post.mdx} components={mdxComponents} />
           </div>
         </article>

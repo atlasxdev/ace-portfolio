@@ -42,6 +42,12 @@ export const metadata: Metadata = {
     title: `${DATA.name}`,
     card: "summary_large_image",
   },
+  // Feed discovery — this is what lets a reader hand the site URL to their
+  // reader app and have it find the feed on its own.
+  alternates: {
+    canonical: DATA.url,
+    types: { "application/rss+xml": `${DATA.url}/feed.xml` },
+  },
   // Icons come from the app/ file conventions (icon.svg, apple-icon.tsx).
   // Declaring them here as well would emit duplicate <link> tags.
   verification: {

@@ -110,7 +110,10 @@ export const DATA = {
         "Tailwind CSS",
       ],
       image: "/online-admission-login.png",
-      links: [{ type: "Website", href: "https://enrol.hfse.edu.sg/" }],
+      links: [
+        { type: "Case study", href: "/blog/admissions-portal-rebuild" },
+        { type: "Website", href: "https://enrol.hfse.edu.sg/" },
+      ],
     },
     {
       title: "Student Information System",
@@ -154,7 +157,7 @@ export const DATA = {
         "Manatal ATS configured around the real hiring process, plus n8n workflows that dispatch background and reference checks automatically. Screening dropped from three days to same-day for 200+ monthly applicants and manual data entry fell 80%.",
       technologies: ["n8n", "Manatal", "REST API", "Webhooks", "WordPress"],
       image: "/manatal-process-automation.png",
-      links: [{ type: "Write-up", href: "/blog/recruitment-automation" }],
+      links: [{ type: "Case study", href: "/blog/recruitment-automation" }],
     },
     {
       title: "Diabetes Meal Assistant",

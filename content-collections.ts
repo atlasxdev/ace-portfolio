@@ -16,6 +16,14 @@ const posts = defineCollection({
         summary: z.string(),
         image: z.string().optional(),
         content: z.string(),
+        // Case-study frames. Optional: only the pieces of work with a real
+        // before-and-after carry them, and a post without them renders exactly
+        // as it did. Hiring managers read for these four beats, and in prose
+        // they're spread across 900 words.
+        problem: z.string().optional(),
+        constraint: z.string().optional(),
+        decision: z.string().optional(),
+        outcome: z.string().optional(),
     }),
     transform: async (document, context) => {
         const mdx = await compileMDX(context, document, {

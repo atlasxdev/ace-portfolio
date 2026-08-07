@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { Reveal } from "@/components/motion/reveal";
 import { ApproachSection } from "@/components/section/approach-section";
+import { ImpactSection } from "@/components/section/impact-section";
 import { CertificationsSection } from "@/components/section/certifications-section";
 import { EducationSection } from "@/components/section/education-section";
 import { JourneySection } from "@/components/section/journey-section";
@@ -12,6 +13,7 @@ import { ItemList, ItemRow, SectionRow } from "@/components/section/section-row"
 import { ExperienceSection } from "@/components/section/work-section";
 import { RULE_DELAY } from "@/lib/motion";
 import { TechGrid } from "@/components/tech-tile";
+import { PersonSchema } from "@/components/person-schema";
 import { DATA } from "@/data/resume";
 import { CAPABILITIES, TECH_BAND } from "@/data/stacks";
 
@@ -29,6 +31,8 @@ export default function Page() {
 
   return (
     <>
+      <PersonSchema />
+
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section className="shell pt-section pb-entry">
         <Reveal kind="fade" onLoad delay={0.1} className="label">
@@ -113,6 +117,11 @@ export default function Page() {
             ))}
           </div>
         </Reveal>
+      </SectionRow>
+
+      {/* ── Impact ───────────────────────────────────────────────────── */}
+      <SectionRow label="Impact" id="impact">
+        <ImpactSection />
       </SectionRow>
 
       {/* ── Experience ───────────────────────────────────────────────── */}
