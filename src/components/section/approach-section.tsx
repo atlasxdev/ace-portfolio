@@ -1,13 +1,14 @@
 "use client";
 
-import { motion, useReducedMotion } from "motion/react";
+import { motion, useInView, useReducedMotion } from "motion/react";
 import { FolderCog, PhoneCall, Rocket, ScanEye, Waypoints } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import { Reveal } from "@/components/motion/reveal";
 import { useOpeningReady } from "@/components/motion/opening";
 import { APPROACH } from "@/data/approach";
 import { EASE, inViewOnce } from "@/lib/motion";
+import { cn } from "@/lib/utils";
 
 /**
  * How the work actually gets done, as five ordered stages.
@@ -56,31 +57,44 @@ const isLow = (i: number) => i % 2 === 0;
  * SVG to fit would distort the stroke, and the whole point of this shape is
  * that it reads as a drawn line. A ResizeObserver keeps it honest on resize.
  *
- * Solid rather than the reference's dashes, for two reasons: a dash pattern and
- * a `pathLength` draw both drive `stroke-dasharray`, so they can't coexist —
- * and every other rule on this page is a solid hairline that draws itself in,
- * which is the language the section should be speaking.
+ * Dashed like the reference. That rules out Framer's `pathLength` draw, which
+ * animates the same `stroke-dasharray` the pattern needs, so the line is wiped
+ * in behind a clip rect instead — every segment runs left to right, so a
+ * left-to-right wipe reads as drawing regardless. Arrowheads stay solid.
  */
-function CurvedPath({ width, ready }: { width: number; ready: boolean }) {
+function CurvedPath({ width, play }: { width: number; play: boolean }) {
   const reduced = useReducedMotion();
+  const uid = useId();
   if (!width) return null;
 
   const cell = (width - GAP * (APPROACH.length - 1)) / APPROACH.length;
-  // Badge centre, not cell centre: the badges are left-aligned with their
-  // card's padding edge, so a cell/2 offset here left the curve floating clear
-  // of the first and last badge instead of touching them.
-  const cx = (i: number) => i * (cell + GAP) + BADGE / 2;
+  // Cell centre: each badge is centred over its own card, so which step a badge
+  // belongs to is unambiguous. Left-aligning them put every badge nearer the
+  // gap between two cards than to either one.
+  const cx = (i: number) => i * (cell + GAP) + cell / 2;
   const cy = (i: number) => (isLow(i) ? SWING : 0) + BADGE / 2;
 
-  const d = APPROACH.slice(0, -1)
-    .map((_, i) => {
-      const [x1, y1, x2, y2] = [cx(i), cy(i), cx(i + 1), cy(i + 1)];
-      // Leave and arrive horizontally, so the curve meets each badge flat
-      // rather than pointing at it.
-      const bend = (x2 - x1) * 0.45;
-      return `M${x1} ${y1} C ${x1 + bend} ${y1}, ${x2 - bend} ${y2}, ${x2} ${y2}`;
-    })
-    .join(" ");
+  /** Clear of the badge rim at both ends, with room for the arrowhead. */
+  const OUT = BADGE / 2 + 7;
+  const IN = BADGE / 2 + 10;
+
+  const segments = APPROACH.slice(0, -1).map((_, i) => {
+    const [x1, y1] = [cx(i) + OUT, cy(i)];
+    const [x2, y2] = [cx(i + 1) - IN, cy(i + 1)];
+    // Leave and arrive horizontally. That's partly how the curve should read,
+    // and partly what makes the arrowhead free: the tangent at the end is
+    // always +x, so the chevron never needs rotating.
+    const bend = (x2 - x1) * 0.5;
+    return {
+      d: `M${x1} ${y1} C ${x1 + bend} ${y1}, ${x2 - bend} ${y2}, ${x2} ${y2}`,
+      head: `M${x2 - 6} ${y2 - 4.5} L${x2} ${y2} L${x2 - 6} ${y2 + 4.5}`,
+      x1,
+      w: x2 - x1,
+      at: i * 0.22,
+    };
+  });
+
+  const on = play || reduced;
 
   return (
     <svg
@@ -90,18 +104,132 @@ function CurvedPath({ width, ready }: { width: number; ready: boolean }) {
       height={SWING + BADGE}
       fill="none"
     >
-      <motion.path
-        d={d}
-        className="stroke-rule"
-        strokeWidth={1}
-        strokeLinecap="round"
-        initial={reduced ? { pathLength: 1 } : { pathLength: 0 }}
-        transition={{ duration: 1.4, ease: EASE }}
-        {...(reduced || !ready
-          ? {}
-          : { whileInView: { pathLength: 1 }, viewport: inViewOnce })}
-      />
+      {segments.map((seg, i) => {
+        const clip = `${uid}-${i}`;
+        return (
+          <g key={i} className="stroke-ink-faint/85 dark:stroke-ink-faint/70" strokeWidth={1}>
+            {/* Wiped in behind a clip rect rather than drawn with `pathLength`.
+                pathLength animates via stroke-dasharray, which is the same
+                property the dash pattern needs — the two cannot coexist, and
+                the dashes are the point. A left-to-right wipe reads as drawing
+                anyway, because every segment runs left to right.
+
+                The rect drives `animate` off a measured in-view flag instead of
+                `whileInView`: it lives inside <clipPath> and is never painted,
+                so an IntersectionObserver on it would have nothing to observe. */}
+            <clipPath id={clip}>
+              <motion.rect
+                x={seg.x1 - 6}
+                y={0}
+                height={SWING + BADGE}
+                initial={{ width: reduced ? seg.w + 14 : 0 }}
+                animate={{ width: on ? seg.w + 14 : 0 }}
+                transition={{ duration: 0.75, ease: EASE, delay: seg.at }}
+              />
+            </clipPath>
+
+            {/* One path per segment rather than one path of many subpaths: a
+                marker-end only lands on the last vertex of a whole path, so
+                subpaths would have given four lines and a single arrowhead. */}
+            <path
+              d={seg.d}
+              clipPath={`url(#${clip})`}
+              strokeDasharray="4 5"
+              strokeLinecap="round"
+            />
+
+            {/* Solid, and it arrives once its line has, so the sequence reads
+                1 to 5 rather than five arrows appearing at once. */}
+            <motion.path
+              d={seg.head}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              initial={{ opacity: reduced ? 1 : 0 }}
+              animate={{ opacity: on ? 1 : 0 }}
+              transition={{ duration: 0.3, ease: EASE, delay: seg.at + 0.6 }}
+            />
+          </g>
+        );
+      })}
     </svg>
+  );
+}
+
+/**
+ * The stacked equivalent of one curve segment.
+ *
+ * The dash is a repeating gradient rather than an SVG stroke because the row
+ * height varies with the card, and a stretched SVG would stretch its dashes
+ * with it. A gradient tiles at whatever height it's given. The reveal is a clip
+ * inset rather than scaleY for the same reason — scaling would smear the
+ * pattern instead of uncovering it.
+ *
+ * Line and head are siblings, not nested. The head sat inside the line at
+ * first, where the clip that reveals the line also clipped the head away to
+ * nothing: a clip-path applies to the whole subtree, and the head deliberately
+ * overhangs the line's box.
+ *
+ * The run starts at the badge's bottom edge, not its centre. Starting at the
+ * centre drew the first 28px of dashes straight through the icon.
+ */
+function StackedConnector({
+  play,
+  reduced,
+  delay,
+}: {
+  play: boolean;
+  reduced: boolean;
+  delay: number;
+}) {
+  const hidden = { clipPath: "inset(0 0 100% 0)" };
+  const shown = { clipPath: "inset(0 0 0% 0)" };
+  const ink = "text-ink-faint/85 dark:text-ink-faint/70";
+
+  return (
+    <>
+      {/* badge bottom (56px) down to just short of the next badge */}
+      <motion.span
+        aria-hidden
+        className={cn(
+          "absolute top-14 -bottom-1 left-7 w-px -translate-x-1/2 lg:hidden",
+          ink
+        )}
+        style={{
+          backgroundImage:
+            "repeating-linear-gradient(to bottom, currentColor 0 4px, transparent 4px 9px)",
+        }}
+        initial={reduced ? shown : hidden}
+        transition={{ duration: 0.7, ease: EASE, delay }}
+        {...(reduced || !play
+          ? {}
+          : { whileInView: shown, viewport: inViewOnce })}
+      />
+
+      {/* seated in the 16px gap between rows, clear of both badges */}
+      <motion.svg
+        aria-hidden
+        className={cn(
+          "absolute -bottom-2.5 left-7 -translate-x-1/2 lg:hidden",
+          ink
+        )}
+        width="11"
+        height="6"
+        fill="none"
+        initial={{ opacity: reduced ? 1 : 0 }}
+        transition={{ duration: 0.3, ease: EASE, delay: delay + 0.55 }}
+        {...(reduced || !play
+          ? {}
+          : { whileInView: { opacity: 1 }, viewport: inViewOnce })}
+      >
+        <path
+          d="M0.5 0.5 L5.5 5.5 L10.5 0.5"
+          stroke="currentColor"
+          strokeWidth={1}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      </motion.svg>
+    </>
   );
 }
 
@@ -110,6 +238,10 @@ export function ApproachSection() {
   const openingReady = useOpeningReady();
   const band = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState(0);
+
+  // Measured here and handed down, because the clip rect that drives the wipe
+  // is never painted and so can't observe its own intersection.
+  const inView = useInView(band, inViewOnce);
 
   useEffect(() => {
     const el = band.current;
@@ -124,7 +256,7 @@ export function ApproachSection() {
       {/* Desktop only — below lg the steps stack and the path becomes a
           straight hairline drawn per row instead. */}
       <div className="hidden lg:block">
-        <CurvedPath width={width} ready={openingReady} />
+        <CurvedPath width={width} play={openingReady && inView} />
       </div>
 
       <ol className="flex flex-col gap-snug lg:grid lg:grid-cols-5 lg:items-start">
@@ -138,17 +270,14 @@ export function ApproachSection() {
               className="relative"
               style={{ "--step": HUES[i % HUES.length] } as React.CSSProperties}
             >
-              {/* Stacked only: a straight hairline down to the next badge,
-                  across the 16px gap between rows. */}
+              {/* Stacked only: the same dashed run and arrowhead as the
+                  desktop curve, turned through 90 degrees. Runs from the badge
+                  centre down across the 16px gap to the next badge's edge. */}
               {!last && (
-                <motion.span
-                  aria-hidden
-                  className="absolute top-7 -bottom-4 left-6.75 w-px origin-top bg-rule lg:hidden"
-                  initial={reduced ? { scaleY: 1 } : { scaleY: 0 }}
-                  transition={{ duration: 0.7, ease: EASE }}
-                  {...(reduced || !openingReady
-                    ? {}
-                    : { whileInView: { scaleY: 1 }, viewport: inViewOnce })}
+                <StackedConnector
+                  play={openingReady}
+                  reduced={reduced}
+                  delay={Math.min(i * 0.06, 0.24)}
                 />
               )}
 
@@ -160,7 +289,7 @@ export function ApproachSection() {
                       weaves. No lift on hover — the badge sits on the path, so
                       moving it would pull it off the line. The hue bloom is the
                       hover state instead. */}
-                  <div className="group flex items-start gap-snug lg:flex-col lg:gap-entry">
+                  <div className="group flex items-start gap-snug lg:flex-col lg:items-center lg:gap-entry">
                     <span
                       aria-hidden
                       className="step-badge relative z-10 grid size-14 shrink-0 place-items-center rounded-full"
