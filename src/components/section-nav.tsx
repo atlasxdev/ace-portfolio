@@ -1,10 +1,11 @@
 "use client";
 
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 import type { SECTIONS } from "@/data/sections";
 import { EASE } from "@/lib/motion";
+import { useSectionSpy } from "@/lib/use-section-spy";
 import { cn } from "@/lib/utils";
 
 /**
@@ -15,6 +16,10 @@ import { cn } from "@/lib/utils";
  * everything else to reach it. This is a slim bar that appears under the header
  * once you've left the hero, marks where you are, and takes you anywhere in one
  * click.
+ *
+ * Below `xl` (1320px) only. Past that there's room beside the content and `SectionDock`
+ * takes over as a floating capsule; the two are never on screen together and
+ * share their scroll-spy so they can't disagree about where you are.
  *
  * The list arrives as a prop from `src/data/sections.ts` rather than being
  * scraped out of the DOM. Scraping meant reading the page inside an effect to
@@ -27,43 +32,8 @@ export function SectionNav({
   sections: typeof SECTIONS | { id: string; label: string }[];
 }) {
   const reduced = useReducedMotion();
-  const [active, setActive] = useState("");
-  const [past, setPast] = useState(false);
+  const { active, past } = useSectionSpy(sections);
   const bar = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    // Which section owns the viewport. The top and bottom bands are discounted
-    // so a section counts as current once it's genuinely in view, not the
-    // instant its first pixel appears.
-    const spy = new IntersectionObserver(
-      (entries) => {
-        const visible = entries
-          .filter((e) => e.isIntersecting)
-          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
-        if (visible[0]) setActive(visible[0].target.id);
-      },
-      { rootMargin: "-20% 0px -70% 0px" }
-    );
-
-    for (const { id } of sections) {
-      const el = document.getElementById(id);
-      if (el) spy.observe(el);
-    }
-
-    // And this one only asks "are we past the hero yet", so the bar never
-    // covers the opening screen.
-    const hero = document.querySelector("main section:first-of-type");
-    const gate = new IntersectionObserver(
-      ([e]) => setPast(!e.isIntersecting),
-      { rootMargin: "-64px 0px 0px 0px" }
-    );
-    if (hero) gate.observe(hero);
-
-    return () => {
-      spy.disconnect();
-      gate.disconnect();
-    };
-  }, [sections]);
 
   // Keep the current chip in view on phones, where the bar scrolls sideways.
   useEffect(() => {
@@ -82,7 +52,7 @@ export function SectionNav({
       {past && (
         <motion.nav
           aria-label="Page sections"
-          className="sticky top-14 z-40 border-b border-rule bg-background/80 backdrop-blur-xl backdrop-saturate-150"
+          className="sticky top-14 z-40 border-b border-rule xl:hidden bg-background/80 backdrop-blur-xl backdrop-saturate-150"
           initial={reduced ? { opacity: 0 } : { opacity: 0, y: -8 }}
           animate={reduced ? { opacity: 1 } : { opacity: 1, y: 0 }}
           exit={reduced ? { opacity: 0 } : { opacity: 0, y: -8 }}

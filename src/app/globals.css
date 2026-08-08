@@ -12,8 +12,12 @@
   --breakpoint-sm: 480px;
   --breakpoint-md: 810px;
   --breakpoint-lg: 1200px;
-  --breakpoint-xl: 1200px;
-  --breakpoint-2xl: 1200px;
+  /* xl was a duplicate of lg and unused. It now marks the width at which the
+     floating dock has room to sit beside the content: below 1320 the dock's
+     right edge lands within 16px of the section labels, so the bar keeps the
+     job. 2xl follows so the scale stays in order. */
+  --breakpoint-xl: 1320px;
+  --breakpoint-2xl: 1600px;
 
   /* Six-step spacing scale. The 24 -> 48 -> 96 jump is what gives the page its
      cadence; nothing should sit between these steps. */

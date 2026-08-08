@@ -14,6 +14,7 @@ import { ExperienceSection } from "@/components/section/work-section";
 import { RULE_DELAY } from "@/lib/motion";
 import { TechGrid } from "@/components/tech-tile";
 import { PersonSchema } from "@/components/person-schema";
+import { SectionDock } from "@/components/section-dock";
 import { SectionNav } from "@/components/section-nav";
 import { DATA } from "@/data/resume";
 import { SECTIONS, section } from "@/data/sections";
@@ -38,6 +39,8 @@ export default function Page() {
   return (
     <>
       <PersonSchema />
+      {/* Dock on desktop, bar below lg — never both. */}
+      <SectionDock sections={SECTIONS} />
       <SectionNav sections={SECTIONS} />
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}
