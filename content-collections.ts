@@ -15,6 +15,10 @@ const posts = defineCollection({
         author: z.string().optional(),
         summary: z.string(),
         image: z.string().optional(),
+        // On-page cover art. Separate from `image` on purpose: `image` feeds
+        // openGraph/twitter, and overriding those would swap the generated
+        // card — which carries the title and branding — for a bare photo.
+        cover: z.string().optional(),
         content: z.string(),
         // Case-study frames. Optional: only the pieces of work with a real
         // before-and-after carry them, and a post without them renders exactly

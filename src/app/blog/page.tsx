@@ -81,7 +81,13 @@ export default async function BlogPage({
                       title={post.title}
                       href={`/blog/${slug}`}
                       cover={
-                        <PostCover slug={slug} index={i} compact />
+                        <PostCover
+                          slug={slug}
+                          index={i}
+                          src={post.cover}
+                          alt={post.title}
+                          compact
+                        />
                       }
                       meta={new Date(post.publishedAt).toLocaleDateString(
                         "en-US",

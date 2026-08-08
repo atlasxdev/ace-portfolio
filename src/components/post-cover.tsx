@@ -1,29 +1,42 @@
+import Image from "next/image";
+
 import { Monogram } from "@/components/monogram";
 import { hueAt } from "@/lib/palette";
 import { cn } from "@/lib/utils";
 
 /**
- * Generic cover for a blog post.
+ * Cover art for a blog post.
  *
- * Drawn, not photographed: CSS and one inline SVG, so there are no image files
- * to keep in sync with the writing, nothing to download, and it works at any
- * size. Each post gets a stable hue from the page's own ambient palette, so the
- * covers read as a set rather than as five unrelated pictures.
+ * A photograph when the post declares a `cover`, and a drawn fallback when it
+ * doesn't, so a new post is never broken-looking before someone finds it an
+ * image.
  *
- * The OG image routes were not a usable template here — their palette is
- * hardcoded light (#ffffff / #fafafa / #141414), which would invert badly on
- * the dark ground. This is built from the theme tokens instead.
+ * Either way the post's hue from the ambient palette goes over the top. On a
+ * photo that wash is what stops five stock images reading as five stock images
+ * bolted onto someone else's site — it ties them to the page and gives the
+ * monogram a consistent ground. Hue comes from position in the list rather than
+ * a hash of the slug: hashing was stable per post but let neighbours collide,
+ * and two adjacent cards in the same colour reads as a bug.
+ *
+ * Deliberately wordless. An earlier version set the post title into the cover,
+ * so every card printed its headline twice — once here and again in the card
+ * body directly beneath.
  */
 export function PostCover({
   slug,
   index,
+  src,
+  alt,
   className,
   compact = false,
 }: {
-  /** Only used to key the SVG pattern id, so two covers can't share one. */
+  /** Keys the SVG pattern id so two drawn covers can't share one. */
   slug: string;
   /** Position in the sorted post list — drives the hue. */
   index: number;
+  /** The post's `cover` frontmatter, when it has one. */
+  src?: string;
+  alt?: string;
   /** Card covers are shorter than the one on the post itself. */
   compact?: boolean;
   className?: string;
@@ -32,62 +45,91 @@ export function PostCover({
 
   return (
     <div
-      aria-hidden
       className={cn(
         "relative overflow-hidden bg-foreground/4",
-        compact ? "h-20" : "h-36 md:h-44",
+        compact ? "h-32" : "h-48 md:h-64",
         className
       )}
       style={{ "--hue": hue } as React.CSSProperties}
     >
-      {/* The wash. Two offset radial pools of the post's hue, kept low enough
-          to stay behind the type in both themes. */}
-      <div
-        className="absolute inset-0 opacity-40 dark:opacity-55"
-        style={{
-          background:
-            "linear-gradient(100deg, var(--hue) -10%, transparent 58%), radial-gradient(80% 180% at 92% 130%, var(--hue) 0%, transparent 62%)",
-        }}
-      />
-
-      {/* A faint grid, so the surface has some structure rather than being a
-          plain gradient. Masked out toward the edges. */}
-      <svg
-        className="absolute inset-0 h-full w-full text-foreground/[0.09]"
-        style={{
-          maskImage:
-            "radial-gradient(75% 75% at 50% 50%, #000 30%, transparent 100%)",
-          WebkitMaskImage:
-            "radial-gradient(75% 75% at 50% 50%, #000 30%, transparent 100%)",
-        }}
-      >
-        <defs>
-          <pattern
-            id={`grid-${slug}`}
-            width="28"
-            height="28"
-            patternUnits="userSpaceOnUse"
+      {src ? (
+        <Image
+          src={src}
+          alt={alt ?? ""}
+          fill
+          // Full card width on phones, roughly the module width above that.
+          sizes="(max-width: 810px) 100vw, 760px"
+          className="object-cover"
+        />
+      ) : (
+        <>
+          <div
+            aria-hidden
+            className="absolute inset-0 opacity-40 dark:opacity-55"
+            style={{
+              background:
+                "linear-gradient(100deg, var(--hue) -10%, transparent 58%), radial-gradient(80% 180% at 92% 130%, var(--hue) 0%, transparent 62%)",
+            }}
+          />
+          <svg
+            aria-hidden
+            className="absolute inset-0 h-full w-full text-foreground/9"
+            style={{
+              maskImage:
+                "radial-gradient(75% 75% at 50% 50%, #000 30%, transparent 100%)",
+              WebkitMaskImage:
+                "radial-gradient(75% 75% at 50% 50%, #000 30%, transparent 100%)",
+            }}
           >
-            <path
-              d="M28 0H0V28"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1"
-            />
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill={`url(#grid-${slug})`} />
-      </svg>
+            <defs>
+              <pattern
+                id={`grid-${slug}`}
+                width="28"
+                height="28"
+                patternUnits="userSpaceOnUse"
+              >
+                <path
+                  d="M28 0H0V28"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1"
+                />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill={`url(#grid-${slug})`} />
+          </svg>
+        </>
+      )}
+
+      {/* Hue wash over the photo. Multiply on the light ground keeps the
+          picture's own contrast; soft-light on the dark ground tints it
+          without flattening it. */}
+      {src && (
+        <div
+          aria-hidden
+          className="absolute inset-0 opacity-45 mix-blend-multiply dark:opacity-70 dark:mix-blend-soft-light"
+          style={{ backgroundColor: hue }}
+        />
+      )}
+
+      {/* Scrim so the monogram holds against a busy photo. */}
+      {src && (
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-linear-to-b from-black/35 via-transparent to-black/20"
+        />
+      )}
 
       <Monogram
         className={cn(
-          "absolute text-foreground/70",
-          compact ? "top-1/2 left-5 size-5 -translate-y-1/2" : "top-1/2 left-1/2 size-8 -translate-x-1/2 -translate-y-1/2"
+          "absolute drop-shadow-sm",
+          src ? "text-white/90" : "text-foreground/70",
+          compact ? "top-3 left-4 size-5" : "top-4 left-5 size-6"
         )}
       />
 
       {/* Hairline foot, matching the rules the rest of the page is built on. */}
-      <span className="absolute inset-x-0 bottom-0 h-px bg-rule" />
+      <span aria-hidden className="absolute inset-x-0 bottom-0 h-px bg-rule" />
     </div>
   );
 }
