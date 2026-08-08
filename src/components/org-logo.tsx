@@ -14,7 +14,20 @@ import { cn } from "@/lib/utils";
  */
 const ART: Record<
   string,
-  { width: number; height: number; adjust?: string }
+  {
+    width: number;
+    height: number;
+    adjust?: string;
+    /**
+     * Sit the mark on a dark plate in both themes rather than the usual
+     * translucent chip. For white-only wordmarks, which vanish on the light
+     * ground — the same treatment `certifications-section.tsx` already gives
+     * these two files.
+     */
+    plate?: boolean;
+    /** Override the default height for marks with an extreme aspect. */
+    imgClass?: string;
+  }
 > = {
   "/orgs/vizserve.png": { width: 500, height: 412 },
   "/orgs/laguna-university.png": { width: 300, height: 300 },
@@ -24,6 +37,15 @@ const ART: Record<
   // margins trimmed, so it sits in the chip like the other two instead of as a
   // white tile. Inverting on the dark ground turns the black art white.
   "/orgs/lamina-studios.png": { width: 592, height: 480, adjust: "dark:invert" },
+  // Codebility publish a near-white wordmark (#EAEAEA plus two gradients) at
+  // 4.4:1. Inverting it would shift the gradients, so it goes on a dark plate
+  // instead, and takes a shorter height so its width stays inside the chip.
+  "/certs/codebility.svg": {
+    width: 1288,
+    height: 295,
+    plate: true,
+    imgClass: "h-5 w-auto max-w-24",
+  },
 };
 
 export function OrgLogo({
@@ -57,7 +79,8 @@ export function OrgLogo({
   return (
     <span
       className={cn(
-        "inline-flex h-12 min-w-12 shrink-0 items-center justify-center rounded-lg border border-rule bg-foreground/4 px-2",
+        "inline-flex h-12 min-w-12 shrink-0 items-center justify-center rounded-lg border border-rule px-2",
+        art.plate ? "bg-[#141414]" : "bg-foreground/4",
         className
       )}
     >
@@ -69,7 +92,7 @@ export function OrgLogo({
         // Height-constrained with a free width, so the square seals and the
         // 2:1 wordmark both read at their own proportions instead of one of
         // them being squashed into the other's box.
-        className={cn("h-8 w-auto max-w-28 object-contain", art.adjust)}
+        className={cn(art.imgClass ?? "h-8 w-auto max-w-28", "object-contain", art.adjust)}
       />
     </span>
   );

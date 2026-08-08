@@ -191,6 +191,25 @@
     @apply border-border;
   }
 
+  /* Jump links land below the sticky header and the section nav rather than
+     underneath them. `scroll-behavior` is on the root so in-page anchors ease
+     instead of teleporting — and is dropped under reduced motion, where a long
+     smooth scroll is exactly the kind of movement to avoid. */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  section[id] {
+    scroll-margin-top: 104px;
+  }
+
+
   body {
     @apply bg-background text-foreground;
     font-size: var(--text-body);
@@ -525,6 +544,15 @@
 @media (prefers-reduced-motion: reduce) {
   #ambient {
     animation: none;
+  }
+}
+
+/* The chatbot resizes with a CSS transition rather than a Framer one, so it
+   needs its own reduced-motion opt-out. */
+@media (prefers-reduced-motion: reduce) {
+  .transition-\[width\],
+  .transition-\[height\] {
+    transition: none;
   }
 }
 

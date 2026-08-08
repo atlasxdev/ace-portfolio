@@ -7,6 +7,7 @@ import { MDXContent } from "@content-collections/mdx/react";
 import { mdxComponents } from "@/mdx-components";
 import Link from "next/link";
 import { CaseStudy } from "@/components/case-study";
+import { PostCover } from "@/components/post-cover";
 import { Reveal } from "@/components/motion/reveal";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
@@ -176,7 +177,12 @@ export default async function Blog({
       </Reveal>
 
       <Reveal delay={0.06}>
-        <article className="glass mt-5 p-group md:p-entry">
+        <article className="glass mt-5 overflow-hidden p-group md:p-entry">
+          {/* Bleeds past the article's own padding to meet the card edges. */}
+          <div className="-mx-group mb-group md:-mx-entry md:-mt-entry md:mb-entry -mt-group">
+            <PostCover slug={slug} index={currentIndex} />
+          </div>
+
           <h1 className="font-display text-[clamp(1.9rem,5vw,2.75rem)] leading-[1.08] font-semibold tracking-[-0.02em] text-balance">
             {post.title}
           </h1>

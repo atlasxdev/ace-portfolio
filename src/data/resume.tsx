@@ -79,6 +79,15 @@ export const DATA = {
       start: "2019",
       end: "2024",
     },
+    {
+      school: "Codebility",
+      href: "https://www.codebility.tech/",
+      // A training programme, not a job — the wording says so on purpose.
+      degree: "Frontend Developer Training Program",
+      logoUrl: "/certs/codebility.svg",
+      start: "Jul 2024",
+      end: "Dec 2024",
+    },
   ],
   projects: [
     {
@@ -190,10 +199,10 @@ export const DATA = {
   ],
   certifications: [
     {
-      title: "Certificate of Completion - Frontend Developer",
+      title: "Frontend Developer Training Program",
       issuer: "Codebility",
       issuerUrl: "https://www.codebility.tech/",
-      date: "December 2024",
+      date: "Jul – Dec 2024",
       // Local copies — the old LinkedIn URLs were signed links that expired in
       // March 2026. Both are white wordmarks, so they render on a dark chip.
       logoUrl: "/certs/codebility.svg",
@@ -250,6 +259,15 @@ export const DATA = {
       links: [],
     },
 
+    {
+      title: "Frontend Developer Training — Codebility",
+      dates: "July – December 2024",
+      location: "Codebility",
+      description:
+        "Straight out of university I completed Codebility's Frontend Developer Training Program (29 July – 2 December 2024) — modern web frameworks, Next.js, version control with Git, and building responsive, accessible interfaces. I shipped two projects on the programme: a responsive Deadpool and Wolverine site and an e-commerce storefront. It was the bridge between graduating and being hired.",
+      image: "",
+      links: [{ type: "Certificate", href: "/certs/codebility-cert.jpg" }],
+    },
     {
       title: "Hired at VizServe",
       dates: "January 2025",

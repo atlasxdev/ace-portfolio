@@ -5,7 +5,6 @@ import Link from "next/link";
 
 import { Reveal } from "@/components/motion/reveal";
 import { ApproachSection } from "@/components/section/approach-section";
-import { ImpactSection } from "@/components/section/impact-section";
 import { CertificationsSection } from "@/components/section/certifications-section";
 import { EducationSection } from "@/components/section/education-section";
 import { JourneySection } from "@/components/section/journey-section";
@@ -15,7 +14,9 @@ import { ExperienceSection } from "@/components/section/work-section";
 import { RULE_DELAY } from "@/lib/motion";
 import { TechGrid } from "@/components/tech-tile";
 import { PersonSchema } from "@/components/person-schema";
+import { SectionNav } from "@/components/section-nav";
 import { DATA } from "@/data/resume";
+import { SECTIONS, section } from "@/data/sections";
 import { CAPABILITIES, TECH_BAND } from "@/data/stacks";
 
 const HERO_LINKS = [
@@ -37,6 +38,7 @@ export default function Page() {
   return (
     <>
       <PersonSchema />
+      <SectionNav sections={SECTIONS} />
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section className="shell pt-section pb-entry">
@@ -104,7 +106,7 @@ export default function Page() {
           the load cascade and lands last in it — per the motion spec — rather
           than reappearing on scroll like the dividers further down. */}
       <SectionRow
-        label="About"
+        label={section("about").label}
         id="about"
         ruleOnLoad
         ruleDelay={RULE_DELAY.min}>
@@ -124,23 +126,18 @@ export default function Page() {
         </Reveal>
       </SectionRow>
 
-      {/* ── Impact ───────────────────────────────────────────────────── */}
-      <SectionRow label="Impact" id="impact">
-        <ImpactSection />
-      </SectionRow>
-
       {/* ── Experience ───────────────────────────────────────────────── */}
-      <SectionRow label="Experience" id="experience">
+      <SectionRow label={section("experience").label} id="experience">
         <ExperienceSection />
       </SectionRow>
 
       {/* ── Education ────────────────────────────────────────────────── */}
-      <SectionRow label="Education" id="education">
+      <SectionRow label={section("education").label} id="education">
         <EducationSection />
       </SectionRow>
 
       {/* ── Capabilities ─────────────────────────────────────────────── */}
-      <SectionRow label="Capabilities" id="capabilities">
+      <SectionRow label={section("capabilities").label} id="capabilities">
         <Reveal className="glass p-group">
           <h2 className="label mb-4 text-ink-faint">Tools I work with</h2>
           <TechGrid items={TECH_BAND} />
@@ -169,7 +166,7 @@ export default function Page() {
       </SectionRow>
 
       {/* ── Approach ─────────────────────────────────────────────────── */}
-      <SectionRow label="Approach" id="approach" wide>
+      <SectionRow label={section("approach").label} id="approach" wide>
         <ApproachSection />
         <Reveal kind="fade" delay={0.2}>
           <Link
@@ -181,13 +178,13 @@ export default function Page() {
       </SectionRow>
 
       {/* ── Selected projects ────────────────────────────────────────── */}
-      <SectionRow label="Selected Work" id="projects">
+      <SectionRow label={section("projects").label} id="projects">
         <ProjectsSection />
       </SectionRow>
 
       {/* ── Writing ──────────────────────────────────────────────────── */}
       {posts.length > 0 && (
-        <SectionRow label="Writing" id="writing">
+        <SectionRow label={section("writing").label} id="writing">
           <Reveal>
             <ItemList>
               {posts.map((post) => (
@@ -215,12 +212,12 @@ export default function Page() {
       )}
 
       {/* ── Journey ──────────────────────────────────────────────────── */}
-      <SectionRow label="Journey" id="journey">
+      <SectionRow label={section("journey").label} id="journey">
         <JourneySection />
       </SectionRow>
 
       {/* ── Certifications ───────────────────────────────────────────── */}
-      <SectionRow label="Certifications" id="certifications">
+      <SectionRow label={section("certifications").label} id="certifications">
         <CertificationsSection />
       </SectionRow>
     </>

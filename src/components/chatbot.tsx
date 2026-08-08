@@ -1,7 +1,7 @@
 "use client";
 
 import { DATA } from "@/data/resume";
-import { Loader2, MessageCircle, Send, X } from "lucide-react";
+import { Loader2, Maximize2, MessageCircle, Minimize2, Send, X } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -30,7 +31,14 @@ export default function Chatbot() {
     }
   }, [messages, isLoading]);
 
-  const toggleChat = () => setIsOpen(!isOpen);
+  // Closing resets the size: reopening into a panel that covers half the page
+  // because of something you did five minutes ago is a surprise, not a memory.
+  const toggleChat = () => {
+    setIsOpen((open) => {
+      if (open) setExpanded(false);
+      return !open;
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,7 +90,10 @@ export default function Chatbot() {
             exit={{ opacity: 0, y: 16 }}
             transition={reduced ? { duration: 0.2 } : CARD_STATE}
             style={{ transformOrigin: "bottom right" }}
-            className="glass w-[min(92vw,380px)] overflow-hidden bg-background/80 backdrop-blur-xl backdrop-saturate-150">
+            className={cn(
+              "glass overflow-hidden bg-background/80 backdrop-blur-xl backdrop-saturate-150 transition-[width] duration-500 ease-out",
+              expanded ? "w-[min(94vw,640px)]" : "w-[min(92vw,380px)]"
+            )}>
             {/* header — label-led, divider instead of an inverted bar */}
             <div className="flex items-center justify-between gap-snug border-b border-rule px-group py-snug">
               <div className="flex items-center gap-2.5">
@@ -92,17 +103,35 @@ export default function Chatbot() {
                   <p className="label text-ink-faint">AI assistant</p>
                 </div>
               </div>
-              <button
-                type="button"
-                onClick={toggleChat}
-                aria-label="Close chat"
-                className="grid size-7 place-items-center rounded-control border border-rule text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground">
-                <X className="size-3.5" aria-hidden />
-              </button>
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setExpanded((v) => !v)}
+                  aria-label={expanded ? "Shrink chat" : "Expand chat"}
+                  aria-pressed={expanded}
+                  className="grid size-7 place-items-center rounded-control border border-rule text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground">
+                  {expanded ? (
+                    <Minimize2 className="size-3.5" aria-hidden />
+                  ) : (
+                    <Maximize2 className="size-3.5" aria-hidden />
+                  )}
+                </button>
+                <button
+                  type="button"
+                  onClick={toggleChat}
+                  aria-label="Close chat"
+                  className="grid size-7 place-items-center rounded-control border border-rule text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground">
+                  <X className="size-3.5" aria-hidden />
+                </button>
+              </div>
             </div>
 
             {/* transcript */}
-            <div className="flex h-90 flex-col gap-snug overflow-y-auto px-group py-group">
+            <div
+              className={cn(
+                "flex flex-col gap-snug overflow-y-auto px-group py-group transition-[height] duration-500 ease-out",
+                expanded ? "h-[min(70vh,560px)]" : "h-90"
+              )}>
               {messages.map((message) => (
                 <div
                   key={message.id}

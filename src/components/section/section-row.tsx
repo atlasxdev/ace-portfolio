@@ -71,6 +71,7 @@ export function ItemRow({
   href,
   external,
   logo,
+  cover,
   children,
 }: {
   title: React.ReactNode;
@@ -79,6 +80,12 @@ export function ItemRow({
   external?: boolean;
   /** Optional mark to the left of the row — an <OrgLogo>, typically. */
   logo?: React.ReactNode;
+  /**
+   * Optional full-bleed banner above the row's content. Negative margins undo
+   * the card's own padding so it reaches the edges. Only the blog index passes
+   * one; projects, journey and certifications render exactly as before.
+   */
+  cover?: React.ReactNode;
   children?: React.ReactNode;
 }) {
   const body = (
@@ -107,6 +114,18 @@ export function ItemRow({
     </>
   );
 
+  const withCover = (node: React.ReactNode) =>
+    cover ? (
+      <>
+        <div className="-mx-5 -mt-[1.15rem] mb-4 overflow-hidden rounded-t-[calc(var(--radius)-1px)]">
+          {cover}
+        </div>
+        {node}
+      </>
+    ) : (
+      node
+    );
+
   const inner = logo ? (
     <div className="flex items-start gap-4">
       {logo}
@@ -116,9 +135,11 @@ export function ItemRow({
     body
   );
 
-  const shared = "glass glass-hover group block px-5 py-[1.15rem]";
+  const shared =
+    "glass glass-hover group block overflow-hidden px-5 py-[1.15rem]";
+  const content = withCover(inner);
 
-  if (!href) return <div className={shared}>{inner}</div>;
+  if (!href) return <div className={shared}>{content}</div>;
 
   return (
     <a
@@ -128,7 +149,7 @@ export function ItemRow({
         ? { target: "_blank", rel: "noopener noreferrer" }
         : {})}
     >
-      {inner}
+      {content}
     </a>
   );
 }

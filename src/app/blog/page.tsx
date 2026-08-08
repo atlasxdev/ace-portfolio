@@ -1,5 +1,6 @@
 import { allPosts } from "content-collections";
 
+import { PostCover } from "@/components/post-cover";
 import { DATA } from "@/data/resume";
 import Link from "next/link";
 import type { Metadata } from "next";
@@ -72,13 +73,16 @@ export default async function BlogPage({
           <>
             <Reveal>
               <ItemList>
-                {paginatedPosts.map((post) => {
+                {paginatedPosts.map((post, i) => {
                   const slug = post._meta.path.replace(/\.mdx$/, "");
                   return (
                     <ItemRow
                       key={slug}
                       title={post.title}
                       href={`/blog/${slug}`}
+                      cover={
+                        <PostCover slug={slug} index={i} compact />
+                      }
                       meta={new Date(post.publishedAt).toLocaleDateString(
                         "en-US",
                         { month: "short", day: "numeric", year: "numeric" }
