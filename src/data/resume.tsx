@@ -4,7 +4,7 @@ import { HomeIcon, NotebookIcon } from "lucide-react";
 export const DATA = {
   name: "Ace Guevarra",
   initials: "AG",
-  url: "https://aceguevarra.dev",
+  url: "https://ace-guevarra.vercel.app",
   location: "Calamba City, Laguna",
   locationLink: "https://www.google.com/maps/place/Calamba,+Laguna",
   description:
