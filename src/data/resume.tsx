@@ -197,6 +197,40 @@ export const DATA = {
     //   ],
     // },
   ],
+  /**
+   * Awards, kept separate from `certifications` on purpose. A certification
+   * says a course was completed; an award says someone chose you over the
+   * alternatives. Merged into one list the second claim reads as the first,
+   * so they render as their own section.
+   *
+   * `citation` is the certificate's own wording, trimmed. Using the issuer's
+   * sentence rather than a paraphrase means the PDF a reader opens says what
+   * the page said.
+   */
+  awards: [
+    {
+      // The certificate reads "FOUNDERS' CHOICE AWARD" — plural possessive.
+      // Kept exactly as printed so the page and the PDF agree.
+      title: "Founders' Choice Award",
+      issuer: "VizServe Private Limited",
+      issuerUrl: "https://vizserve.com",
+      date: "June 2026",
+      logoUrl: "/orgs/vizserve.png",
+      citation:
+        "For exceptional dedication and delivery of high-impact solutions that embody the vision and values of our founders.",
+      credentialUrl: "/certs/founders-choice-award.pdf",
+    },
+    {
+      title: "The Code Builder Award",
+      issuer: "VizServe Private Limited",
+      issuerUrl: "https://vizserve.com",
+      date: "June 2026",
+      logoUrl: "/orgs/vizserve.png",
+      citation:
+        "For technical excellence and dedication to developing reliable, efficient, and high-quality systems that support the organization's success.",
+      credentialUrl: "/certs/code-builder-award.pdf",
+    },
+  ],
   certifications: [
     {
       title: "Frontend Developer Training Program",

@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { Reveal } from "@/components/motion/reveal";
 import { ApproachSection } from "@/components/section/approach-section";
+import { RecognitionSection } from "@/components/section/recognition-section";
 import { CertificationsSection } from "@/components/section/certifications-section";
 import { EducationSection } from "@/components/section/education-section";
 import { JourneySection } from "@/components/section/journey-section";
@@ -217,6 +218,11 @@ export default function Page() {
       {/* ── Journey ──────────────────────────────────────────────────── */}
       <SectionRow label={section("journey").label} id="journey">
         <JourneySection />
+      </SectionRow>
+
+      {/* ── Recognition ──────────────────────────────────────────────── */}
+      <SectionRow label={section("recognition").label} id="recognition">
+        <RecognitionSection />
       </SectionRow>
 
       {/* ── Certifications ───────────────────────────────────────────── */}

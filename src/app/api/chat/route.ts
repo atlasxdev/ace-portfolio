@@ -20,6 +20,9 @@ Ace Guevarra's Profile:
   - HAPI Online Store — configured a HitPay storefront and inventory for HFSE Global Education Group's uniform and supplies shop (7 product categories, cart, search, checkout) and designed the store page. Live at hapistore.hfse.edu.sg.
   - Fathom AI MCP Server — a custom local Model Context Protocol server exposing meeting notes and action items to Claude Desktop and Claude Code, built before an official integration existed.
 - Internship: Frontend Developer Intern at Lamina Studios (Laravel, BladewindUI).
+- Awards (both from VizServe Private Limited, June 2026):
+  - Founders' Choice Award — for exceptional dedication and delivery of high-impact solutions that embody the vision and values of the founders.
+  - The Code Builder Award — for technical excellence and dedication to developing reliable, efficient, and high-quality systems.
 - Skills:
   - Languages: TypeScript, JavaScript, SQL, basic shell scripting.
   - Frontend: React, Next.js, Vite, Tailwind CSS, shadcn/ui, Zustand, TanStack Query, React Hook Form, Zod.
