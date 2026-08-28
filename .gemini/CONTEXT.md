@@ -6,7 +6,7 @@
 - **Email:** aceguevarra.dev@gmail.com
 - **Phone:** 0907 925 1189
 - **Location:** Calamba City, Laguna
-- **Portfolio:** aceguevarra.dev (QR available on resume)
+- **Portfolio:** ace-guevarra.vercel.app
 
 ---
 

@@ -102,6 +102,19 @@
 :root {
   --radius: 0.875rem;
 
+  /* The site'''s easing curve, matching EASE in lib/motion.ts so the CSS
+     transitions and the Framer springs share one shape.
+
+     This was referenced by .glass-hover but never declared. An undefined
+     var() invalidates the whole transition shorthand at computed-value time,
+     so every glass card'''s hover — the 2px lift, the border and the ground —
+     was snapping instantly rather than easing. */
+  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+
+  /* The dock'''s magnification runs longer and flatter than the page'''s other
+     motion: the row has to settle behind a moving cursor, not land once. */
+  --ease-dock: cubic-bezier(0.16, 1, 0.3, 1);
+
   /* Editorial neutrals. Not pure greys — each carries a slight cool bias so the
      ground reads as chosen rather than inherited. */
   --background: #fafaf9;
@@ -383,6 +396,115 @@
     border-color: color-mix(in srgb, var(--foreground) 22%, transparent);
     background: color-mix(in srgb, var(--card) 68%, transparent);
   }
+
+  /* --- Section dock --------------------------------------------------------
+     macOS-style proximity magnification on a vertical rail, done in CSS rather
+     than in a pointer handler. Hovering a chip grows it and the two neighbours
+     either side taper back to the resting size, so the column swells around
+     the cursor instead of one chip popping on its own.
+
+     THE RAMP ANIMATES HEIGHT, and the chip takes its width from that via
+     `aspect-ratio` — one animated property, with the square falling out for
+     free. Animating both independently would let them disagree mid-transition
+     and the chip would breathe out of square on the way to peak.
+
+     CSS has no previous-sibling combinator, so each falloff ring is written
+     twice: `:has(+ …:hover)` reaches backwards from the hovered chip, the `+`
+     chain reaches forwards. Drop either half and the swell goes lopsided.
+
+     Magnification is pointer-only, deliberately. Adding :focus-within to all
+     six selectors would double them to catch a state that gains nothing —
+     keyboard users need the label, which the tooltip rule below does handle,
+     not the size.
+
+     Sizes are bounded by viewport HEIGHT, not width: ten chips at rest is
+     ~29rem, which clears a 600px-tall window once the capsule's padding and
+     margins are counted. Raising --dock-rest much past 3rem starts to overrun
+     short laptop screens at the xl breakpoint, where the rail is visible. */
+
+  .dock {
+    --dock-rest: 2.9rem;
+    --dock-far: 3.2rem;
+    --dock-near: 3.55rem;
+    --dock-peak: 4.2rem;
+  }
+
+  .dock-item {
+    height: var(--dock-rest);
+    padding-block: 0.35rem;
+    transition: height 0.5s var(--ease-dock);
+  }
+
+  .dock-item:hover {
+    height: var(--dock-peak);
+  }
+
+  .dock-item:has(+ .dock-item:hover),
+  .dock-item:hover + .dock-item {
+    height: var(--dock-near);
+  }
+
+  .dock-item:has(+ .dock-item + .dock-item:hover),
+  .dock-item:hover + .dock-item + .dock-item {
+    height: var(--dock-far);
+  }
+
+  /* The chip fills the item's content box, so the height ramp above is what
+     the eye reads as magnification.
+
+     The radius is a PERCENTAGE on purpose. A fixed 12px is a squircle at rest
+     and nearly a square at peak — the corner stops scaling with the box. 28%
+     holds the same silhouette across the whole ramp. */
+  .dock-chip {
+    height: 100%;
+    width: auto;
+    aspect-ratio: 1;
+    border-radius: 28%;
+  }
+
+  .dock-mark {
+    width: 45%;
+    height: auto;
+  }
+
+  .dock-tip {
+    opacity: 0;
+    transform: translateX(-0.25rem);
+    pointer-events: none;
+    transition:
+      opacity 0.35s var(--ease-dock),
+      transform 0.35s var(--ease-dock);
+  }
+
+  .dock-item:hover .dock-tip,
+  .dock-item:focus-visible .dock-tip {
+    opacity: 1;
+    transform: translateX(0.25rem);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* The label still appears — it's information. The swell doesn't, since
+       it's movement nobody asked for. */
+    .dock-item,
+    .dock-item:hover,
+    .dock-item:has(+ .dock-item:hover),
+    .dock-item:hover + .dock-item,
+    .dock-item:has(+ .dock-item + .dock-item:hover),
+    .dock-item:hover + .dock-item + .dock-item {
+      height: var(--dock-rest);
+    }
+
+    .dock-item,
+    .dock-tip {
+      transition: none;
+    }
+
+    .dock-item:hover .dock-tip,
+    .dock-item:focus-visible .dock-tip {
+      transform: none;
+    }
+  }
+
 
   /* --- Approach step badge -------------------------------------------------
      Each step carries its hue as `--step`, one of the four brand colours the

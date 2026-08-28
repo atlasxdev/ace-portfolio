@@ -18,6 +18,7 @@ export const SECTIONS = [
   { id: "projects", label: "Selected Work" },
   { id: "writing", label: "Writing" },
   { id: "journey", label: "Journey" },
+  { id: "recognition", label: "Recognition" },
   { id: "certifications", label: "Certifications" },
 ] as const;
 

@@ -1,31 +1,42 @@
 /* ===========================================================================
    Ace Guevarra — shared resume stylesheet
-   Single-column, ATS-safe, tuned for browser print-to-PDF at A4 and Letter.
+   Single-column, ATS-safe, tuned for browser print-to-PDF at A4.
+
+   Design language borrowed from the v.2 resume: oversized name set against a
+   right-aligned contact block, full-width rules doing the section separation,
+   underlined uppercase headings, bold right-aligned dates, black ink only.
+   No accent colour anywhere except real links — the structure carries it.
 
    Density knobs, in the order you should reach for them if a variant ever
    spills onto a second page:
-     1. --lh          1.16 is at the floor; go to --fs-base next
-     2. --gap-section 1.9mm -> 1.6mm
-     3. --fs-base     9.7pt -> 9.4pt (floor: 9.2pt, below that it reads cramped)
+     1. --gap-section 2.1mm -> 1.8mm  (cheapest, 5 sections x 2 edges)
+     2. --lh          1.21 -> 1.17
+     3. --fs-base     9.0pt -> 8.8pt (floor: 8.7pt, below that it reads cramped)
+     4. --fs-name     30pt -> 26pt   (last resort, it's the whole first impression)
    =========================================================================== */
 
 :root {
-  --ink: #14171a;
-  --ink-soft: #3d444b;
-  --ink-mute: #5c646d;
-  --accent: #16354f;
-  --rule: #c9cfd6;
-  --rule-strong: #16354f;
+  --ink: #0f1114;
+  --ink-body: #2a2e35;
+  --ink-mute: #626a74;
+  --link: #1155cc;
+  --rule: #14181d;
 
-  --fs-base: 9.7pt;
-  --lh: 1.16;
+  --font: "Segoe UI Variable Text", "Segoe UI", -apple-system,
+    BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+  --font-display: "Segoe UI Variable Display", "Segoe UI", -apple-system,
+    BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+
+  --fs-base: 9pt;
+  --fs-name: 30pt;
+  --lh: 1.21;
 
   --page-w: 210mm;
   --page-h: 297mm;
   --pad-x: 10mm;
-  --pad-y: 8.2mm;
+  --pad-y: 7mm;
 
-  --gap-section: 1.6mm;
+  --gap-section: 2.1mm;
   --gap-entry: 2.4mm;
 }
 
@@ -39,11 +50,10 @@ html {
 
 body {
   margin: 0;
-  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue",
-    Arial, sans-serif;
+  font-family: var(--font);
   font-size: var(--fs-base);
   line-height: var(--lh);
-  color: var(--ink);
+  color: var(--ink-body);
   background: #fff;
   font-variant-ligatures: none;
 }
@@ -56,83 +66,101 @@ body {
   background: #fff;
 }
 
-/* --- Header ------------------------------------------------------------- */
+/* --- Header --------------------------------------------------------------
+   Row 1 is the masthead: name left, contact right, both sitting on the same
+   bottom edge. Row 2 hands the headline the full width — sharing row 1 with
+   the contact block squeezed it onto two lines.
+   Grid rather than flex so no wrapper div is needed in the markup. */
 
 header {
-  margin-bottom: 2.8mm;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  column-gap: 10mm;
+  align-items: end;
+  padding-bottom: 2.2mm;
 }
 
+/* nowrap matters: the contact column is sized by its longest line, and without
+   this the name is the thing that gives and breaks across two lines. */
+
 h1 {
+  grid-column: 1;
+  grid-row: 1;
   margin: 0;
-  font-size: 20pt;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.04;
+  font-family: var(--font-display);
+  font-size: var(--fs-name);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 0.9;
+  white-space: nowrap;
   color: var(--ink);
 }
 
 .headline {
-  margin: 1mm 0 0;
-  font-size: 10.1pt;
+  grid-column: 1 / -1;
+  grid-row: 2;
+  margin: 1.6mm 0 0;
+  font-size: 9.6pt;
   font-weight: 600;
-  letter-spacing: 0.015em;
-  color: var(--accent);
+  letter-spacing: 0.005em;
+  color: var(--ink-body);
 }
 
 .contact {
-  margin: 1.5mm 0 0;
-  font-size: 8.5pt;
-  line-height: 1.4;
-  color: var(--ink-soft);
+  grid-column: 2;
+  grid-row: 1;
+  align-self: end;
+  margin: 0;
+  text-align: right;
+  font-size: 8.2pt;
+  line-height: 1.38;
+  color: var(--ink-mute);
 }
 
 .contact a {
-  color: var(--ink-soft);
+  color: var(--ink-mute);
   text-decoration: none;
 }
 
 .contact .sep {
-  color: var(--rule);
-  padding: 0 0.7mm;
+  color: #b9c0c8;
+  padding: 0 0.9mm;
 }
 
-header::after {
-  content: "";
-  display: block;
-  height: 1.3pt;
-  background: var(--rule-strong);
-  margin-top: 2.2mm;
-}
-
-/* --- Sections ----------------------------------------------------------- */
+/* --- Sections ------------------------------------------------------------
+   One rule per section, drawn on the section's own top edge. The header needs
+   no rule of its own — the first section supplies it. */
 
 section {
   margin-top: var(--gap-section);
+  padding-top: var(--gap-section);
+  border-top: 0.9pt solid var(--rule);
 }
 
 h2 {
-  margin: 0 0 1.6mm;
-  padding-bottom: 0.7mm;
-  border-bottom: 0.6pt solid var(--rule);
-  font-size: 9pt;
-  font-weight: 700;
-  letter-spacing: 0.11em;
+  margin: 0 0 1.7mm;
+  font-family: var(--font-display);
+  font-size: 10.2pt;
+  font-weight: 800;
+  letter-spacing: 0.005em;
   text-transform: uppercase;
-  color: var(--accent);
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1.1px;
+  text-underline-offset: 2.6px;
 }
 
 .summary {
   margin: 0;
-  font-size: 9.5pt;
-  color: var(--ink-soft);
+  font-size: 9.4pt;
 }
 
 .summary strong {
   color: var(--ink);
-  font-weight: 600;
+  font-weight: 700;
 }
 
-/* --- Skills ------------------------------------------------------------- */
+/* --- Skills --------------------------------------------------------------- */
 
 .skills {
   margin: 0;
@@ -140,10 +168,9 @@ h2 {
 
 .skill-row {
   display: flex;
-  gap: 2.6mm;
-  margin-bottom: 0.7mm;
-  font-size: 9.3pt;
-  line-height: 1.24;
+  gap: 3mm;
+  margin-bottom: 0.8mm;
+  line-height: 1.26;
 }
 
 .skill-row:last-child {
@@ -160,10 +187,9 @@ h2 {
 .skill-row dd {
   margin: 0;
   flex: 1;
-  color: var(--ink-soft);
 }
 
-/* --- Experience --------------------------------------------------------- */
+/* --- Experience ----------------------------------------------------------- */
 
 .entry {
   margin-bottom: var(--gap-entry);
@@ -177,29 +203,38 @@ h2 {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  gap: 4mm;
+  gap: 5mm;
 }
 
 .entry-head h3 {
   margin: 0;
-  font-size: 10.3pt;
+  font-size: 10.4pt;
   font-weight: 700;
   color: var(--ink);
 }
 
-.entry-head .meta {
+/* Dates sit bold and black on the right edge, as on v.2 — greying them out is
+   what made the previous pass read like a spreadsheet. */
+
+.entry-head .meta,
+.project-head .meta,
+.line-head .meta {
   flex: none;
-  font-size: 8.8pt;
-  font-weight: 600;
-  color: var(--ink-mute);
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
+.entry-head .meta {
+  font-size: 9.2pt;
+}
+
 .role {
-  margin: 0.2mm 0 0;
-  font-size: 9.6pt;
+  margin: 0.5mm 0 0;
+  font-size: 9.5pt;
   font-weight: 600;
-  color: var(--accent);
+  color: var(--ink-body);
 }
 
 /* Role progression within one employer — current role first, prior
@@ -209,12 +244,12 @@ h2 {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  gap: 4mm;
+  gap: 5mm;
 }
 
 .role-line .when-sm {
   flex: none;
-  font-size: 8.5pt;
+  font-size: 8.6pt;
   font-weight: 600;
   color: var(--ink-mute);
   font-variant-numeric: tabular-nums;
@@ -222,75 +257,68 @@ h2 {
 }
 
 .role-prev {
-  margin: 0.35mm 0 0;
+  margin: 0.4mm 0 0;
   font-size: 9.2pt;
   font-weight: 500;
   color: var(--ink-mute);
 }
 
 .scope {
-  margin: 0.8mm 0 0;
+  margin: 0.9mm 0 0;
   font-size: 9.2pt;
-  color: var(--ink-soft);
 }
 
-/* Project blocks nested under an employer */
+/* Project blocks nested under an employer. No left rail: the bold title plus
+   the section rules already carry the hierarchy, and the rail was clutter. */
 
 .project {
   margin-top: 1.7mm;
-  padding-left: 2.8mm;
-  border-left: 1.2pt solid var(--rule);
 }
 
 .project-head {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  gap: 4mm;
+  gap: 5mm;
 }
 
 .project-head h4 {
   margin: 0;
-  font-size: 9.6pt;
+  font-size: 9.7pt;
   font-weight: 700;
   color: var(--ink);
 }
 
 .project-head .meta {
-  flex: none;
-  font-size: 8.4pt;
-  font-weight: 600;
-  color: var(--ink-mute);
-  white-space: nowrap;
+  font-size: 8.7pt;
 }
 
 .stack {
-  margin: 0.3mm 0 0;
+  margin: 0.4mm 0 0;
   font-size: 8.5pt;
-  line-height: 1.26;
+  line-height: 1.25;
   color: var(--ink-mute);
 }
 
 .stack b {
   font-weight: 700;
-  color: var(--ink-soft);
+  color: var(--ink-body);
 }
 
-/* --- Bullets ------------------------------------------------------------ */
+/* --- Bullets -------------------------------------------------------------- */
 
 /* Native list markers on purpose: an absolutely-positioned ::before bullet
    makes Chrome emit every <li> at the END of the PDF content stream, which
    detaches the bullets from their project when an ATS reads the text layer. */
 
 ul {
-  margin: 0.7mm 0 0;
-  padding-left: 3.9mm;
+  margin: 0.8mm 0 0;
+  padding-left: 4.2mm;
   list-style: disc outside;
 }
 
 li {
-  margin-bottom: 0.55mm;
-  color: var(--ink-soft);
+  margin-bottom: 0.4mm;
 }
 
 li:last-child {
@@ -298,8 +326,8 @@ li:last-child {
 }
 
 li::marker {
-  color: var(--rule-strong);
-  font-size: 0.85em;
+  color: var(--ink);
+  font-size: 0.9em;
 }
 
 li strong {
@@ -307,7 +335,7 @@ li strong {
   font-weight: 700;
 }
 
-/* --- Compact one-line list (projects, education) ------------------------ */
+/* --- Compact one-line list (projects, education) -------------------------- */
 
 .line {
   margin-bottom: 1.3mm;
@@ -321,39 +349,38 @@ li strong {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  gap: 4mm;
+  gap: 5mm;
 }
 
 .line-head .name {
-  font-size: 9.6pt;
+  font-size: 9.7pt;
   font-weight: 700;
   color: var(--ink);
 }
 
 .line-head .meta {
-  flex: none;
-  font-size: 8.5pt;
-  font-weight: 600;
-  color: var(--ink-mute);
-  white-space: nowrap;
+  font-size: 8.7pt;
 }
 
 .line p {
-  margin: 0.25mm 0 0;
+  margin: 0.5mm 0 0;
   font-size: 9.2pt;
-  color: var(--ink-soft);
 }
 
-.line a {
-  color: var(--ink-soft);
-  text-decoration: none;
+/* Real links stay blue and underlined — the one colour on the page, and the
+   only thing a reader is meant to click. */
+
+.line a,
+.project-head a {
+  color: var(--link);
+  text-decoration: underline;
+  text-underline-offset: 1.6px;
 }
 
 .note {
-  margin: 1.1mm 0 0;
-  font-size: 9.1pt;
-  line-height: 1.25;
-  color: var(--ink-soft);
+  margin: 1.3mm 0 0;
+  font-size: 8.9pt;
+  line-height: 1.26;
 }
 
 .note b {
@@ -361,21 +388,21 @@ li strong {
   font-weight: 700;
 }
 
-/* --- Screen preview ----------------------------------------------------- */
+/* --- Screen preview ------------------------------------------------------- */
 
 @media screen {
   body {
-    background: #eef1f4;
+    background: #e9ecef;
     padding: 10mm 0;
   }
 
   .page {
-    box-shadow: 0 2px 18px rgba(20, 23, 26, 0.16);
+    box-shadow: 0 2px 20px rgba(15, 17, 20, 0.18);
     border-radius: 2px;
   }
 }
 
-/* --- Print -------------------------------------------------------------- */
+/* --- Print ---------------------------------------------------------------- */
 
 @page {
   size: A4;
@@ -398,11 +425,22 @@ li strong {
     border-radius: 0;
   }
 
-  section,
-  .entry,
+  /* Only small units are kept atomic. `section` and `.entry` are deliberately
+     breakable: the Experience entry wraps all four projects, so making it
+     unbreakable shoves the whole block to page 2 the moment it doesn't fit. */
+
   .project,
-  .line {
+  .line,
+  .skill-row,
+  li {
     break-inside: avoid;
     page-break-inside: avoid;
+  }
+
+  h2,
+  h3,
+  h4 {
+    break-after: avoid;
+    page-break-after: avoid;
   }
 }
