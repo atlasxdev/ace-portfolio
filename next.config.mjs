@@ -31,6 +31,12 @@ const nextConfig = {
           },
         ],
       },
+      // Link-preview cards: fetchable by social crawlers (robots.txt allows
+      // them), but kept out of image search.
+      ...["/opengraph-image", "/blog/opengraph-image", "/blog/:slug/opengraph-image"].map((source) => ({
+        source,
+        headers: [{ key: "X-Robots-Tag", value: "noindex" }],
+      })),
     ];
   },
 };
