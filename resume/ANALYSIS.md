@@ -45,7 +45,7 @@ Net effect: a recruiter's six-second scan of the old document returned *"React d
 
 | # | Weakness | Why it matters |
 |---|---|---|
-| C1 | **No LinkedIn URL. No GitHub URL.** Only email, phone, city. | For remote international roles this is close to disqualifying friction. Recruiters source and verify on LinkedIn; engineering managers check GitHub. You had both ([linkedin.com/in/ace-guevarra](https://linkedin.com/in/ace-guevarra), [github.com/atlasxdev](https://github.com/atlasxdev)) and neither was on the page. |
+| C1 | **No LinkedIn URL. No GitHub URL.** Only email, phone, city. | For remote international roles this is close to disqualifying friction. Recruiters source and verify on LinkedIn; engineering managers check GitHub. You had both ([linkedin.com/in/devace-guevarra](https://www.linkedin.com/in/devace-guevarra/), [github.com/atlasxdev](https://github.com/atlasxdev)) and neither was on the page. |
 | C2 | **No remote-availability signal, no country.** "Calamba City, Laguna" alone means nothing to a recruiter in Berlin or SF. | Remote-first companies filter on location and work authorization. Say the country, say you're open to remote. |
 
 ### D. Skills taxonomy
