@@ -1,5 +1,3 @@
-import { readFile } from "node:fs/promises";
-import { join } from "node:path";
 import { NextResponse } from "next/server";
 import { Resend } from "resend";
 import { DATA } from "@/data/resume";
@@ -8,24 +6,17 @@ import { DATA } from "@/data/resume";
 // isolates don't share even as loosely as a warm Node instance does.
 export const runtime = "nodejs";
 
-// Must be an address on the domain verified in Resend. Overridable so a
-// subdomain (e.g. send.aceguevarra.xyz) can be used without a code change.
-const FROM = process.env.CONTACT_FROM || `${DATA.name} <hello@aceguevarra.xyz>`;
 const INBOX = process.env.CONTACT_TO || DATA.contact.email;
 
 /* --- Templates -------------------------------------------------------------
-   The HTML in emails/ is sent as-is. Not Resend dashboard templates: that
-   editor converts pasted HTML into its own blocks and drops the <style> head,
-   which takes the fonts and the mobile rules with it. The folder is shipped
-   with this route via outputFileTracingIncludes in next.config.mjs. */
-let templates: Promise<string[]> | undefined;
-const loadTemplates = () =>
-  (templates ??= Promise.all(
-    ["contact-notification.html", "contact-reply.html"].map((f) =>
-      readFile(join(process.cwd(), "emails", f), "utf8")
-    )
-  ));
+   Both emails are published Resend templates, which own the sender and the
+   subject line. The HTML they were built from is kept in emails/. */
+const TEMPLATES = {
+  notify: "34ba8d5d-e32e-431c-89b9-e6cdf888080c", // "Contact Form" (contact-form)
+  reply: "fcd48c38-b56e-4419-b365-8de44d2357f6", // "Contact Response" (contact-response)
+};
 
+// Template variables land in HTML, so markup in them is neutralised here.
 const escapeHtml = (s: string) =>
   s
     .replace(/&/g, "&amp;")
@@ -34,28 +25,9 @@ const escapeHtml = (s: string) =>
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#x27;");
 
-// Fills {{{NAME}}} placeholders, escaping every value — they come from the form.
-const fill = (html: string, vars: Record<string, string>) =>
-  html.replace(/\{\{\{(\w+)\}\}\}/g, (_, key: string) => escapeHtml(vars[key] ?? ""));
-
-// Header-bound strings must not carry line breaks.
-const oneLine = (s: string) => s.replace(/[\r\n]+/g, " ");
-
-const REPLY_TEXT = `Thanks for reaching out.
-
-I read every message myself and usually reply within one to two working days.
-Something time-sensitive? Email me directly at ${DATA.contact.email}.
-
-While you wait:
-- Book a 15-minute call: ${DATA.contact.calendly}
-- Read a case study: ${DATA.url}/blog/admissions-portal-rebuild
-- Browse the work: ${DATA.url}/#projects
-
-${DATA.name}
-${DATA.url}
-
-You're receiving this because you sent a message through aceguevarra.xyz. It's a one-time reply, not a mailing list.
-`;
+// The name also fills the subject line, where an entity would show literally,
+// so it's cleaned rather than escaped: no angle brackets, no line breaks.
+const cleanName = (s: string) => s.replace(/[<>]/g, "").replace(/[\r\n]+/g, " ");
 
 const LIMITS = { name: 100, email: 254, message: 5000 } as const;
 
@@ -138,15 +110,17 @@ export async function POST(req: Request) {
 
   // The notification to Ace is the one that matters. If it fails, the visitor
   // is told so, rather than getting an auto-reply for a message nobody saw.
-  const [notifyHtml, replyHtml] = await loadTemplates();
-
   const notify = await resend.emails.send({
-    from: FROM,
     to: INBOX,
     replyTo: email,
-    subject: oneLine(`New message from ${name}`).slice(0, 150),
-    html: fill(notifyHtml, { SENDER_NAME: name, SENDER_EMAIL: email, MESSAGE: message }),
-    text: `${name} <${email}>\nvia the contact form on aceguevarra.xyz\n\n${message}\n`,
+    template: {
+      id: TEMPLATES.notify,
+      variables: {
+        SENDER_NAME: cleanName(name),
+        SENDER_EMAIL: escapeHtml(email),
+        MESSAGE: escapeHtml(message),
+      },
+    },
   });
 
   if (notify.error) {
@@ -162,12 +136,9 @@ export async function POST(req: Request) {
   // the visitor typed is echoed back, so the form can't be used to mail
   // arbitrary text to arbitrary inboxes from this domain.
   const reply = await resend.emails.send({
-    from: FROM,
     to: email,
     replyTo: INBOX,
-    subject: `Thanks for reaching out — ${DATA.name}`,
-    html: replyHtml,
-    text: REPLY_TEXT,
+    template: { id: TEMPLATES.reply },
   });
 
   if (reply.error) {

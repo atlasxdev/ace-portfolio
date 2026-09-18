@@ -3,11 +3,6 @@ import { withContentCollections } from "@content-collections/next";
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  // The contact route reads its email HTML off disk at runtime. File tracing
-  // can't see a path built from process.cwd(), so ship the folder explicitly.
-  outputFileTracingIncludes: {
-    "/api/contact": ["./emails/**/*"],
-  },
   async headers() {
     return [
       {
