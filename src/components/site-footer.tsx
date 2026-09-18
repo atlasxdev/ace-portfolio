@@ -1,3 +1,4 @@
+import { ContactForm } from "@/components/contact-form";
 import { CopyButton } from "@/components/copy-button";
 import { Reveal } from "@/components/motion/reveal";
 import { DATA } from "@/data/resume";
@@ -45,6 +46,12 @@ export function SiteFooter() {
               <Mail className="size-4" aria-hidden />
               Send an email
             </a>
+          </div>
+        </Reveal>
+
+        <Reveal kind="rise" delay={0.18}>
+          <div className="mt-entry max-w-[640px]">
+            <ContactForm />
           </div>
         </Reveal>
 

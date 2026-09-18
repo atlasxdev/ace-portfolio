@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!--
+  Contact notification (sent to Ace). Filled and sent by src/app/api/contact/route.ts.
+  Variables: {{{SENDER_NAME}}}, {{{SENDER_EMAIL}}}, {{{MESSAGE}}} — escaped by the route.
+  Reply-To is set to the sender, so hitting reply answers them.
+-->
+<html dir="ltr" lang="en">
+  <head>
+    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+    <meta name="x-apple-disable-message-reformatting" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="supported-color-schemes" content="dark" />
+    <title>New message from {{{SENDER_NAME}}}</title>
+    <style>
+      @media (max-width:600px){.mobile_px-4{padding-right:1rem!important;padding-left:1rem!important}}@media (max-width:600px){.mobile_font-32{font-size:32px!important;line-height:36px!important;letter-spacing:-0.64px!important}}
+      @font-face { font-family:'Clash Display'; font-style:normal; font-weight:600; mso-font-alt:'Arial'; src:url(https://www.aceguevarra.xyz/fonts/ClashDisplay-Semibold.ttf) format('truetype'); }
+      @font-face { font-family:'Geist'; font-style:normal; font-weight:400 600; mso-font-alt:'Arial'; src:url(https://fonts.gstatic.com/s/geist/v4/gyByhwUxId8gMEwcGFWNOITd.woff2) format('woff2'); }
+      @font-face { font-family:'Geist Mono'; font-style:normal; font-weight:400 500; mso-font-alt:'Courier New'; src:url(https://fonts.gstatic.com/s/geistmono/v4/or3nQ6H-1_WfwkMZI_qYFrcdmhHkjko.woff2) format('woff2'); }
+      * { font-family:'Geist', -apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; }
+    </style>
+  </head>
+  <body dir="ltr" lang="en" style="background-color:#0e0e0e;margin:0;padding:0">
+    <table border="0" width="100%" cellpadding="0" cellspacing="0" role="presentation" align="center">
+      <tbody>
+        <tr>
+          <td style="background-color:#0e0e0e;padding:0;font-family:Geist,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
+            <div style="display:none;overflow:hidden;line-height:1px;opacity:0;max-height:0;max-width:0" data-skip-in-text="true">{{{SENDER_EMAIL}}} via aceguevarra.xyz</div>
+            <table align="center" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="max-width:640px;background-color:#141414;margin-right:auto;margin-left:auto;border:1px solid #242424">
+              <tbody>
+                <tr>
+                  <td>
+                    <!-- Brand strip -->
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
+                      <tbody>
+                        <tr>
+                          <td height="3" style="height:3px;line-height:3px;font-size:0;background-color:#3178c6;width:25%">&nbsp;</td>
+                          <td height="3" style="height:3px;line-height:3px;font-size:0;background-color:#3ecf8e;width:25%">&nbsp;</td>
+                          <td height="3" style="height:3px;line-height:3px;font-size:0;background-color:#d97757;width:25%">&nbsp;</td>
+                          <td height="3" style="height:3px;line-height:3px;font-size:0;background-color:#ea4b71;width:25%">&nbsp;</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <!-- Header -->
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
+                      <tbody>
+                        <tr>
+                          <td class="mobile_px-4" style="padding:1.5rem;vertical-align:middle">
+                            <img alt="AG" height="36" width="36" src="https://www.aceguevarra.xyz/apple-icon" style="display:block;outline:none;border:1px solid #242424;border-radius:8px;text-decoration:none" />
+                          </td>
+                          <td align="right" class="mobile_px-4" style="padding:1.5rem;vertical-align:middle">
+                            <p style="font-family:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,'Courier New',monospace;font-size:12px;line-height:16px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#8f8f8f;margin:0">Contact form</p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <!-- Sender -->
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
+                      <tbody>
+                        <tr>
+                          <td class="mobile_px-4" style="padding:2.5rem 1.5rem 2rem 1.5rem">
+                            <p style="font-family:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,'Courier New',monospace;font-size:12px;line-height:16px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#d9a441;margin:0 0 1.25rem 0"><span style="display:inline-block;width:7px;height:7px;border-radius:999px;background-color:#d9a441;vertical-align:middle;margin-right:10px;margin-top:-2px"></span>New message</p>
+                            <p class="mobile_font-32" style="font-size:44px;line-height:48px;letter-spacing:-1.1px;font-weight:600;font-family:'Clash Display',Geist,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#f2f2f2;margin:0">{{{SENDER_NAME}}}</p>
+                            <p style="font-size:15px;line-height:24px;font-weight:400;color:#a8a8a8;margin:0.5rem 0 0 0;font-family:Geist,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">{{{SENDER_EMAIL}}}</p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <!-- Message -->
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
+                      <tbody>
+                        <tr>
+                          <td class="mobile_px-4" style="padding:0 1.5rem 3rem 1.5rem">
+                            <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="background-color:#1c1c1c;border:1px solid #2a2a2a;border-radius:14px">
+                              <tbody>
+                                <tr>
+                                  <td style="padding:1.5rem">
+                                    <p style="font-family:'Geist Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,'Courier New',monospace;font-size:12px;line-height:16px;font-weight:500;letter-spacing:0.12em;text-transform:uppercase;color:#8f8f8f;margin:0 0 0.75rem 0">Message</p>
+                                    <p style="font-size:16px;line-height:26px;font-weight:400;color:#f2f2f2;margin:0;white-space:pre-wrap;word-break:break-word;font-family:Geist,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">{{{MESSAGE}}}</p>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <!-- Footer -->
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="border-top:1px solid #242424;background-color:#0e0e0e">
+                      <tbody>
+                        <tr>
+                          <td class="mobile_px-4" style="padding:1.5rem">
+                            <p style="font-size:12px;line-height:18px;font-weight:400;color:#8f8f8f;margin:0;font-family:Geist,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">Sent from the contact form on <a href="https://www.aceguevarra.xyz" style="color:#a8a8a8;text-decoration-line:none">aceguevarra.xyz</a>. Hit reply to answer them directly — they&#x27;ve already been sent the automatic confirmation.</p>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </body>
+</html>
