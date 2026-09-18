@@ -11,7 +11,7 @@ const field =
   "w-full rounded-control border border-rule bg-background/60 px-3 py-2.5 text-body-sm text-foreground placeholder:text-ink-faint transition-colors focus:border-foreground/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/40";
 
 /**
- * Footer contact form. Posts to /api/contact, which emails the message to
+ * Contact form, shown in the site-wide contact dialog. Posts to /api/contact, which emails the message to
  * Ace and sends the visitor a one-time auto-reply.
  *
  * Two quiet bot checks ride along: a honeypot field people never see, and the
@@ -60,7 +60,7 @@ export function ContactForm() {
 
   if (status === "sent") {
     return (
-      <div className="glass p-group" role="status">
+      <div role="status">
         <div className="flex items-center gap-2.5">
           <Check className="size-4 text-available" aria-hidden />
           <p className="font-medium">Message sent.</p>
@@ -81,7 +81,7 @@ export function ContactForm() {
   const sending = status === "sending";
 
   return (
-    <form onSubmit={onSubmit} className="glass grid gap-snug p-group">
+    <form onSubmit={onSubmit} className="relative grid gap-snug">
       <div className="grid gap-snug sm:grid-cols-2">
         <label className="grid gap-2">
           <span className="label">Name</span>

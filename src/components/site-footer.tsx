@@ -1,8 +1,8 @@
-import { ContactForm } from "@/components/contact-form";
+import { ContactTrigger } from "@/components/contact-dialog";
 import { CopyButton } from "@/components/copy-button";
 import { Reveal } from "@/components/motion/reveal";
 import { DATA } from "@/data/resume";
-import { ArrowRight, Calendar, Mail } from "lucide-react";
+import { ArrowRight, Calendar, Mail, MessageSquare } from "lucide-react";
 import Link from "next/link";
 
 const SOCIALS = [
@@ -28,6 +28,10 @@ export function SiteFooter() {
 
         <Reveal kind="rise" delay={0.15}>
           <div className="mt-entry flex flex-wrap items-center gap-tight">
+            <ContactTrigger className="glass glass-hover inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-body-sm font-medium">
+              <MessageSquare className="size-4 text-available" aria-hidden />
+              Message me
+            </ContactTrigger>
             <a
               href={DATA.contact.calendly}
               target="_blank"
@@ -46,12 +50,6 @@ export function SiteFooter() {
               <Mail className="size-4" aria-hidden />
               Send an email
             </a>
-          </div>
-        </Reveal>
-
-        <Reveal kind="rise" delay={0.18}>
-          <div className="mt-entry max-w-[640px]">
-            <ContactForm />
           </div>
         </Reveal>
 

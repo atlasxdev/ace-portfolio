@@ -482,6 +482,18 @@
     transform: translateX(0.25rem);
   }
 
+  /* The contact chip's label peeks out on its own, on a slow loop, so the
+     chip names itself without waiting for a hover. Hover or focus takes over
+     from the loop and holds it open. */
+  .dock-tip-peek {
+    animation: dock-peek 7s var(--ease-dock) 1.2s infinite;
+  }
+
+  .dock-item:hover .dock-tip-peek,
+  .dock-item:focus-visible .dock-tip-peek {
+    animation: none;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     /* The label still appears — it's information. The swell doesn't, since
        it's movement nobody asked for. */
@@ -503,8 +515,68 @@
     .dock-item:focus-visible .dock-tip {
       transform: none;
     }
+
+    /* Still peeks, but fades in place rather than sliding. */
+    .dock-tip-peek {
+      animation-name: dock-peek-fade;
+    }
   }
 
+
+  /* --- Contact chip (dock) ---------------------------------------------------
+     The one element on the page that keeps moving, so it's the one that reads
+     as an invitation. A short gold highlight travels round the chip's edge on
+     a slow, even loop, and a soft glow breathes underneath it.
+
+     The highlight is a conic gradient masked down to a 1.5px ring; its start
+     angle is a registered custom property, which is what lets the gradient
+     itself rotate rather than the whole box. Under reduced motion the orbit
+     stops (the ring stays, parked) and only the glow's brightness changes. */
+
+  .cta-orbit {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .cta-orbit::before {
+    content: "";
+    position: absolute;
+    inset: -1.5px;
+    padding: 1.5px;
+    border-radius: inherit;
+    background: conic-gradient(
+      from var(--cta-angle),
+      transparent 0deg 240deg,
+      color-mix(in srgb, var(--available) 45%, transparent) 300deg,
+      var(--available) 340deg,
+      color-mix(in srgb, var(--available) 40%, #fff) 352deg,
+      transparent 360deg
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    animation: cta-orbit 3.2s linear infinite;
+  }
+
+  .cta-orbit::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    box-shadow: 0 0 20px -2px color-mix(in srgb, var(--available) 60%, transparent);
+    pointer-events: none;
+    animation: cta-breathe 3.2s ease-in-out infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cta-orbit::before {
+      animation: none;
+    }
+  }
 
   /* --- Approach step badge -------------------------------------------------
      Each step carries its hue as `--step`, one of the four brand colours the
@@ -652,6 +724,56 @@
 @media (prefers-reduced-motion: reduce) {
   .preload-glow {
     animation: none;
+  }
+}
+
+@property --cta-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+@keyframes cta-orbit {
+  to {
+    --cta-angle: 360deg;
+  }
+}
+
+@keyframes cta-breathe {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes dock-peek {
+  0%,
+  48%,
+  100% {
+    opacity: 0;
+    transform: translateX(-0.25rem);
+  }
+  6%,
+  40% {
+    opacity: 1;
+    transform: translateX(0.25rem);
+  }
+}
+
+@keyframes dock-peek-fade {
+  0%,
+  48%,
+  100% {
+    opacity: 0;
+    transform: none;
+  }
+  6%,
+  40% {
+    opacity: 1;
+    transform: none;
   }
 }
 

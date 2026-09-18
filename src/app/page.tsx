@@ -1,25 +1,26 @@
 import { allPosts } from "content-collections";
+import { ArrowRight, Calendar, Mail, MessageSquare } from "lucide-react";
 import type { Metadata } from "next";
-import { ArrowRight, Calendar, Mail } from "lucide-react";
 import Link from "next/link";
 
+import { ContactTrigger } from "@/components/contact-dialog";
 import { Reveal } from "@/components/motion/reveal";
+import { PersonSchema } from "@/components/person-schema";
+import { SectionDock } from "@/components/section-dock";
+import { SectionNav } from "@/components/section-nav";
 import { ApproachSection } from "@/components/section/approach-section";
-import { RecognitionSection } from "@/components/section/recognition-section";
 import { CertificationsSection } from "@/components/section/certifications-section";
 import { EducationSection } from "@/components/section/education-section";
 import { JourneySection } from "@/components/section/journey-section";
 import { ProjectsSection } from "@/components/section/projects-section";
+import { RecognitionSection } from "@/components/section/recognition-section";
 import { ItemList, ItemRow, SectionRow } from "@/components/section/section-row";
 import { ExperienceSection } from "@/components/section/work-section";
-import { RULE_DELAY } from "@/lib/motion";
 import { TechGrid } from "@/components/tech-tile";
-import { PersonSchema } from "@/components/person-schema";
-import { SectionDock } from "@/components/section-dock";
-import { SectionNav } from "@/components/section-nav";
 import { DATA } from "@/data/resume";
 import { SECTIONS, section } from "@/data/sections";
 import { CAPABILITIES, TECH_BAND } from "@/data/stacks";
+import { RULE_DELAY } from "@/lib/motion";
 
 const HERO_LINKS = [
   { label: "LinkedIn", href: DATA.contact.social.LinkedIn.url, external: true },
@@ -65,6 +66,10 @@ export default function Page() {
         </Reveal>
         <Reveal kind="open" onLoad delay={0.95}>
           <div className="mt-7 flex flex-wrap items-center gap-3">
+            <ContactTrigger className="glass glass-hover inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium">
+              <MessageSquare className="size-4 text-available" aria-hidden />
+              Message me
+            </ContactTrigger>
             <a
               href={DATA.contact.calendly}
               target="_blank"
@@ -77,6 +82,7 @@ export default function Page() {
                 aria-hidden
               />
             </a>
+
             <a
               href={`mailto:${DATA.contact.email}`}
               className="glass glass-hover inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium">
@@ -109,11 +115,7 @@ export default function Page() {
           Its divider is the one closing the opening screen, so it belongs to
           the load cascade and lands last in it — per the motion spec — rather
           than reappearing on scroll like the dividers further down. */}
-      <SectionRow
-        label={section("about").label}
-        id="about"
-        ruleOnLoad
-        ruleDelay={RULE_DELAY.min}>
+      <SectionRow label={section("about").label} id="about" ruleOnLoad ruleDelay={RULE_DELAY.min}>
         <Reveal className="glass max-w-none p-group">
           <div className="flex flex-col gap-[1.15rem] text-muted-foreground [&_strong]:font-medium [&_strong]:text-foreground">
             {DATA.summary.split("\n\n").map((para, i) => (
@@ -121,9 +123,7 @@ export default function Page() {
                 {/* `**…**` in the summary marks the claim a skimming reader
                     should catch — the role, the numbers, the stack. Odd
                     segments of the split are the emphasised ones. */}
-                {para.split("**").map((part, j) =>
-                  j % 2 ? <strong key={j}>{part}</strong> : part
-                )}
+                {para.split("**").map((part, j) => (j % 2 ? <strong key={j}>{part}</strong> : part))}
               </p>
             ))}
           </div>

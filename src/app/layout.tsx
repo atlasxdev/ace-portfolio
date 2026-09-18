@@ -2,6 +2,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
 import Chatbot from "@/components/chatbot";
+import { ContactDialogProvider } from "@/components/contact-dialog";
 import { PageWipe } from "@/components/motion/page-wipe";
 import { OpeningProvider } from "@/components/motion/opening";
 import { Preloader } from "@/components/preloader";
@@ -122,11 +123,13 @@ export default function RootLayout({
             <Preloader />
             <PageWipe />
 
-            <div className="flex min-h-screen flex-col">
-              <SiteHeader />
-              <main className="flex-1">{children}</main>
-              <SiteFooter />
-            </div>
+            <ContactDialogProvider>
+              <div className="flex min-h-screen flex-col">
+                <SiteHeader />
+                <main className="flex-1">{children}</main>
+                <SiteFooter />
+              </div>
+            </ContactDialogProvider>
 
             <Chatbot />
             </OpeningProvider>

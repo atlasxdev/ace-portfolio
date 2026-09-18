@@ -10,11 +10,13 @@ import {
   GraduationCap,
   Layers,
   LayoutGrid,
+  MessageSquare,
   PenLine,
   UserRound,
   type LucideIcon,
 } from "lucide-react";
 
+import { ContactTrigger } from "@/components/contact-dialog";
 import type { SECTIONS } from "@/data/sections";
 import { EASE } from "@/lib/motion";
 import { useSectionSpy } from "@/lib/use-section-spy";
@@ -105,6 +107,28 @@ export function SectionDock({
           exit={reduced ? { opacity: 0 } : { opacity: 0, x: -12 }}
           transition={{ duration: 0.35, ease: EASE }}
         >
+          {/* Contact heads the rail, apart from the section chips — it's an
+              action, not a place on the page — with a rule between. It's the
+              one chip that moves, and its label peeks out on a loop so the
+              chip says what it does without being hovered. It opens the
+              contact dialog. */}
+          <ContactTrigger className="dock-item group/item relative flex items-center">
+            <span
+              aria-hidden
+              className="dock-tip dock-tip-peek glass label absolute top-1/2 left-full ml-1 -translate-y-1/2 rounded-full px-2.5 py-1 whitespace-nowrap text-available"
+            >
+              Message me
+            </span>
+            <span
+              aria-hidden
+              className="dock-chip cta-orbit flex items-center justify-center border border-available/25 bg-available/10 text-available transition-colors duration-300 group-hover/item:bg-available/20"
+            >
+              <MessageSquare className="dock-mark" strokeWidth={1.75} />
+            </span>
+            <span className="sr-only">Message me</span>
+          </ContactTrigger>
+          <span aria-hidden className="my-1.5 h-px w-full bg-rule" />
+
           {sections.map((s) => {
             const current = active === s.id;
             const Mark = MARKS[s.id] ?? UserRound;
@@ -151,6 +175,7 @@ export function SectionDock({
               </a>
             );
           })}
+
         </motion.nav>
       )}
     </AnimatePresence>
