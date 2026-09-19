@@ -77,6 +77,10 @@ export async function POST(req: Request) {
         systemInstruction: SYSTEM_PROMPT,
         responseMimeType: "application/json",
         responseSchema: RESPONSE_SCHEMA,
+        // Free-tier quota: no hidden reasoning pass for a portfolio Q&A, and a
+        // ceiling well above a three-sentence reply in case the prompt slips.
+        thinkingConfig: { thinkingBudget: 0 },
+        maxOutputTokens: 500,
       },
     });
 
@@ -87,8 +91,12 @@ export async function POST(req: Request) {
       reply = typeof parsed.reply === "string" ? parsed.reply : "";
       showContact = parsed.showContact === true;
     } catch {
-      // Schema should rule this out; if not, show whatever came back.
-      reply = result.text || "";
+      // Cut off at maxOutputTokens mid-JSON: the raw text would show as
+      // broken JSON, so say something useful instead.
+      console.error("Chat API: unparseable reply", result.candidates?.[0]?.finishReason);
+    }
+    if (!reply) {
+      reply = "Sorry, I couldn't finish that answer. Could you ask it a shorter way?";
     }
 
     return NextResponse.json({ content: reply, showContact });
