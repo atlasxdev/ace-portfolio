@@ -128,7 +128,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "That email address doesn't look right." }, { status: 400 });
   }
 
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  // Behind Cloudflare's proxy, x-forwarded-for holds a Cloudflare edge IP
+  // shared by many visitors; cf-connecting-ip is the visitor's own.
+  const ip =
+    req.headers.get("cf-connecting-ip")?.trim() ||
+    req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    "unknown";
 
   if (!(await passesTurnstile(body["cf-turnstile-response"], ip))) {
     return NextResponse.json(
