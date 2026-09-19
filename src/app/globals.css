@@ -115,7 +115,10 @@
      motion: the row has to settle behind a moving cursor, not land once. */
   --ease-dock: cubic-bezier(0.16, 1, 0.3, 1);
 
-  /* Editorial neutrals. Not pure greys — each carries a slight cool bias so the
+  /* Light-mode greys run darker than a straight inversion of dark mode: the
+     body face is light-weight, so mid-grey on off-white read washed out.
+
+     Editorial neutrals. Not pure greys — each carries a slight cool bias so the
      ground reads as chosen rather than inherited. */
   --background: #fafaf9;
   --foreground: #141414;
@@ -128,17 +131,17 @@
   --secondary: #f0f0ef;
   --secondary-foreground: #141414;
   --muted: #f0f0ef;
-  --muted-foreground: #6b6b6b;
+  --muted-foreground: #4a4a4a;
   --accent: #f0f0ef;
   --accent-foreground: #141414;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: #e4e4e4;
+  --border: #dcdcdc;
   --input: #e4e4e4;
   --ring: #9a9a9a;
 
   /* design-system extras */
-  --ink-faint: #6f6f6f;
-  --rule: #e4e4e4;
+  --ink-faint: #5c5c5c;
+  --rule: #dcdcdc;
   --available: #8f6216;
   --glass-bg: color-mix(in srgb, var(--card) 52%, transparent);
   --glass-brd: color-mix(in srgb, var(--foreground) 12%, transparent);
@@ -156,7 +159,7 @@
   --sidebar-primary-foreground: #fafaf9;
   --sidebar-accent: #f0f0ef;
   --sidebar-accent-foreground: #141414;
-  --sidebar-border: #e4e4e4;
+  --sidebar-border: #dcdcdc;
   --sidebar-ring: #9a9a9a;
 }
 
