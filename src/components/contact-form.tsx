@@ -57,6 +57,8 @@ export function ContactForm() {
   const startedAt = useRef(0);
   const widgetEl = useRef<HTMLDivElement>(null);
   const widgetId = useRef<string | null>(null);
+  // Without a site key there's no widget to wait for.
+  const [verified, setVerified] = useState(!TURNSTILE_SITE_KEY);
 
   // Set on mount, not during render — the server render would otherwise stamp
   // the build time, and every submission would look minutes old.
@@ -77,6 +79,9 @@ export function ContactForm() {
           sitekey: TURNSTILE_SITE_KEY,
           theme: "auto",
           size: "flexible",
+          callback: () => setVerified(true),
+          "expired-callback": () => setVerified(false),
+          "error-callback": () => setVerified(false),
         });
       })
       .catch(() => console.error("Contact form: Turnstile failed to load"));
@@ -105,13 +110,17 @@ export function ContactForm() {
 
       if (!res.ok) {
         // A token is single-use, so a failed attempt needs a fresh one.
-        if (widgetId.current) window.turnstile?.reset(widgetId.current);
+        if (widgetId.current) {
+          window.turnstile?.reset(widgetId.current);
+          setVerified(false);
+        }
         setError(json.error || "Something went wrong. Please email me directly.");
         setStatus("error");
         return;
       }
 
       form.reset();
+      setVerified(!TURNSTILE_SITE_KEY);
       setStatus("sent");
     } catch {
       setError("Couldn't reach the server. Please email me directly.");
@@ -192,7 +201,8 @@ export function ContactForm() {
         </p>
         <button
           type="submit"
-          disabled={sending}
+          disabled={sending || !verified}
+          title={verified ? undefined : "Waiting for the verification check"}
           className="inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-body-sm font-medium text-background transition-transform duration-300 hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-60">
           {sending ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <Send className="size-4" aria-hidden />}
           {sending ? "Sending" : "Send message"}
