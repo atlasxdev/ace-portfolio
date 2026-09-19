@@ -1,18 +1,28 @@
 "use client";
 
 import { DATA } from "@/data/resume";
-import { Loader2, Maximize2, MessageCircle, Minimize2, Send, X } from "lucide-react";
+import { Loader2, Mail, Maximize2, MessageCircle, Minimize2, Send, X } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
+import { useContactDialog } from "@/components/contact-dialog";
 import { Monogram } from "@/components/monogram";
 import { CARD_STATE, SPRING } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
+type Message = {
+  id: number;
+  role: "user" | "assistant";
+  content: string;
+  /** The model judged the visitor wants to reach Ace: offer the contact form. */
+  showContact?: boolean;
+};
+
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
   const [expanded, setExpanded] = useState(false);
-  const [messages, setMessages] = useState([
+  const openContact = useContactDialog();
+  const [messages, setMessages] = useState<Message[]>([
     {
       id: 1,
       role: "assistant",
@@ -44,7 +54,7 @@ export default function Chatbot() {
     e.preventDefault();
     if (!inputValue.trim() || isLoading) return;
 
-    const userMessage = {
+    const userMessage: Message = {
       id: Date.now(),
       role: "user",
       content: inputValue,
@@ -58,7 +68,9 @@ export default function Chatbot() {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: [...messages, userMessage] }),
+        body: JSON.stringify({
+          messages: [...messages, userMessage].map(({ role, content }) => ({ role, content })),
+        }),
       });
 
       const data = await response.json();
@@ -70,6 +82,7 @@ export default function Chatbot() {
             id: Date.now() + 1,
             role: "assistant",
             content: data.content,
+            showContact: data.showContact === true,
           },
         ]);
       }
@@ -144,6 +157,19 @@ export default function Chatbot() {
                         : "bg-foreground text-background",
                     )}>
                     {message.content}
+                    {message.showContact && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          // Close the chat so the dialog isn't competing with it.
+                          toggleChat();
+                          openContact();
+                        }}
+                        className="mt-2.5 flex w-fit items-center gap-2 rounded-full bg-foreground px-3.5 py-1.5 text-body-sm font-medium whitespace-nowrap text-background transition-transform duration-300 hover:-translate-y-0.5">
+                        <Mail className="size-3.5" aria-hidden />
+                        Message Ace
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}

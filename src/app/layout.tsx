@@ -131,9 +131,10 @@ export default function RootLayout({
                 <main className="flex-1">{children}</main>
                 <SiteFooter />
               </div>
-            </ContactDialogProvider>
 
-            <Chatbot />
+              {/* Inside the provider: it offers the contact form mid-chat. */}
+              <Chatbot />
+            </ContactDialogProvider>
             </OpeningProvider>
 
             {/* Outside the providers: neither renders anything, and neither

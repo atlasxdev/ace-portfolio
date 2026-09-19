@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Type } from "@google/genai";
 import { NextResponse } from "next/server";
 
 const client = new GoogleGenAI({
@@ -42,7 +42,20 @@ Instructions:
 4. If you don't know something about Ace that isn't in the profile, honestly state that you don't have that information and suggest contacting him directly via the email listed on the site (aceguevarra.dev@gmail.com).
 5. Always speak in the third person about Ace (e.g., "Ace has experience with..." or "He developed...").
 6. Keep responses relatively short to fit well in a chat interface.
+7. Set "showContact" to true when the visitor wants to reach Ace: hire him, work with him, book a call, ask how to get in touch, or ask something only Ace can answer. A "Message Ace" button then appears directly under your reply and opens a contact form, so in "reply" point them to that button rather than spelling out contact details. Otherwise set it to false.
 `;
+
+// Structured output, so "does this visitor want to reach Ace?" arrives as a
+// field the UI can act on rather than a phrase to pattern-match in prose.
+const RESPONSE_SCHEMA = {
+  type: Type.OBJECT,
+  properties: {
+    reply: { type: Type.STRING },
+    showContact: { type: Type.BOOLEAN },
+  },
+  required: ["reply", "showContact"],
+  propertyOrdering: ["reply", "showContact"],
+};
 
 export async function POST(req: Request) {
   try {
@@ -62,14 +75,23 @@ export async function POST(req: Request) {
       contents: contents,
       config: {
         systemInstruction: SYSTEM_PROMPT,
+        responseMimeType: "application/json",
+        responseSchema: RESPONSE_SCHEMA,
       },
     });
 
-    const responseText = result.text || "";
+    let reply = "";
+    let showContact = false;
+    try {
+      const parsed = JSON.parse(result.text || "{}");
+      reply = typeof parsed.reply === "string" ? parsed.reply : "";
+      showContact = parsed.showContact === true;
+    } catch {
+      // Schema should rule this out; if not, show whatever came back.
+      reply = result.text || "";
+    }
 
-    return NextResponse.json({
-      content: responseText,
-    });
+    return NextResponse.json({ content: reply, showContact });
   } catch (error) {
     console.error("Chat API error:", error);
     return NextResponse.json({ error: "Failed to process chat request" }, { status: 500 });
