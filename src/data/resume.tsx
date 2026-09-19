@@ -10,7 +10,7 @@ export const DATA = {
   description:
     "Ace Guevarra, full-stack and automation engineer. I build production systems end-to-end — full-stack, automation, and AI-augmented delivery.",
   summary:
-    "I'm **Ace Guevarra**, a **full-stack engineer** who takes systems from stakeholder requirements through to production: architecture, build, test, deploy, maintain. I'm currently at VizServe, where I joined as an Associate System Developer in 2025 and was **promoted to System Engineer I** a year later.\n\nThat's meant replacing a legacy admissions portal that now handles **1,539 applications**, automating a recruitment pipeline that **cut manual data entry 80%**, and consolidating a school's spreadsheet operations into a single platform.\n\nI work across the whole lifecycle rather than one layer: **REST APIs and Postgres** on one side, **React and Next.js** on the other, and n8n, CRM and ATS configuration where software meets business process. I use **Claude Code** throughout my development lifecycle, and built a **custom MCP server for Fathom AI** before an official one existed.",
+    "I'm **Ace Guevarra**, a **full-stack and automation engineer**. I take systems from the first stakeholder call through to production — architecture, build, test, deploy, and the maintenance that follows. I started as an Associate System Developer in 2025 and was **promoted to System Engineer I** a year later.\n\nI build **web platforms, internal tools, automations and storefronts** — usually where manual work has outgrown the spreadsheet it lives in. Whatever the domain, the job is the same: understand how people actually work, then build something they'll keep using.\n\nI work across the whole lifecycle rather than one layer: **REST APIs and Postgres** on one side, **React and Next.js** on the other, and n8n, CRM and ATS configuration where software meets business process. I use **Claude Code** throughout my development lifecycle and built a **custom MCP server for Fathom AI** before an official one existed — and I review everything that ships.",
   avatarUrl: "/me-light.jpg",
   navbar: [
     { href: "/", icon: HomeIcon, label: "Home" },
@@ -55,7 +55,7 @@ export const DATA = {
       start: "January 2025",
       end: "Present",
       description:
-        "- Replaced a legacy admissions portal with a self-service parent portal: 1,539 applications across 3 academic years, 888 parents served in AY2025, 11,368 documents digitized.\n- Configured Manatal ATS and built a WordPress careers portal wired to its REST API, cutting screening from 3 days to same-day for 200+ monthly applicants and manual data entry by 80%.\n- Automated background and reference checks in n8n for 100+ candidates weekly, lifting response rates 25%.\n- Consolidated spreadsheet-based school operations into one platform, collapsing a multi-day per-term report card process to minutes.\n- Configured a HitPay online store and inventory for the group's uniform and supplies shop across 7 product categories, and designed the storefront.",
+        "- Replaced a legacy admissions portal with a self-service parent portal, carrying 1,539 applications across 3 academic years, serving 888 parents in AY2025 and digitizing 11,368 documents.\n- Configured Manatal ATS and built a WordPress careers portal on its REST API, cutting screening from 3 days to same-day for 200+ monthly applicants and manual data entry by 80%.\n- Automated background and reference checks in n8n for 100+ candidates weekly, lifting response rates 25%.\n- Consolidated spreadsheet-based school operations into one platform, collapsing a multi-day per-term report card process to minutes.\n- Launched a HitPay online store and inventory for the group's uniform and supplies shop across 7 product categories, giving families a single checkout in place of manual order-taking.",
     },
     {
       company: "Lamina Studios",
@@ -67,7 +67,7 @@ export const DATA = {
       start: "January 2024",
       end: "May 2024",
       description:
-        "Developed and implemented a user registration system for truck drivers/helpers using Laravel and BladewindUI. Built multi-step forms with draft functionality and validation to improve user experience.",
+        "- Built a registration system for truck drivers and helpers in Laravel and BladewindUI, taking sign-up off paper and into a single reviewable flow.\n- Designed multi-step forms with saved drafts and field-level validation, so applicants could stop and resume without losing an entry and submissions arrived complete.",
     },
   ],
   education: [
