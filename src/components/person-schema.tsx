@@ -10,7 +10,8 @@ import { DATA } from "@/data/resume";
  *
  * `primaryImageOfPage` points Google's result thumbnail at the AG monogram.
  * Without it Google picked an on-page image of its own (the VizServe logo in
- * the work section).
+ * the work section). It's a large PNG because Google passes over small images
+ * for thumbnails; robots.ts also keeps the company logos out of its reach.
  *
  * Everything below is drawn from DATA rather than restated, so it can't drift
  * from what the page actually says.
@@ -63,9 +64,9 @@ export function PersonSchema() {
     url: DATA.url,
     primaryImageOfPage: {
       "@type": "ImageObject",
-      url: `${DATA.url}/apple-icon`,
-      width: 180,
-      height: 180,
+      url: `${DATA.url}/ag-logo-1200.png`,
+      width: 1200,
+      height: 1200,
     },
     mainEntity: person,
   };
