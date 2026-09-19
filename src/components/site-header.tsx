@@ -2,13 +2,13 @@
 
 import { Menu, X } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { CopyButton } from "@/components/copy-button";
 import { ModeToggle } from "@/components/mode-toggle";
-import { Monogram } from "@/components/monogram";
 import { DATA } from "@/data/resume";
 import { SPRING } from "@/lib/motion";
 import { cn } from "@/lib/utils";
@@ -42,7 +42,10 @@ export function SiteHeader() {
     <header className="sticky top-0 z-50 border-b border-rule bg-background/80 backdrop-blur-xl backdrop-saturate-150">
       <div className="shell flex h-14 items-center justify-between gap-snug">
         <Link href="/" className="flex items-center gap-2.5 text-body-sm font-semibold tracking-tight">
-          <Monogram className="size-5" />
+          {/* A real image, not the inline <Monogram>: it's the page's first image,
+              so Google has the AG logo to pick as the result thumbnail. Same file
+              as primaryImageOfPage in person-schema.tsx. */}
+          <Image src="/ag-logo-1200.png" alt={`${DATA.name} logo`} width={24} height={24} unoptimized priority className="size-6 rounded-md" />
           <span>{DATA.name}</span>
         </Link>
 

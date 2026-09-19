@@ -8,9 +8,9 @@ export const DATA = {
   location: "Calamba City, Laguna",
   locationLink: "https://www.google.com/maps/place/Calamba,+Laguna",
   description:
-    "System Engineer I at VizServe Private Limited. I build production systems end-to-end — full-stack, automation, and AI-augmented delivery.",
+    "Ace Guevarra, full-stack and automation engineer. I build production systems end-to-end — full-stack, automation, and AI-augmented delivery.",
   summary:
-    "I'm a **full-stack engineer** at VizServe Private Limited — hired as an Associate System Developer in 2025 and **promoted to System Engineer I** a year later. I take systems from stakeholder requirements through to production: architecture, build, test, deploy, maintain.\n\nThat's meant replacing a legacy admissions portal that now handles **1,539 applications**, automating a recruitment pipeline that **cut manual data entry 80%**, and consolidating a school's spreadsheet operations into a single platform.\n\nI work across the whole lifecycle rather than one layer: **REST APIs and Postgres** on one side, **React and Next.js** on the other, and n8n, CRM and ATS configuration where software meets business process. I use **Claude Code** throughout my development lifecycle, and built a **custom MCP server for Fathom AI** before an official one existed.",
+    "I'm **Ace Guevarra**, a **full-stack engineer** who takes systems from stakeholder requirements through to production: architecture, build, test, deploy, maintain. I'm currently at VizServe, where I joined as an Associate System Developer in 2025 and was **promoted to System Engineer I** a year later.\n\nThat's meant replacing a legacy admissions portal that now handles **1,539 applications**, automating a recruitment pipeline that **cut manual data entry 80%**, and consolidating a school's spreadsheet operations into a single platform.\n\nI work across the whole lifecycle rather than one layer: **REST APIs and Postgres** on one side, **React and Next.js** on the other, and n8n, CRM and ATS configuration where software meets business process. I use **Claude Code** throughout my development lifecycle, and built a **custom MCP server for Fathom AI** before an official one existed.",
   avatarUrl: "/me-light.jpg",
   navbar: [
     { href: "/", icon: HomeIcon, label: "Home" },
