@@ -83,7 +83,8 @@ export const metadata: Metadata = {
   alternates: {
     types: { "application/rss+xml": `${DATA.url}/feed.xml` },
   },
-  // Icons come from the app/ file conventions (icon.svg, apple-icon.tsx).
+  // Icons come from the app/ file conventions (favicon.ico, icon.svg,
+  // icon.png, apple-icon.tsx). favicon.ico is what Google Search falls back to.
   // Declaring them here as well would emit duplicate <link> tags.
   verification: {
     google: "",
