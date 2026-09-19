@@ -1,15 +1,15 @@
-import { allPosts } from "content-collections";
-import { formatDate } from "@/lib/utils";
-import { DATA } from "@/data/resume";
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import { MDXContent } from "@content-collections/mdx/react";
-import { mdxComponents } from "@/mdx-components";
-import Link from "next/link";
 import { CaseStudy } from "@/components/case-study";
-import { PostCover } from "@/components/post-cover";
 import { Reveal } from "@/components/motion/reveal";
+import { PostCover } from "@/components/post-cover";
+import { DATA } from "@/data/resume";
+import { formatDate } from "@/lib/utils";
+import { mdxComponents } from "@/mdx-components";
+import { MDXContent } from "@content-collections/mdx/react";
+import { allPosts } from "content-collections";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 
 function getSortedPosts() {
   return [...allPosts].sort((a, b) => {
@@ -40,13 +40,7 @@ export async function generateMetadata({
     return undefined;
   }
 
-  const {
-    title,
-    publishedAt: publishedTime,
-    updatedAt: modifiedTime,
-    summary: description,
-    image,
-  } = post;
+  const { title, publishedAt: publishedTime, updatedAt: modifiedTime, summary: description, image } = post;
 
   return {
     title,
@@ -94,9 +88,7 @@ export default async function Blog({
 }) {
   const { slug } = await params;
   const sortedPosts = getSortedPosts();
-  const currentIndex = sortedPosts.findIndex(
-    (p) => p._meta.path.replace(/\.mdx$/, "") === slug
-  );
+  const currentIndex = sortedPosts.findIndex((p) => p._meta.path.replace(/\.mdx$/, "") === slug);
   const post = sortedPosts[currentIndex];
 
   if (!post) {
@@ -106,8 +98,7 @@ export default async function Blog({
   const previousPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null;
   const nextPost = currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null;
 
-  const getSlug = (post: (typeof sortedPosts)[0]) =>
-    post._meta.path.replace(/\.mdx$/, "");
+  const getSlug = (post: (typeof sortedPosts)[0]) => post._meta.path.replace(/\.mdx$/, "");
 
   // Two graphs: the post itself, and the trail Google needs to render
   // breadcrumbs in the result instead of a bare URL. `dateModified` reads the
@@ -121,9 +112,7 @@ export default async function Blog({
       datePublished: post.publishedAt,
       dateModified: post.updatedAt ?? post.publishedAt,
       description: post.summary,
-      image: post.image
-        ? `${DATA.url}${post.image}`
-        : `${DATA.url}/blog/${slug}/opengraph-image`,
+      image: post.image ? `${DATA.url}${post.image}` : `${DATA.url}/blog/${slug}/opengraph-image`,
       url: `${DATA.url}/blog/${slug}`,
       mainEntityOfPage: {
         "@type": "WebPage",
@@ -158,19 +147,14 @@ export default async function Blog({
   ]).replace(/</g, "\u003c");
 
   return (
-    <div className="mx-auto max-w-[760px] px-group pt-7 pb-20">
-      <script
-        type="application/ld+json"
-        suppressHydrationWarning
-        dangerouslySetInnerHTML={{ __html: jsonLdContent }}
-      />
+    <div className="mx-auto max-w-6xl px-group pt-7 pb-20">
+      <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: jsonLdContent }} />
 
       <Reveal kind="fade">
         <Link
           href="/blog"
           className="label group inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
-          aria-label="Back to all posts"
-        >
+          aria-label="Back to all posts">
           <ChevronLeft className="size-3 transition-transform group-hover:-translate-x-0.5" />
           All posts
         </Link>
@@ -180,20 +164,13 @@ export default async function Blog({
         <article className="glass mt-5 overflow-hidden p-group md:p-entry">
           {/* Bleeds past the article's own padding to meet the card edges. */}
           <div className="-mx-group mb-group md:-mx-entry md:-mt-entry md:mb-entry -mt-group">
-            <PostCover
-              slug={slug}
-              index={currentIndex}
-              src={post.cover}
-              alt={post.title}
-            />
+            <PostCover slug={slug} index={currentIndex} src={post.cover} alt={post.title} />
           </div>
 
           <h1 className="font-display text-[clamp(1.9rem,5vw,2.75rem)] leading-[1.08] font-semibold tracking-[-0.02em] text-balance">
             {post.title}
           </h1>
-          <p className="label mt-5 text-ink-faint">
-            {formatDate(post.publishedAt)}
-          </p>
+          <p className="label mt-5 text-ink-faint">{formatDate(post.publishedAt)}</p>
 
           {/* Above the prose on the pieces that have a before-and-after: the
               four beats someone deciding whether to read this needs. */}
@@ -215,15 +192,12 @@ export default async function Blog({
           {previousPost ? (
             <Link
               href={`/blog/${getSlug(previousPost)}`}
-              className="glass glass-hover group flex flex-1 flex-col gap-1 p-4"
-            >
+              className="glass glass-hover group flex flex-1 flex-col gap-1 p-4">
               <span className="label flex items-center gap-1">
                 <ChevronLeft className="size-3" />
                 Previous
               </span>
-              <span className="text-sm font-medium wrap-break-word">
-                {previousPost.title}
-              </span>
+              <span className="text-sm font-medium wrap-break-word">{previousPost.title}</span>
             </Link>
           ) : (
             <div className="hidden flex-1 sm:block" />
@@ -232,15 +206,12 @@ export default async function Blog({
           {nextPost ? (
             <Link
               href={`/blog/${getSlug(nextPost)}`}
-              className="glass glass-hover group flex flex-1 flex-col gap-1 p-4 text-right"
-            >
+              className="glass glass-hover group flex flex-1 flex-col gap-1 p-4 text-right">
               <span className="label flex items-center justify-end gap-1">
                 Next
                 <ChevronRight className="size-3" />
               </span>
-              <span className="text-sm font-medium wrap-break-word">
-                {nextPost.title}
-              </span>
+              <span className="text-sm font-medium wrap-break-word">{nextPost.title}</span>
             </Link>
           ) : (
             <div className="hidden flex-1 sm:block" />
