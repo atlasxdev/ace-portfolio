@@ -1,12 +1,16 @@
 import { DATA } from "@/data/resume";
 
 /**
- * schema.org Person for the homepage.
+ * schema.org ProfilePage (with its Person) for the homepage.
  *
  * This is what turns a name search from "a page that mentions Ace Guevarra"
  * into a result Google can label with a job title, an employer and the right
  * profile links. Blog posts already emit their own Article schema; the site's
  * root had none.
+ *
+ * `primaryImageOfPage` points Google's result thumbnail at the AG monogram.
+ * Without it Google picked an on-page image of its own (the VizServe logo in
+ * the work section).
  *
  * Everything below is drawn from DATA rather than restated, so it can't drift
  * from what the page actually says.
@@ -14,8 +18,7 @@ import { DATA } from "@/data/resume";
 export function PersonSchema() {
   const current = DATA.work[0];
 
-  const schema = {
-    "@context": "https://schema.org",
+  const person = {
     "@type": "Person",
     name: DATA.name,
     url: DATA.url,
@@ -52,6 +55,19 @@ export function PersonSchema() {
       "Model Context Protocol",
       "AI-augmented development",
     ],
+  };
+
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "ProfilePage",
+    url: DATA.url,
+    primaryImageOfPage: {
+      "@type": "ImageObject",
+      url: `${DATA.url}/apple-icon`,
+      width: 180,
+      height: 180,
+    },
+    mainEntity: person,
   };
 
   return (
