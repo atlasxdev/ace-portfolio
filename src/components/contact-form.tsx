@@ -7,6 +7,39 @@ import { cn } from "@/lib/utils";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+const TURNSTILE_SRC = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
+
+type Turnstile = {
+  render: (el: HTMLElement, opts: Record<string, unknown>) => string;
+  reset: (id: string) => void;
+  remove: (id: string) => void;
+};
+
+declare global {
+  interface Window {
+    turnstile?: Turnstile;
+  }
+}
+
+// One script tag for the page, however many times the dialog opens.
+let turnstileLoad: Promise<Turnstile> | null = null;
+function loadTurnstile() {
+  turnstileLoad ??= new Promise<Turnstile>((resolve, reject) => {
+    if (window.turnstile) return resolve(window.turnstile);
+    const script = document.createElement("script");
+    script.src = TURNSTILE_SRC;
+    script.async = true;
+    script.onload = () => (window.turnstile ? resolve(window.turnstile) : reject());
+    script.onerror = () => {
+      turnstileLoad = null;
+      reject();
+    };
+    document.head.appendChild(script);
+  });
+  return turnstileLoad;
+}
+
 const field =
   "w-full rounded-control border border-rule bg-background/60 px-3 py-2.5 text-body-sm text-foreground placeholder:text-ink-faint transition-colors focus:border-foreground/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/40";
 
@@ -14,19 +47,45 @@ const field =
  * Contact form, shown in the site-wide contact dialog. Posts to /api/contact, which emails the message to
  * Ace and sends the visitor a one-time auto-reply.
  *
- * Two quiet bot checks ride along: a honeypot field people never see, and the
- * time the form was first rendered, so the route can drop instant submissions.
+ * Bot checks: a honeypot field people never see, the time the form was first
+ * rendered (so the route can drop instant submissions), and a Cloudflare
+ * Turnstile widget whose token the route verifies with Cloudflare.
  */
 export function ContactForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState("");
   const startedAt = useRef(0);
+  const widgetEl = useRef<HTMLDivElement>(null);
+  const widgetId = useRef<string | null>(null);
 
   // Set on mount, not during render — the server render would otherwise stamp
   // the build time, and every submission would look minutes old.
   useEffect(() => {
     startedAt.current = Date.now();
   }, []);
+
+  // Rendered explicitly: the form mounts inside a dialog, after Turnstile's
+  // implicit scan of the page has already run. It adds a hidden
+  // `cf-turnstile-response` input to the form, which FormData picks up.
+  useEffect(() => {
+    if (!TURNSTILE_SITE_KEY || status === "sent") return;
+    let cancelled = false;
+    loadTurnstile()
+      .then((turnstile) => {
+        if (cancelled || !widgetEl.current) return;
+        widgetId.current = turnstile.render(widgetEl.current, {
+          sitekey: TURNSTILE_SITE_KEY,
+          theme: "auto",
+          size: "flexible",
+        });
+      })
+      .catch(() => console.error("Contact form: Turnstile failed to load"));
+    return () => {
+      cancelled = true;
+      if (widgetId.current) window.turnstile?.remove(widgetId.current);
+      widgetId.current = null;
+    };
+  }, [status === "sent"]); // eslint-disable-line react-hooks/exhaustive-deps
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -45,6 +104,8 @@ export function ContactForm() {
       const json = await res.json().catch(() => ({}));
 
       if (!res.ok) {
+        // A token is single-use, so a failed attempt needs a fresh one.
+        if (widgetId.current) window.turnstile?.reset(widgetId.current);
         setError(json.error || "Something went wrong. Please email me directly.");
         setStatus("error");
         return;
@@ -113,6 +174,8 @@ export function ContactForm() {
           <input name="company" tabIndex={-1} autoComplete="off" />
         </label>
       </div>
+
+      {TURNSTILE_SITE_KEY && <div ref={widgetEl} className="min-h-[65px]" />}
 
       <div className="flex flex-wrap items-center justify-between gap-snug">
         <p className="text-body-sm text-muted-foreground" aria-live="polite">

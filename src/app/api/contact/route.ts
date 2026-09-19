@@ -56,6 +56,34 @@ function limited(ip: string) {
   return false;
 }
 
+/* --- Turnstile -------------------------------------------------------------
+   Cloudflare's CAPTCHA. The widget in the form yields a single-use token;
+   Cloudflare confirms it here, server side, before anything is sent. Without
+   TURNSTILE_SECRET_KEY (local dev) the check is skipped. */
+async function passesTurnstile(token: unknown, ip: string) {
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+  if (!secret) return true;
+  if (typeof token !== "string" || !token) return false;
+
+  const form = new FormData();
+  form.append("secret", secret);
+  form.append("response", token);
+  if (ip !== "unknown") form.append("remoteip", ip);
+
+  try {
+    const res = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      body: form,
+    });
+    const result = (await res.json()) as { success?: boolean; "error-codes"?: string[] };
+    if (!result.success) console.warn("Contact API: Turnstile rejected", result["error-codes"]);
+    return result.success === true;
+  } catch (error) {
+    console.error("Contact API: Turnstile verification failed", error);
+    return false;
+  }
+}
+
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(req: Request) {
@@ -101,6 +129,14 @@ export async function POST(req: Request) {
   }
 
   const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+
+  if (!(await passesTurnstile(body["cf-turnstile-response"], ip))) {
+    return NextResponse.json(
+      { error: "Couldn't verify you're human. Please try again, or email me directly." },
+      { status: 400 }
+    );
+  }
+
   if (limited(ip)) {
     return NextResponse.json(
       { error: "Too many messages — try again in a few minutes, or email me directly." },
