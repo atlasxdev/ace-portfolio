@@ -69,7 +69,7 @@ export function SiteHeader() {
           </a>
           <CopyButton value={DATA.contact.email} />
 
-          <ModeToggle className="size-7 rounded-control border border-rule text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground" />
+          <ModeToggle />
 
           {/* phone only */}
           <button

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Check, Copy } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 /**
@@ -34,24 +35,21 @@ export function CopyButton({
   };
 
   return (
-    <button
+    <Button
       type="button"
       onClick={copy}
+      variant={variant === "outline" ? "control" : "pill"}
+      size="pill-sm"
       aria-label={copied ? `${label}: copied` : `${label} ${value}`}
       className={cn(
-        "label flex shrink-0 items-center gap-1.5 transition-colors",
-        variant === "outline"
-          ? "rounded-control border border-rule px-2 py-1 hover:border-foreground/30 hover:text-foreground"
-          : "rounded-full bg-foreground px-3 py-1.5 text-background hover:bg-foreground/90",
-        className
-      )}
-    >
-      {copied ? (
-        <Check className="size-3" aria-hidden />
-      ) : (
-        <Copy className="size-3" aria-hidden />
-      )}
+        "label shrink-0",
+        // The filled treatment here shifts tone on hover rather than lifting:
+        // it sits inline with text, where a rising button reads as a wobble.
+        variant === "outline" ? "px-2 py-1" : "hover:translate-y-0 hover:bg-foreground/90",
+        className,
+      )}>
+      {copied ? <Check className="size-3" aria-hidden /> : <Copy className="size-3" aria-hidden />}
       <span>{copied ? "Copied" : label}</span>
-    </button>
+    </Button>
   );
 }

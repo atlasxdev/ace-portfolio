@@ -15,12 +15,21 @@ const buttonVariants = cva(
         secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
+        // The site's own two treatments, so page-level buttons stop restating
+        // them by hand: `pill` is the filled call to action, `control` the
+        // bordered square that sits in a header or beside a field.
+        pill: "rounded-full bg-foreground font-medium text-background transition-transform duration-300 hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-60",
+        control:
+          "rounded-control border border-rule text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground",
       },
       size: {
         default: "h-9 px-4 py-2",
         sm: "h-8 rounded-md px-3 text-xs",
         lg: "h-10 rounded-md px-8",
         icon: "h-9 w-9 rounded-full",
+        control: "size-7",
+        pill: "h-auto gap-2 px-5 py-2.5 text-body-sm",
+        "pill-sm": "h-auto gap-1.5 px-3 py-1.5",
       },
     },
     defaultVariants: {

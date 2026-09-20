@@ -2,8 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Check, Loader2, Send } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { DATA } from "@/data/resume";
-import { cn } from "@/lib/utils";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
@@ -39,9 +42,6 @@ function loadTurnstile() {
   });
   return turnstileLoad;
 }
-
-const field =
-  "w-full rounded-control border border-rule bg-background/60 px-3 py-2.5 text-body-sm text-foreground placeholder:text-ink-faint transition-colors focus:border-foreground/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-ring/40";
 
 /**
  * Contact form, shown in the site-wide contact dialog. Posts to /api/contact, which emails the message to
@@ -138,12 +138,14 @@ export function ContactForm() {
         <p className="mt-2 text-body-sm text-muted-foreground">
           Thanks — a confirmation is on its way to your inbox, and I&rsquo;ll reply within one to two working days.
         </p>
-        <button
+        <Button
           type="button"
+          variant="control"
+          size="pill-sm"
           onClick={() => setStatus("idle")}
-          className="label mt-group transition-colors hover:text-foreground">
+          className="label mt-group">
           Send another
-        </button>
+        </Button>
       </div>
     );
   }
@@ -153,27 +155,26 @@ export function ContactForm() {
   return (
     <form onSubmit={onSubmit} className="relative grid gap-snug">
       <div className="grid gap-snug sm:grid-cols-2">
-        <label className="grid gap-2">
+        <Label>
           <span className="label">Name</span>
-          <input name="name" required maxLength={100} autoComplete="name" className={field} />
-        </label>
-        <label className="grid gap-2">
+          <Input name="name" required maxLength={100} autoComplete="name" />
+        </Label>
+        <Label>
           <span className="label">Email</span>
-          <input name="email" type="email" required maxLength={254} autoComplete="email" className={field} />
-        </label>
+          <Input name="email" type="email" required maxLength={254} autoComplete="email" />
+        </Label>
       </div>
 
-      <label className="grid gap-2">
+      <Label>
         <span className="label">Message</span>
-        <textarea
+        <Textarea
           name="message"
           required
           maxLength={5000}
           rows={5}
           placeholder="A role, a project, or just a question."
-          className={cn(field, "resize-y")}
         />
-      </label>
+      </Label>
 
       {/* Honeypot. Off-screen rather than display:none, which some bots skip;
           hidden from assistive tech and the tab order so people never hit it. */}
@@ -199,14 +200,15 @@ export function ContactForm() {
             "You'll get a confirmation by email."
           )}
         </p>
-        <button
+        <Button
           type="submit"
+          variant="pill"
+          size="pill"
           disabled={sending || !verified}
-          title={verified ? undefined : "Waiting for the verification check"}
-          className="inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-body-sm font-medium text-background transition-transform duration-300 hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-60">
+          title={verified ? undefined : "Waiting for the verification check"}>
           {sending ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <Send className="size-4" aria-hidden />}
           {sending ? "Sending" : "Send message"}
-        </button>
+        </Button>
       </div>
     </form>
   );

@@ -7,6 +7,10 @@ import { useEffect, useRef, useState } from "react";
 
 import { useContactDialog } from "@/components/contact-dialog";
 import { Monogram } from "@/components/monogram";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { CARD_STATE, SPRING } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -33,6 +37,10 @@ export default function Chatbot() {
   const [inputValue, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  // Set when the panel closes to hand off to the contact dialog, so Radix doesn't
+  // pull focus back to the bubble while the dialog is mounting.
+  const handingOff = useRef(false);
   const reduced = useReducedMotion();
 
   useEffect(() => {
@@ -43,11 +51,10 @@ export default function Chatbot() {
 
   // Closing resets the size: reopening into a panel that covers half the page
   // because of something you did five minutes ago is a surprise, not a memory.
-  const toggleChat = () => {
-    setIsOpen((open) => {
-      if (open) setExpanded(false);
-      return !open;
-    });
+  // The transcript itself survives: it lives above the popover.
+  const handleOpenChange = (open: boolean) => {
+    if (!open) setExpanded(false);
+    setIsOpen(open);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -94,146 +101,173 @@ export default function Chatbot() {
   };
 
   return (
-    <div className="fixed right-group bottom-group z-50 flex flex-col items-end gap-snug">
+    <Popover open={isOpen} onOpenChange={handleOpenChange}>
       <AnimatePresence>
         {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 16 }}
-            transition={reduced ? { duration: 0.2 } : CARD_STATE}
-            style={{ transformOrigin: "bottom right" }}
-            className={cn(
-              "glass overflow-hidden bg-background/80 backdrop-blur-xl backdrop-saturate-150 transition-[width] duration-500 ease-out",
-              expanded ? "w-[min(94vw,640px)]" : "w-[min(92vw,380px)]"
-            )}>
-            {/* header — label-led, divider instead of an inverted bar */}
-            <div className="flex items-center justify-between gap-snug border-b border-rule px-group py-snug">
-              <div className="flex items-center gap-2.5">
-                <Monogram className="size-5" />
-                <div className="leading-tight">
-                  <p className="text-body-sm font-semibold">Ask about {DATA.name.split(" ")[0]}</p>
-                  <p className="label text-ink-faint">AI assistant</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => setExpanded((v) => !v)}
-                  aria-label={expanded ? "Shrink chat" : "Expand chat"}
-                  aria-pressed={expanded}
-                  className="grid size-7 place-items-center rounded-control border border-rule text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground">
-                  {expanded ? (
-                    <Minimize2 className="size-3.5" aria-hidden />
-                  ) : (
-                    <Maximize2 className="size-3.5" aria-hidden />
-                  )}
-                </button>
-                <button
-                  type="button"
-                  onClick={toggleChat}
-                  aria-label="Close chat"
-                  className="grid size-7 place-items-center rounded-control border border-rule text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground">
-                  <X className="size-3.5" aria-hidden />
-                </button>
-              </div>
-            </div>
-
-            {/* transcript */}
-            <div
+          <PopoverContent
+            forceMount
+            asChild
+            side="top"
+            align="end"
+            sideOffset={12}
+            collisionPadding={16}
+            onOpenAutoFocus={(e) => {
+              // Land on the composer, not on the panel wrapper.
+              e.preventDefault();
+              inputRef.current?.focus();
+            }}
+            onCloseAutoFocus={(e) => {
+              if (handingOff.current) {
+                handingOff.current = false;
+                e.preventDefault();
+              }
+            }}>
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 16 }}
+              transition={reduced ? { duration: 0.2 } : CARD_STATE}
+              style={{ transformOrigin: "bottom right" }}
               className={cn(
-                "flex flex-col gap-snug overflow-y-auto px-group py-group transition-[height] duration-500 ease-out",
-                expanded ? "h-[min(70vh,560px)]" : "h-90"
+                "glass overflow-hidden bg-background/80 backdrop-blur-xl backdrop-saturate-150 transition-[width] duration-500 ease-out",
+                expanded ? "w-[min(94vw,640px)]" : "w-[min(92vw,380px)]",
               )}>
-              {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={cn("flex", message.role === "assistant" ? "justify-start" : "justify-end")}>
-                  <div
-                    className={cn(
-                      "max-w-[85%] rounded-control px-3 py-2 text-body-sm leading-5",
-                      message.role === "assistant"
-                        ? "border border-rule bg-foreground/4 whitespace-pre-wrap text-muted-foreground"
-                        : "bg-foreground text-background",
-                    )}>
-                    {message.content}
-                    {message.showContact && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          // Close the chat so the dialog isn't competing with it.
-                          toggleChat();
-                          openContact();
-                        }}
-                        className="mt-2.5 flex w-fit items-center gap-2 rounded-full bg-foreground px-3.5 py-1.5 text-body-sm font-medium whitespace-nowrap text-background transition-transform duration-300 hover:-translate-y-0.5">
-                        <Mail className="size-3.5" aria-hidden />
-                        Message Ace
-                      </button>
+              {/* header — label-led, divider instead of an inverted bar */}
+              <div className="flex items-center justify-between gap-snug border-b border-rule px-group py-snug">
+                <div className="flex items-center gap-2.5">
+                  <Monogram className="size-5" />
+                  <div className="leading-tight">
+                    <p className="text-body-sm font-semibold">Ask about {DATA.name.split(" ")[0]}</p>
+                    <p className="label text-ink-faint">AI assistant</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Button
+                    type="button"
+                    variant="control"
+                    size="control"
+                    onClick={() => setExpanded((v) => !v)}
+                    aria-label={expanded ? "Shrink chat" : "Expand chat"}
+                    aria-pressed={expanded}>
+                    {expanded ? (
+                      <Minimize2 className="size-3.5" aria-hidden />
+                    ) : (
+                      <Maximize2 className="size-3.5" aria-hidden />
                     )}
-                  </div>
+                  </Button>
+                  <PopoverClose asChild>
+                    <Button type="button" variant="control" size="control" aria-label="Close chat">
+                      <X className="size-3.5" aria-hidden />
+                    </Button>
+                  </PopoverClose>
                 </div>
-              ))}
-              {isLoading && (
-                <div className="flex justify-start">
-                  <div className="rounded-control border border-rule bg-foreground/4 px-3 py-2 text-muted-foreground">
-                    <Loader2 className="size-3.5 animate-spin" aria-hidden />
-                    <span className="sr-only">Thinking</span>
-                  </div>
-                </div>
-              )}
-              <div ref={scrollRef} />
-            </div>
+              </div>
 
-            {/* composer */}
-            <form onSubmit={handleSubmit} className="flex items-center gap-snug border-t border-rule px-group py-snug">
-              <input
-                autoFocus
-                placeholder="Type a message…"
-                className="flex-1 bg-transparent text-body-sm outline-none placeholder:text-ink-faint"
-                value={inputValue}
-                onChange={(e) => setInput(e.target.value)}
-                disabled={isLoading}
-              />
-              <button
-                type="submit"
-                aria-label="Send message"
-                disabled={!inputValue.trim() || isLoading}
-                className="grid size-7 shrink-0 place-items-center rounded-control border border-rule text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground disabled:pointer-events-none disabled:opacity-40">
-                {isLoading ? (
-                  <Loader2 className="size-3.5 animate-spin" aria-hidden />
-                ) : (
-                  <Send className="size-3.5" aria-hidden />
-                )}
-              </button>
-            </form>
-          </motion.div>
+              {/* transcript */}
+              <ScrollArea
+                viewportClassName="px-group py-group"
+                className={cn("transition-[height] duration-500 ease-out", expanded ? "h-[min(70vh,560px)]" : "h-90")}>
+                <div className="flex flex-col gap-snug">
+                  {messages.map((message) => (
+                    <div
+                      key={message.id}
+                      className={cn("flex", message.role === "assistant" ? "justify-start" : "justify-end")}>
+                      <div
+                        className={cn(
+                          "max-w-[85%] rounded-control px-3 py-2 text-body-sm leading-5",
+                          message.role === "assistant"
+                            ? "border border-rule bg-foreground/4 whitespace-pre-wrap text-muted-foreground"
+                            : "bg-foreground text-background",
+                        )}>
+                        {message.content}
+                        {message.showContact && (
+                          <Button
+                            type="button"
+                            variant="pill"
+                            size="pill-sm"
+                            onClick={() => {
+                              // Close the chat so the dialog isn't competing with it.
+                              handingOff.current = true;
+                              handleOpenChange(false);
+                              openContact();
+                            }}
+                            className="mt-2.5 w-fit text-body-sm">
+                            <Mail className="size-3.5" aria-hidden />
+                            Message Ace
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                  {isLoading && (
+                    <div className="flex justify-start">
+                      <div className="rounded-control border border-rule bg-foreground/4 px-3 py-2 text-muted-foreground">
+                        <Loader2 className="size-3.5 animate-spin" aria-hidden />
+                        <span className="sr-only">Thinking</span>
+                      </div>
+                    </div>
+                  )}
+                  <div ref={scrollRef} />
+                </div>
+              </ScrollArea>
+
+              {/* composer */}
+              <form
+                onSubmit={handleSubmit}
+                className="flex items-center gap-snug border-t border-rule px-group py-snug">
+                <Input
+                  ref={inputRef}
+                  variant="ghost"
+                  placeholder="Type a message…"
+                  className="flex-1"
+                  value={inputValue}
+                  onChange={(e) => setInput(e.target.value)}
+                  disabled={isLoading}
+                />
+                <Button
+                  type="submit"
+                  variant="control"
+                  size="control"
+                  aria-label="Send message"
+                  disabled={!inputValue.trim() || isLoading}
+                  className="shrink-0">
+                  {isLoading ? (
+                    <Loader2 className="size-3.5 animate-spin" aria-hidden />
+                  ) : (
+                    <Send className="size-3.5" aria-hidden />
+                  )}
+                </Button>
+              </form>
+            </motion.div>
+          </PopoverContent>
         )}
       </AnimatePresence>
 
-      <motion.button
-        type="button"
-        onClick={toggleChat}
-        aria-label={isOpen ? "Close chat" : "Chat with Ace's AI assistant"}
-        whileHover={reduced ? undefined : { y: -2 }}
-        whileTap={reduced ? undefined : { scale: 0.96 }}
-        transition={SPRING}
-        className="glass grid size-12 cursor-pointer place-items-center rounded-full">
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.span
-            key={isOpen ? "close" : "chat"}
-            initial={{ opacity: 0, rotate: isOpen ? -90 : 90 }}
-            animate={{ opacity: 1, rotate: 0 }}
-            exit={{ opacity: 0, rotate: isOpen ? 90 : -90 }}
-            transition={reduced ? { duration: 0.15 } : SPRING}
-            className="grid place-items-center">
-            {isOpen ? (
-              <X className="size-5 text-foreground" aria-hidden />
-            ) : (
-              <MessageCircle className="size-5 text-foreground" aria-hidden />
-            )}
-          </motion.span>
-        </AnimatePresence>
-      </motion.button>
-    </div>
+      <PopoverTrigger asChild>
+        <motion.button
+          type="button"
+          aria-label={isOpen ? "Close chat" : "Chat with Ace's AI assistant"}
+          whileHover={reduced ? undefined : { y: -2 }}
+          whileTap={reduced ? undefined : { scale: 0.96 }}
+          transition={SPRING}
+          className="glass fixed right-group bottom-group z-50 grid size-12 cursor-pointer place-items-center rounded-full">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.span
+              key={isOpen ? "close" : "chat"}
+              initial={{ opacity: 0, rotate: isOpen ? -90 : 90 }}
+              animate={{ opacity: 1, rotate: 0 }}
+              exit={{ opacity: 0, rotate: isOpen ? 90 : -90 }}
+              transition={reduced ? { duration: 0.15 } : SPRING}
+              className="grid place-items-center">
+              {isOpen ? (
+                <X className="size-5 text-foreground" aria-hidden />
+              ) : (
+                <MessageCircle className="size-5 text-foreground" aria-hidden />
+              )}
+            </motion.span>
+          </AnimatePresence>
+        </motion.button>
+      </PopoverTrigger>
+    </Popover>
   );
 }
