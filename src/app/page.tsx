@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { BrandLogo } from "@/components/brand-logo";
+import { HeroPortrait } from "@/components/hero-portrait";
 import { Reveal } from "@/components/motion/reveal";
 import { PersonSchema } from "@/components/person-schema";
 import { ApproachSection } from "@/components/section/approach-section";
@@ -40,7 +41,11 @@ export default function Page() {
       <PersonSchema />
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}
-      <section className="shell pt-entry pb-group">
+      {/* Photo left, details right from md; stacked below that. */}
+      <section className="shell grid grid-cols-1 gap-group pt-entry pb-group md:grid-cols-[240px_minmax(0,1fr)] md:items-center md:gap-10 xl:grid-cols-[300px_minmax(0,1fr)] xl:gap-14">
+        <Reveal kind="fade" onLoad delay={0.05}>
+          <HeroPortrait className="w-full max-w-[280px] md:max-w-none" />
+        </Reveal>
         <div className="min-w-0">
           <Reveal kind="fade" onLoad delay={0.1} className="label">
             Full-stack &middot; Automation &middot; AI
