@@ -22,7 +22,7 @@ export function HeroPortrait({ className }: { className?: string }) {
       role="img"
       aria-label={`Photo of ${DATA.name}`}
       className={cn(
-        "group relative aspect-[3/4] overflow-hidden rounded-2xl border border-rule bg-foreground/5 shadow-xl shadow-black/10",
+        "group relative aspect-square overflow-hidden rounded-2xl border border-rule bg-foreground/5 shadow-xl shadow-black/10",
         className,
       )}>
       {SHOTS.map((shot, i) => (
@@ -33,7 +33,7 @@ export function HeroPortrait({ className }: { className?: string }) {
           fill
           priority={i === 0 || i === 2}
           sizes="(min-width: 1024px) 300px, (min-width: 768px) 260px, 90vw"
-          className={cn("object-cover transition-opacity duration-500", shot.show)}
+          className={cn("object-cover transition-opacity duration-500 scale-125", shot.show)}
         />
       ))}
     </div>

@@ -16,9 +16,9 @@ import { ItemList, ItemRow, SectionRow } from "@/components/section/section-row"
 import { ExperienceSection } from "@/components/section/work-section";
 import { TechGrid } from "@/components/tech-tile";
 import { DATA } from "@/data/resume";
-import { LOGOS } from "@/lib/logos";
 import { section } from "@/data/sections";
 import { CAPABILITIES, TECH_BAND } from "@/data/stacks";
+import { LOGOS } from "@/lib/logos";
 import { RULE_DELAY } from "@/lib/motion";
 
 /** The stack at a glance, in the hero; the full set is under Capabilities. */
@@ -44,7 +44,7 @@ export default function Page() {
       {/* Photo left, details right from md; stacked below that. */}
       <section className="shell grid grid-cols-1 gap-group pt-entry pb-group md:grid-cols-[240px_minmax(0,1fr)] md:items-center md:gap-10 xl:grid-cols-[300px_minmax(0,1fr)] xl:gap-14">
         <Reveal kind="fade" onLoad delay={0.05}>
-          <HeroPortrait className="w-full max-w-[280px] md:max-w-none" />
+          <HeroPortrait className="w-full max-w-[280px] md:max-w-none overflow-hidden" />
         </Reveal>
         <div className="min-w-0">
           <Reveal kind="fade" onLoad delay={0.1} className="label">
@@ -59,12 +59,6 @@ export default function Page() {
             <p className="mt-snug max-w-[48ch] text-body-lg text-balance">
               I build production systems end&#8209;to&#8209;end, from the first stakeholder call to the thing running in
               production.
-            </p>
-          </Reveal>
-          <Reveal kind="fade" onLoad delay={0.6}>
-            <p className="mt-tight flex items-center gap-2 text-body-sm text-muted-foreground">
-              <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-available" />
-              Currently building AI-assisted automations and internal tools.
             </p>
           </Reveal>
           <Reveal kind="fade" onLoad delay={0.75}>
