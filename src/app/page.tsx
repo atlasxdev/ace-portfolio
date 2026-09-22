@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 
+import { BrandLogo } from "@/components/brand-logo";
 import { Reveal } from "@/components/motion/reveal";
 import { PersonSchema } from "@/components/person-schema";
 import { ApproachSection } from "@/components/section/approach-section";
@@ -15,9 +16,15 @@ import { ItemList, ItemRow, SectionRow } from "@/components/section/section-row"
 import { ExperienceSection } from "@/components/section/work-section";
 import { TechGrid } from "@/components/tech-tile";
 import { DATA } from "@/data/resume";
+import { LOGOS } from "@/lib/logos";
 import { section } from "@/data/sections";
 import { CAPABILITIES, TECH_BAND } from "@/data/stacks";
 import { RULE_DELAY } from "@/lib/motion";
+
+/** The stack at a glance, in the hero; the full set is under Capabilities. */
+const HERO_STACK = TECH_BAND.filter((t) =>
+  ["TypeScript", "React", "Next.js", "PostgreSQL", "Supabase", "n8n", "Anthropic", "MCP"].includes(t.name),
+);
 
 export const metadata: Metadata = {
   alternates: { canonical: DATA.url },
@@ -35,7 +42,7 @@ export default function Page() {
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       {/* Logo left, details right from lg; stacked below that. */}
-      <section className="shell grid grid-cols-1 gap-entry pt-section pb-entry lg:grid-cols-[auto_1fr] lg:items-center lg:gap-10">
+      <section className="shell flex flex-col gap-group pt-entry pb-group md:flex-row md:items-center lg:gap-10">
         <Reveal kind="fade" onLoad delay={0.05}>
           {/* A real image, not the inline <Monogram>: it's the page's first
               image, so Google has the AG logo to pick as the result thumbnail.
@@ -47,23 +54,44 @@ export default function Page() {
             height={240}
             unoptimized
             priority
-            className="size-16 rounded-xl md:size-24 lg:size-32 lg:rounded-2xl xl:size-36"
+            className="size-20 rounded-xl md:size-24 lg:size-32 lg:rounded-2xl xl:size-36"
           />
         </Reveal>
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <Reveal kind="fade" onLoad delay={0.1} className="label">
             Full-stack &middot; Automation &middot; AI
           </Reveal>
           <Reveal kind="open" onLoad delay={0.2}>
-            <h1 className="mt-group font-display text-[36px] leading-[40px] font-semibold tracking-[-0.03em] text-balance md:text-[48px] md:leading-[52px] xl:text-display xl:leading-[100px]">
+            <h1 className="mt-snug font-display text-[36px] leading-[40px] font-semibold tracking-[-0.03em] text-balance md:text-[48px] md:leading-[52px] xl:text-display xl:leading-16">
               {DATA.name}
             </h1>
           </Reveal>
           <Reveal kind="open" onLoad delay={0.45}>
-            <p className="mt-6 max-w-[40ch] text-body-lg text-balance">
+            <p className="mt-snug max-w-[48ch] text-body-lg text-balance">
               I build production systems end&#8209;to&#8209;end, from the first stakeholder call to the thing running in
               production.
             </p>
+          </Reveal>
+          <Reveal kind="fade" onLoad delay={0.6}>
+            <p className="mt-tight flex items-center gap-2 text-body-sm text-muted-foreground">
+              <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-available" />
+              Currently building AI-assisted automations and internal tools.
+            </p>
+          </Reveal>
+          <Reveal kind="fade" onLoad delay={0.75}>
+            <ul aria-label="Tools I work with" className="mt-group flex flex-wrap gap-1.5">
+              {HERO_STACK.map((tech) => (
+                <li
+                  key={tech.name}
+                  className="flex items-center gap-1.5 rounded-full border border-rule bg-foreground/3 py-1 pr-2.5 pl-1.5 text-xs text-muted-foreground">
+                  {tech.logo && (
+                    // Wide marks (n8n) keep their aspect ratio; forcing them square overlaps the label.
+                    <BrandLogo name={tech.logo} className={LOGOS[tech.logo]?.wide ? "h-3.5" : "size-3.5"} />
+                  )}
+                  {tech.name}
+                </li>
+              ))}
+            </ul>
           </Reveal>
         </div>
       </section>
@@ -72,7 +100,7 @@ export default function Page() {
           First after the hero, so its divider closes the opening screen and
           lands last in the load cascade instead of reappearing on scroll. */}
       {posts.length > 0 && (
-        <SectionRow label={section("blog").label} id="blog" ruleOnLoad ruleDelay={RULE_DELAY.min}>
+        <SectionRow label={section("blog").label} id="blog" ruleOnLoad ruleDelay={RULE_DELAY.min} className="pt-entry">
           <Reveal>
             <ItemList>
               {posts.map((post) => (
