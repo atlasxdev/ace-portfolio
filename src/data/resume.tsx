@@ -10,7 +10,7 @@ export const DATA = {
   description:
     "Ace Guevarra, full-stack and automation engineer. I build production systems end-to-end — full-stack, automation, and AI-augmented delivery.",
   summary:
-    "I'm **Ace Guevarra**, a **full-stack and automation engineer**. I take systems from the first stakeholder call through to production — architecture, build, test, deploy, and the maintenance that follows.\n\nI build **web platforms, internal tools, automations and storefronts** — usually where manual work has outgrown the spreadsheet it lives in. Whatever the domain, the job is the same: understand how people actually work, then build something they'll keep using.\n\nI work across the whole lifecycle rather than one layer: **REST APIs and Postgres** on one side, **React and Next.js** on the other, and n8n, CRM and ATS configuration where software meets business process. I use **Claude Code** throughout my development lifecycle and built a **custom MCP server for Fathom AI** before an official one existed — and I review everything that ships.",
+    "I'm a **full-stack and automation engineer**. I build web apps, internal tools and automations, and these days I'm focused on **AI-augmented development**.\n\nI love taking a rough idea, or a process stuck in a spreadsheet, and turning it into something people actually use.",
   avatarUrl: "/me-light.jpg",
   navbar: [
     { href: "/", icon: HomeIcon, label: "Home" },
