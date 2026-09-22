@@ -35,7 +35,7 @@ export default function Page() {
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       {/* Logo left, details right from lg; stacked below that. */}
-      <section className="shell grid grid-cols-1 gap-entry pt-section pb-entry lg:grid-cols-[auto_1fr] lg:items-center lg:gap-14">
+      <section className="shell grid grid-cols-1 gap-entry pt-section pb-entry lg:grid-cols-[auto_1fr] lg:items-center lg:gap-10">
         <Reveal kind="fade" onLoad delay={0.05}>
           {/* A real image, not the inline <Monogram>: it's the page's first
               image, so Google has the AG logo to pick as the result thumbnail.
@@ -47,7 +47,7 @@ export default function Page() {
             height={240}
             unoptimized
             priority
-            className="size-24 rounded-2xl md:size-32 lg:size-52 lg:rounded-3xl xl:size-60"
+            className="size-20 rounded-2xl md:size-28 lg:size-40 lg:rounded-3xl xl:size-44"
           />
         </Reveal>
         <div className="min-w-0">
@@ -55,12 +55,12 @@ export default function Page() {
             Full-stack &middot; Automation &middot; AI
           </Reveal>
           <Reveal kind="open" onLoad delay={0.2}>
-            <h1 className="mt-group font-display text-[56px] leading-[60px] font-semibold tracking-[-0.03em] text-balance md:text-[72px] md:leading-[76px] xl:text-display xl:leading-[100px]">
+            <h1 className="mt-group font-display text-[44px] leading-[48px] font-semibold tracking-[-0.03em] text-balance md:text-[56px] md:leading-[60px] xl:text-display xl:leading-[100px]">
               {DATA.name}
             </h1>
           </Reveal>
           <Reveal kind="open" onLoad delay={0.45}>
-            <p className="mt-6 max-w-[40ch] text-[clamp(1rem,1.6vw,1.15rem)] leading-snug text-balance">
+            <p className="mt-6 max-w-[40ch] text-body-lg text-balance">
               I build production systems end&#8209;to&#8209;end, from the first stakeholder call to the thing running
               in production.
             </p>
@@ -149,7 +149,7 @@ export default function Page() {
           {CAPABILITIES.map((column, i) => (
             <Reveal key={i} delay={0.05 + i * 0.08}>
               <h2 className="label mb-4 text-ink-faint">{i === 0 ? "What I do" : <span aria-hidden>&nbsp;</span>}</h2>
-              <ul className="flex flex-col gap-2 text-[14.5px] text-muted-foreground">
+              <ul className="flex flex-col gap-2 text-[13.5px] text-muted-foreground">
                 {column.map((item) => (
                   <li key={item}>{item}</li>
                 ))}

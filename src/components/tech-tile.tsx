@@ -7,7 +7,7 @@ export function TechTile({ tech }: { tech: Tech }) {
     <div
       className={cn(
         "flex items-center gap-2.5 rounded-lg border border-transparent bg-foreground/3 px-2.5 py-2",
-        "text-[13.5px] text-muted-foreground",
+        "text-[12.5px] text-muted-foreground",
         "transition-[color,background-color,border-color,transform] duration-300",
         "hover:-translate-y-0.5 hover:border-foreground/15 hover:bg-foreground/7 hover:text-foreground"
       )}

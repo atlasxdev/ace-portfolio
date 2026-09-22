@@ -63,7 +63,7 @@ function Profile() {
         <span className="block text-body font-semibold tracking-tight text-foreground">{DATA.name}</span>
         <span className="block text-body-sm text-muted-foreground">Full-stack &amp; automation engineer</span>
       </Link>
-      <span className="inline-flex w-fit items-center gap-2 rounded-full border border-rule px-2.5 py-1 text-[12.5px] font-medium text-available">
+      <span className="inline-flex w-fit items-center gap-2 rounded-full border border-rule px-2.5 py-1 text-xs font-medium text-available">
         <span aria-hidden className="relative flex size-1.5">
           <span className="absolute inset-0 animate-ping rounded-full bg-current opacity-60 motion-reduce:hidden" />
           <span className="relative size-1.5 rounded-full bg-current" />
@@ -74,7 +74,7 @@ function Profile() {
   );
 }
 
-function EmailRow() {
+function EmailInvite() {
   const [copied, setCopied] = useState(false);
 
   const copy = async () => {
@@ -88,7 +88,7 @@ function EmailRow() {
   };
 
   return (
-    <p className="px-2.5 pt-2 text-body-sm leading-relaxed text-muted-foreground">
+    <p className="text-body-sm text-muted-foreground">
       For work, collabs &amp; everything else, reach me at{" "}
       <a
         href={`mailto:${DATA.contact.email}`}
@@ -165,7 +165,6 @@ function SidebarContent({
             <Sparkles className={ROW_ICON} aria-hidden />
             Ask my AI assistant
           </button>
-          <EmailRow />
         </Group>
 
         <Group label="Elsewhere">
@@ -179,8 +178,11 @@ function SidebarContent({
         </Group>
       </div>
 
-      <div className="flex items-center justify-between gap-tight border-t border-rule px-5 py-snug">
-        <span className="text-[12.5px] text-ink-faint">Theme</span>
+      {/* Footer: the standing invite, with the theme toggle beside it. */}
+      <div className="flex items-start gap-tight border-t border-rule px-5 py-group">
+        <div className="min-w-0 flex-1">
+          <EmailInvite />
+        </div>
         <ModeToggle />
       </div>
     </div>

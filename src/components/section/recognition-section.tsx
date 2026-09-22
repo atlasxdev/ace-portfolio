@@ -28,7 +28,7 @@ export function RecognitionSection() {
 
             <div className="min-w-0 flex-1">
               <div className="flex items-start justify-between gap-6 max-md:flex-col max-md:gap-1">
-                <h3 className="text-[16px] leading-snug font-semibold tracking-[-0.01em]">
+                <h3 className="text-[15px] leading-snug font-semibold tracking-[-0.01em]">
                   {award.title}
                 </h3>
                 <span className="label shrink-0 text-ink-faint">

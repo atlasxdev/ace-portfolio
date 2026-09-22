@@ -56,7 +56,7 @@ export default async function BlogPage({
           Writing
         </Reveal>
         <Reveal delay={0.07}>
-          <h1 className="mt-4 font-display text-[clamp(2.5rem,7vw,4rem)] leading-none font-semibold tracking-[-0.02em]">
+          <h1 className="mt-4 font-display text-[clamp(2rem,5.5vw,3rem)] leading-none font-semibold tracking-[-0.02em]">
             Notes from the build
           </h1>
         </Reveal>

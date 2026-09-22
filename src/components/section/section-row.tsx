@@ -91,7 +91,7 @@ export function ItemRow({
   const body = (
     <>
       <div className="flex items-baseline justify-between gap-6 max-md:flex-col max-md:items-start max-md:gap-1">
-        <span className="inline-flex items-baseline gap-2 text-[16px] leading-snug font-semibold tracking-[-0.01em]">
+        <span className="inline-flex items-baseline gap-2 text-[15px] leading-snug font-semibold tracking-[-0.01em]">
           {title}
           {href && (
             <span

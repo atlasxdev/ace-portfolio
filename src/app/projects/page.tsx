@@ -33,7 +33,7 @@ export default function ProjectsPage() {
           Projects
         </Reveal>
         <Reveal delay={0.07}>
-          <h1 className="mt-4 font-display text-[clamp(2.5rem,7vw,4rem)] leading-none font-semibold tracking-[-0.02em]">
+          <h1 className="mt-4 font-display text-[clamp(2rem,5.5vw,3rem)] leading-none font-semibold tracking-[-0.02em]">
             Everything I&rsquo;ve built
           </h1>
         </Reveal>

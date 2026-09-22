@@ -167,7 +167,7 @@ export default async function Blog({
             <PostCover slug={slug} index={currentIndex} src={post.cover} alt={post.title} />
           </div>
 
-          <h1 className="font-display text-[clamp(1.9rem,5vw,2.75rem)] leading-[1.08] font-semibold tracking-[-0.02em] text-balance">
+          <h1 className="font-display text-[clamp(1.6rem,4vw,2.25rem)] leading-[1.08] font-semibold tracking-[-0.02em] text-balance">
             {post.title}
           </h1>
           <p className="label mt-5 text-ink-faint">{formatDate(post.publishedAt)}</p>
