@@ -10,16 +10,15 @@
  * Reorder here and both the page and its nav move together.
  */
 export const SECTIONS = [
-  { id: "about", label: "About" },
+  { id: "writing", label: "Writing" },
+  { id: "projects", label: "Selected Work" },
   { id: "experience", label: "Experience" },
+  { id: "certifications", label: "Certifications" },
   { id: "education", label: "Education" },
   { id: "capabilities", label: "Capabilities" },
   { id: "approach", label: "Approach" },
-  { id: "projects", label: "Selected Work" },
-  { id: "writing", label: "Writing" },
   { id: "journey", label: "Journey" },
   { id: "recognition", label: "Recognition" },
-  { id: "certifications", label: "Certifications" },
 ] as const;
 
 export type SectionId = (typeof SECTIONS)[number]["id"];

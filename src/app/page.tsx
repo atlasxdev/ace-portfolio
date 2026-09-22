@@ -108,28 +108,55 @@ export default function Page() {
         </Reveal>
       </section>
 
-      {/* ── About ──────────────────────────────────────────────────────
-          Its divider is the one closing the opening screen, so it belongs to
-          the load cascade and lands last in it — per the motion spec — rather
-          than reappearing on scroll like the dividers further down. */}
-      <SectionRow label={section("about").label} id="about" ruleOnLoad ruleDelay={RULE_DELAY.min}>
-        <Reveal className="glass max-w-none p-group">
-          <div className="flex flex-col gap-[1.15rem] text-muted-foreground [&_strong]:font-medium [&_strong]:text-foreground">
-            {DATA.summary.split("\n\n").map((para, i) => (
-              <p key={i} className="max-w-[70ch]">
-                {/* `**…**` in the summary marks the claim a skimming reader
-                    should catch — the role, the numbers, the stack. Odd
-                    segments of the split are the emphasised ones. */}
-                {para.split("**").map((part, j) => (j % 2 ? <strong key={j}>{part}</strong> : part))}
-              </p>
-            ))}
-          </div>
-        </Reveal>
+      {/* ── Writing ────────────────────────────────────────────────────
+          First after the hero, so its divider closes the opening screen and
+          lands last in the load cascade instead of reappearing on scroll. */}
+      {posts.length > 0 && (
+        <SectionRow label={section("writing").label} id="writing" ruleOnLoad ruleDelay={RULE_DELAY.min}>
+          <Reveal>
+            <ItemList>
+              {posts.map((post) => (
+                <ItemRow
+                  key={post._meta.path}
+                  title={post.title}
+                  meta={new Date(post.publishedAt).toLocaleDateString("en-US", {
+                    month: "short",
+                    year: "numeric",
+                  })}
+                  href={`/blog/${post._meta.path}`}>
+                  {post.summary}
+                </ItemRow>
+              ))}
+            </ItemList>
+          </Reveal>
+          <Reveal kind="fade" delay={0.12}>
+            <Link
+              href="/blog"
+              className="label mt-6 inline-flex items-center gap-2 transition-all hover:gap-3 hover:text-foreground">
+              All writing <ArrowRight className="size-3" aria-hidden />
+            </Link>
+          </Reveal>
+        </SectionRow>
+      )}
+
+      {/* ── Selected projects ────────────────────────────────────────── */}
+      {/* Takes over the load-cascade divider when there are no posts. */}
+      <SectionRow
+        label={section("projects").label}
+        id="projects"
+        ruleOnLoad={posts.length === 0}
+        ruleDelay={RULE_DELAY.min}>
+        <ProjectsSection />
       </SectionRow>
 
       {/* ── Experience ───────────────────────────────────────────────── */}
       <SectionRow label={section("experience").label} id="experience">
         <ExperienceSection />
+      </SectionRow>
+
+      {/* ── Certifications ───────────────────────────────────────────── */}
+      <SectionRow label={section("certifications").label} id="certifications">
+        <CertificationsSection />
       </SectionRow>
 
       {/* ── Education ────────────────────────────────────────────────── */}
@@ -178,40 +205,6 @@ export default function Page() {
         </Reveal>
       </SectionRow>
 
-      {/* ── Selected projects ────────────────────────────────────────── */}
-      <SectionRow label={section("projects").label} id="projects">
-        <ProjectsSection />
-      </SectionRow>
-
-      {/* ── Writing ──────────────────────────────────────────────────── */}
-      {posts.length > 0 && (
-        <SectionRow label={section("writing").label} id="writing">
-          <Reveal>
-            <ItemList>
-              {posts.map((post) => (
-                <ItemRow
-                  key={post._meta.path}
-                  title={post.title}
-                  meta={new Date(post.publishedAt).toLocaleDateString("en-US", {
-                    month: "short",
-                    year: "numeric",
-                  })}
-                  href={`/blog/${post._meta.path}`}>
-                  {post.summary}
-                </ItemRow>
-              ))}
-            </ItemList>
-          </Reveal>
-          <Reveal kind="fade" delay={0.12}>
-            <Link
-              href="/blog"
-              className="label mt-6 inline-flex items-center gap-2 transition-all hover:gap-3 hover:text-foreground">
-              All writing <ArrowRight className="size-3" aria-hidden />
-            </Link>
-          </Reveal>
-        </SectionRow>
-      )}
-
       {/* ── Journey ──────────────────────────────────────────────────── */}
       <SectionRow label={section("journey").label} id="journey">
         <JourneySection />
@@ -220,11 +213,6 @@ export default function Page() {
       {/* ── Recognition ──────────────────────────────────────────────── */}
       <SectionRow label={section("recognition").label} id="recognition">
         <RecognitionSection />
-      </SectionRow>
-
-      {/* ── Certifications ───────────────────────────────────────────── */}
-      <SectionRow label={section("certifications").label} id="certifications">
-        <CertificationsSection />
       </SectionRow>
     </>
   );
