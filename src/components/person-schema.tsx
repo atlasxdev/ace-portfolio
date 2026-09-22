@@ -31,10 +31,11 @@ export function PersonSchema() {
       "@type": "PostalAddress",
       addressLocality: DATA.location,
     },
+    // Name only, no url: linking vizserve.com tied the page to VizServe's
+    // entity, and Google borrowed its logo as the result thumbnail.
     worksFor: {
       "@type": "Organization",
       name: current.company,
-      url: current.href,
     },
     alumniOf: DATA.education.map((school) => ({
       "@type": "CollegeOrUniversity",
