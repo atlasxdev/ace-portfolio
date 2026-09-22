@@ -1,6 +1,5 @@
 import { ContactTrigger } from "@/components/contact-dialog";
 import { CopyButton } from "@/components/copy-button";
-import { ScheduleTrigger } from "@/components/schedule-dialog";
 import { Reveal } from "@/components/motion/reveal";
 import { DATA } from "@/data/resume";
 import { ArrowRight, Calendar, Mail, MessageSquare } from "lucide-react";
@@ -33,15 +32,16 @@ export function SiteFooter() {
               <MessageSquare className="size-4 text-available" aria-hidden />
               Message me
             </ContactTrigger>
-            <ScheduleTrigger
-              className="group inline-flex cursor-pointer items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-body-sm font-medium text-background transition-transform duration-300 hover:-translate-y-0.5">
+            <Link
+              href="/schedule"
+              className="group inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-body-sm font-medium text-background transition-transform duration-300 hover:-translate-y-0.5">
               <Calendar className="size-4" aria-hidden />
               Schedule a 15-min call
               <ArrowRight
                 className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
                 aria-hidden
               />
-            </ScheduleTrigger>
+            </Link>
             <a
               href={`mailto:${DATA.contact.email}`}
               className="glass glass-hover inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-body-sm font-medium">

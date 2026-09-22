@@ -4,7 +4,6 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import Chatbot from "@/components/chatbot";
 import { ContactDialogProvider } from "@/components/contact-dialog";
 import { PageWipe } from "@/components/motion/page-wipe";
-import { ScheduleDialogProvider } from "@/components/schedule-dialog";
 import { OpeningProvider } from "@/components/motion/opening";
 import { Preloader } from "@/components/preloader";
 import { SiteFooter } from "@/components/site-footer";
@@ -127,7 +126,6 @@ export default function RootLayout({
             <PageWipe />
 
             <ContactDialogProvider>
-            <ScheduleDialogProvider>
               <SiteSidebar />
               {/* Clears the fixed desktop sidebar (w-72). */}
               <div className="flex min-h-screen flex-col lg:pl-72">
@@ -137,7 +135,6 @@ export default function RootLayout({
 
               {/* Inside the provider: it offers the contact form mid-chat. */}
               <Chatbot />
-            </ScheduleDialogProvider>
             </ContactDialogProvider>
             </OpeningProvider>
 

@@ -24,7 +24,6 @@ import { OPEN_CHAT_EVENT } from "@/components/chatbot";
 import { useContactDialog } from "@/components/contact-dialog";
 import { Icons } from "@/components/icons";
 import { ModeToggle } from "@/components/mode-toggle";
-import { useScheduleDialog } from "@/components/schedule-dialog";
 import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { DATA } from "@/data/resume";
 import { cn } from "@/lib/utils";
@@ -131,7 +130,6 @@ function SidebarContent({
 }) {
   const pathname = usePathname();
   const openContact = useContactDialog();
-  const openSchedule = useScheduleDialog();
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
   return (
@@ -169,16 +167,14 @@ function SidebarContent({
             <MessageSquare className={ROW_ICON} aria-hidden />
             Message me
           </button>
-          <button
-            type="button"
-            onClick={() => {
-              onNavigate?.();
-              openSchedule();
-            }}
-            className={ROW}>
+          <Link
+            href="/schedule"
+            onClick={onNavigate}
+            aria-current={isActive("/schedule") ? "page" : undefined}
+            className={cn(ROW, isActive("/schedule") && "bg-foreground/5 font-medium text-foreground")}>
             <Calendar className={ROW_ICON} aria-hidden />
             Schedule a call
-          </button>
+          </Link>
           <button
             type="button"
             onClick={onOpenChat}
