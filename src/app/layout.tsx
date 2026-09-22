@@ -6,7 +6,6 @@ import { ContactDialogProvider } from "@/components/contact-dialog";
 import { PageWipe } from "@/components/motion/page-wipe";
 import { OpeningProvider } from "@/components/motion/opening";
 import { Preloader } from "@/components/preloader";
-import { SiteFooter } from "@/components/site-footer";
 import { SiteSidebar } from "@/components/site-sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -127,10 +126,10 @@ export default function RootLayout({
 
             <ContactDialogProvider>
               <SiteSidebar />
-              {/* Clears the fixed desktop sidebar (w-72). */}
+              {/* Clears the fixed desktop sidebar (w-72). No site footer: its
+                  contact links, email and socials all live in the sidebar. */}
               <div className="flex min-h-screen flex-col lg:pl-72">
                 <main className="flex-1">{children}</main>
-                <SiteFooter />
               </div>
 
               {/* Inside the provider: it offers the contact form mid-chat. */}
