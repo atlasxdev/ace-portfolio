@@ -34,7 +34,8 @@ export default function Page() {
       <PersonSchema />
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}
-      <section className="shell pt-section pb-entry">
+      {/* Logo left, details right from lg; stacked below that. */}
+      <section className="shell grid grid-cols-1 gap-entry pt-section pb-entry lg:grid-cols-[auto_1fr] lg:items-center lg:gap-14">
         <Reveal kind="fade" onLoad delay={0.05}>
           {/* A real image, not the inline <Monogram>: it's the page's first
               image, so Google has the AG logo to pick as the result thumbnail.
@@ -42,27 +43,29 @@ export default function Page() {
           <Image
             src="/ag-logo-1200.png"
             alt={`${DATA.name} logo`}
-            width={64}
-            height={64}
+            width={240}
+            height={240}
             unoptimized
             priority
-            className="mb-group size-14 rounded-xl md:size-16"
+            className="size-24 rounded-2xl md:size-32 lg:size-52 lg:rounded-3xl xl:size-60"
           />
         </Reveal>
-        <Reveal kind="fade" onLoad delay={0.1} className="label">
-          Full-stack &middot; Automation &middot; AI
-        </Reveal>
-        <Reveal kind="open" onLoad delay={0.2}>
-          <h1 className="mt-group font-display text-[56px] leading-[60px] font-semibold tracking-[-0.03em] text-balance md:text-[72px] md:leading-[76px] lg:text-display lg:leading-[100px]">
-            {DATA.name}
-          </h1>
-        </Reveal>
-        <Reveal kind="open" onLoad delay={0.45}>
-          <p className="mt-6 max-w-[40ch] text-[clamp(1rem,1.6vw,1.15rem)] leading-snug text-balance">
-            I build production systems end&#8209;to&#8209;end, from the first stakeholder call to the thing running in
-            production.
-          </p>
-        </Reveal>
+        <div className="min-w-0">
+          <Reveal kind="fade" onLoad delay={0.1} className="label">
+            Full-stack &middot; Automation &middot; AI
+          </Reveal>
+          <Reveal kind="open" onLoad delay={0.2}>
+            <h1 className="mt-group font-display text-[56px] leading-[60px] font-semibold tracking-[-0.03em] text-balance md:text-[72px] md:leading-[76px] xl:text-display xl:leading-[100px]">
+              {DATA.name}
+            </h1>
+          </Reveal>
+          <Reveal kind="open" onLoad delay={0.45}>
+            <p className="mt-6 max-w-[40ch] text-[clamp(1rem,1.6vw,1.15rem)] leading-snug text-balance">
+              I build production systems end&#8209;to&#8209;end, from the first stakeholder call to the thing running
+              in production.
+            </p>
+          </Reveal>
+        </div>
       </section>
 
       {/* ── Blog ───────────────────────────────────────────────────────
