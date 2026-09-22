@@ -1,33 +1,19 @@
 import type { Metadata } from "next";
 
+import { BreadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+
 import { Reveal } from "@/components/motion/reveal";
 import { ProjectsSection } from "@/components/section/projects-section";
 import { DATA } from "@/data/resume";
 
-const DESCRIPTION = "Everything I've built: web platforms, internal tools, automations and storefronts.";
+const DESCRIPTION = "Projects by Ace Guevarra: web platforms, internal tools, automations and storefronts, built end-to-end.";
 
-export const metadata: Metadata = {
-  title: "Projects",
-  description: DESCRIPTION,
-  alternates: { canonical: `${DATA.url}/projects` },
-  openGraph: {
-    title: `Projects | ${DATA.name}`,
-    description: DESCRIPTION,
-    url: `${DATA.url}/projects`,
-    siteName: DATA.name,
-    locale: "en_US",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `Projects | ${DATA.name}`,
-    description: DESCRIPTION,
-  },
-};
+export const metadata: Metadata = pageMetadata({ title: "Projects", description: DESCRIPTION, path: "/projects" });
 
 export default function ProjectsPage() {
   return (
     <div className="shell">
+      <BreadcrumbJsonLd name="Projects" path="/projects" />
       <section className="pt-section pb-7">
         <Reveal kind="fade" className="label">
           Projects

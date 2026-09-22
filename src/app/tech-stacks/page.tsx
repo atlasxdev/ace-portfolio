@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+
+import { BreadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { DATA } from "@/data/resume";
 import { STACK_GROUPS } from "@/data/stacks";
 import { Reveal } from "@/components/motion/reveal";
@@ -7,28 +9,12 @@ import { TechGrid } from "@/components/tech-tile";
 const DESCRIPTION =
   "Everything I build with, grouped by what it's for — languages, frontend, backend, AI engineering, automation, cloud, testing, and the integrations shipped to production.";
 
-export const metadata: Metadata = {
-  title: "Tech Stacks",
-  description: DESCRIPTION,
-  alternates: { canonical: `${DATA.url}/tech-stacks` },
-  openGraph: {
-    title: `Tech Stacks | ${DATA.name}`,
-    description: DESCRIPTION,
-    url: `${DATA.url}/tech-stacks`,
-    siteName: DATA.name,
-    locale: "en_US",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `Tech Stacks | ${DATA.name}`,
-    description: DESCRIPTION,
-  },
-};
+export const metadata: Metadata = pageMetadata({ title: "Tech Stacks", description: DESCRIPTION, path: "/tech-stacks" });
 
 export default function TechStacksPage() {
   return (
     <div className="shell">
+      <BreadcrumbJsonLd name="Tech Stacks" path="/tech-stacks" />
       <section className="pt-section pb-7">
         <Reveal kind="fade" className="label">
           Tech Stacks

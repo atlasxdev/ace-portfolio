@@ -2,6 +2,7 @@ import { allPosts } from "content-collections";
 
 import { PostCover } from "@/components/post-cover";
 import { DATA } from "@/data/resume";
+import { BreadcrumbJsonLd } from "@/lib/seo";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { paginate, normalizePage } from "@/lib/pagination";
@@ -51,6 +52,7 @@ export default async function BlogPage({
 
   return (
     <div className="shell">
+      <BreadcrumbJsonLd name="Blog" path="/blog" />
       <section className="pt-section pb-7">
         <Reveal kind="fade" className="label">
           Writing

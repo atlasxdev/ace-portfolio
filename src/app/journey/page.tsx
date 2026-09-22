@@ -1,34 +1,20 @@
 import type { Metadata } from "next";
 
+import { BreadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+
 import { Reveal } from "@/components/motion/reveal";
 import { JourneySection } from "@/components/section/journey-section";
 import { ExperienceSection } from "@/components/section/work-section";
 import { DATA } from "@/data/resume";
 
-const DESCRIPTION = "The full history: where I've worked, and the milestones that got me here.";
+const DESCRIPTION = "Ace Guevarra's full history as a full-stack and automation engineer: where I've worked, and the milestones that got me here.";
 
-export const metadata: Metadata = {
-  title: "Journey",
-  description: DESCRIPTION,
-  alternates: { canonical: `${DATA.url}/journey` },
-  openGraph: {
-    title: `Journey | ${DATA.name}`,
-    description: DESCRIPTION,
-    url: `${DATA.url}/journey`,
-    siteName: DATA.name,
-    locale: "en_US",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `Journey | ${DATA.name}`,
-    description: DESCRIPTION,
-  },
-};
+export const metadata: Metadata = pageMetadata({ title: "Journey", description: DESCRIPTION, path: "/journey" });
 
 export default function JourneyPage() {
   return (
     <div className="shell">
+      <BreadcrumbJsonLd name="Journey" path="/journey" />
       <section className="pt-section pb-7">
         <Reveal kind="fade" className="label">
           Journey

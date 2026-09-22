@@ -1,33 +1,19 @@
 import type { Metadata } from "next";
 
+import { BreadcrumbJsonLd, pageMetadata } from "@/lib/seo";
+
 import { CalendlyEmbed } from "@/components/calendly-embed";
 import { Reveal } from "@/components/motion/reveal";
 import { DATA } from "@/data/resume";
 
-const DESCRIPTION = `Book a 15-minute call with ${DATA.name}.`;
+const DESCRIPTION = `Book a 15-minute call with ${DATA.name}, full-stack and automation engineer — about a role, a project, or a question.`;
 
-export const metadata: Metadata = {
-  title: "Schedule a call",
-  description: DESCRIPTION,
-  alternates: { canonical: `${DATA.url}/schedule` },
-  openGraph: {
-    title: `Schedule a call | ${DATA.name}`,
-    description: DESCRIPTION,
-    url: `${DATA.url}/schedule`,
-    siteName: DATA.name,
-    locale: "en_US",
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: `Schedule a call | ${DATA.name}`,
-    description: DESCRIPTION,
-  },
-};
+export const metadata: Metadata = pageMetadata({ title: "Schedule a call", description: DESCRIPTION, path: "/schedule" });
 
 export default function SchedulePage() {
   return (
     <div className="shell">
+      <BreadcrumbJsonLd name="Schedule a call" path="/schedule" />
       <section className="pt-section pb-7">
         <Reveal kind="fade" className="label">
           Schedule a call

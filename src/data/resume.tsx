@@ -19,7 +19,7 @@ export const DATA = {
   contact: {
     email: "aceguevarra.dev@gmail.com",
     tel: "0907 925 1189",
-    // Booking link — used by the hero CTA and the footer.
+    // Booking link — embedded on /schedule.
     calendly: "https://calendly.com/aceguevarra-dev/15min",
     social: {
       GitHub: {

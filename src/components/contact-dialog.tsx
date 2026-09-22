@@ -7,10 +7,10 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 /**
  * One contact dialog for the whole site, opened from anywhere.
  *
- * The triggers live in unrelated trees — the hero, the section dock, the
- * footer — so the open state sits in context at the layout rather than in
- * each trigger. A `#contact` link also opens it, so the form stays reachable
- * from a plain URL (and from anything still linking to the old footer anchor).
+ * It's opened from the sidebar, which on phones is a sheet that closes as
+ * the row is tapped, so the open state sits in context at the layout rather
+ * than in the trigger. A `#contact` link also opens it, so the form stays
+ * reachable from a plain URL.
  */
 
 const ContactDialogContext = createContext<(() => void) | null>(null);
@@ -55,10 +55,4 @@ export function ContactDialogProvider({ children }: { children: React.ReactNode 
       </Dialog>
     </ContactDialogContext.Provider>
   );
-}
-
-/** A button that opens the contact dialog. Styling is the caller's. */
-export function ContactTrigger(props: Omit<React.ComponentProps<"button">, "onClick" | "type">) {
-  const open = useContactDialog();
-  return <button type="button" onClick={open} {...props} />;
 }
