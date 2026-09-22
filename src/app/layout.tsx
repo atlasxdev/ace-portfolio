@@ -7,7 +7,7 @@ import { PageWipe } from "@/components/motion/page-wipe";
 import { OpeningProvider } from "@/components/motion/opening";
 import { Preloader } from "@/components/preloader";
 import { SiteFooter } from "@/components/site-footer";
-import { SiteHeader } from "@/components/site-header";
+import { SiteSidebar } from "@/components/site-sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { DATA } from "@/data/resume";
@@ -126,8 +126,9 @@ export default function RootLayout({
             <PageWipe />
 
             <ContactDialogProvider>
-              <div className="flex min-h-screen flex-col">
-                <SiteHeader />
+              <SiteSidebar />
+              {/* Clears the fixed desktop sidebar (w-72). */}
+              <div className="flex min-h-screen flex-col lg:pl-72">
                 <main className="flex-1">{children}</main>
                 <SiteFooter />
               </div>

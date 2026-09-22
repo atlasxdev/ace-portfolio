@@ -73,10 +73,11 @@ function RowBody({
   );
 }
 
-export function ProjectsSection() {
+/** `limit` trims to the first N, for the homepage preview. */
+export function ProjectsSection({ limit }: { limit?: number }) {
   return (
     <div className="flex flex-col">
-      {DATA.projects.map((project, i) => {
+      {DATA.projects.slice(0, limit).map((project, i) => {
         const primary = project.links[0];
         const rowClass = cn(ROW, i > 0 && "pt-entry");
         const body = (

@@ -1,32 +1,22 @@
 import { allPosts } from "content-collections";
-import { ArrowRight, Calendar, Mail, MessageSquare } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { ContactTrigger } from "@/components/contact-dialog";
 import { Reveal } from "@/components/motion/reveal";
 import { PersonSchema } from "@/components/person-schema";
-import { SectionDock } from "@/components/section-dock";
-import { SectionNav } from "@/components/section-nav";
 import { ApproachSection } from "@/components/section/approach-section";
 import { CertificationsSection } from "@/components/section/certifications-section";
 import { EducationSection } from "@/components/section/education-section";
-import { JourneySection } from "@/components/section/journey-section";
 import { ProjectsSection } from "@/components/section/projects-section";
 import { RecognitionSection } from "@/components/section/recognition-section";
 import { ItemList, ItemRow, SectionRow } from "@/components/section/section-row";
 import { ExperienceSection } from "@/components/section/work-section";
 import { TechGrid } from "@/components/tech-tile";
 import { DATA } from "@/data/resume";
-import { SECTIONS, section } from "@/data/sections";
+import { section } from "@/data/sections";
 import { CAPABILITIES, TECH_BAND } from "@/data/stacks";
 import { RULE_DELAY } from "@/lib/motion";
-
-const HERO_LINKS = [
-  { label: "LinkedIn", href: DATA.contact.social.LinkedIn.url, external: true },
-  { label: "GitHub", href: DATA.contact.social.GitHub.url, external: true },
-  { label: "Blog", href: "/blog", external: false },
-];
 
 export const metadata: Metadata = {
   alternates: { canonical: DATA.url },
@@ -41,9 +31,6 @@ export default function Page() {
   return (
     <>
       <PersonSchema />
-      {/* Dock on desktop, bar below lg — never both. */}
-      <SectionDock sections={SECTIONS} />
-      <SectionNav sections={SECTIONS} />
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section className="shell pt-section pb-entry">
@@ -61,58 +48,13 @@ export default function Page() {
             production.
           </p>
         </Reveal>
-        <Reveal kind="open" onLoad delay={0.7}>
-          <div className="mt-7 flex flex-wrap items-center gap-3">
-            <ContactTrigger className="glass glass-hover inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium">
-              <MessageSquare className="size-4 text-available" aria-hidden />
-              Message me
-            </ContactTrigger>
-            <a
-              href={DATA.contact.calendly}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group inline-flex items-center gap-2 rounded-full bg-foreground px-5 py-2.5 text-sm font-medium text-background transition-transform duration-300 hover:-translate-y-0.5">
-              <Calendar className="size-4" aria-hidden />
-              Schedule a call
-              <ArrowRight
-                className="size-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
-                aria-hidden
-              />
-            </a>
-
-            <a
-              href={`mailto:${DATA.contact.email}`}
-              className="glass glass-hover inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium">
-              <Mail className="size-4" aria-hidden />
-              Send an email
-            </a>
-          </div>
-        </Reveal>
-        <Reveal
-          kind="fade"
-          onLoad
-          delay={1.35}
-          className="mt-[clamp(2rem,5vw,3rem)] flex flex-wrap items-baseline justify-between gap-x-8 gap-y-4">
-          <span className="label">{DATA.location} &middot; Open to remote</span>
-          <nav className="flex flex-wrap gap-6">
-            {HERO_LINKS.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                {...(link.external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-                className="relative text-[13.5px] text-muted-foreground transition-colors after:absolute after:inset-x-0 after:-bottom-0.5 after:h-px after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:text-foreground hover:after:scale-x-100">
-                {link.label}
-              </a>
-            ))}
-          </nav>
-        </Reveal>
       </section>
 
-      {/* ── Writing ────────────────────────────────────────────────────
+      {/* ── Blog ───────────────────────────────────────────────────────
           First after the hero, so its divider closes the opening screen and
           lands last in the load cascade instead of reappearing on scroll. */}
       {posts.length > 0 && (
-        <SectionRow label={section("writing").label} id="writing" ruleOnLoad ruleDelay={RULE_DELAY.min}>
+        <SectionRow label={section("blog").label} id="blog" ruleOnLoad ruleDelay={RULE_DELAY.min}>
           <Reveal>
             <ItemList>
               {posts.map((post) => (
@@ -133,25 +75,39 @@ export default function Page() {
             <Link
               href="/blog"
               className="label mt-6 inline-flex items-center gap-2 transition-all hover:gap-3 hover:text-foreground">
-              All writing <ArrowRight className="size-3" aria-hidden />
+              All posts <ArrowRight className="size-3" aria-hidden />
             </Link>
           </Reveal>
         </SectionRow>
       )}
 
-      {/* ── Selected projects ────────────────────────────────────────── */}
+      {/* ── Projects ─────────────────────────────────────────────────── */}
       {/* Takes over the load-cascade divider when there are no posts. */}
       <SectionRow
         label={section("projects").label}
         id="projects"
         ruleOnLoad={posts.length === 0}
         ruleDelay={RULE_DELAY.min}>
-        <ProjectsSection />
+        <ProjectsSection limit={3} />
+        <Reveal kind="fade" delay={0.12}>
+          <Link
+            href="/projects"
+            className="label mt-6 inline-flex items-center gap-2 transition-all hover:gap-3 hover:text-foreground">
+            All projects <ArrowRight className="size-3" aria-hidden />
+          </Link>
+        </Reveal>
       </SectionRow>
 
       {/* ── Experience ───────────────────────────────────────────────── */}
       <SectionRow label={section("experience").label} id="experience">
         <ExperienceSection />
+        <Reveal kind="fade" delay={0.12}>
+          <Link
+            href="/journey"
+            className="label mt-6 inline-flex items-center gap-2 transition-all hover:gap-3 hover:text-foreground">
+            Full history <ArrowRight className="size-3" aria-hidden />
+          </Link>
+        </Reveal>
       </SectionRow>
 
       {/* ── Certifications ───────────────────────────────────────────── */}
@@ -203,11 +159,6 @@ export default function Page() {
             Read the full write-up <ArrowRight className="size-3" aria-hidden />
           </Link>
         </Reveal>
-      </SectionRow>
-
-      {/* ── Journey ──────────────────────────────────────────────────── */}
-      <SectionRow label={section("journey").label} id="journey">
-        <JourneySection />
       </SectionRow>
 
       {/* ── Recognition ──────────────────────────────────────────────── */}

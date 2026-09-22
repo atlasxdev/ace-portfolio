@@ -1,23 +1,15 @@
 /**
- * The homepage's sections, in page order.
- *
- * One list feeds two things: the `<SectionRow>` headings themselves and the
- * jump nav. The nav used to scrape the DOM for `section[id]` and read each
- * label out of its `<h2>`, which meant a renamed heading silently desynced the
- * nav, and reading the page during an effect to set state is exactly the
- * cascading-render pattern React's lint rules exist to catch.
- *
- * Reorder here and both the page and its nav move together.
+ * The homepage's sections, in page order: one place for each `<SectionRow>`
+ * heading, so a label reads the same everywhere it's used.
  */
 export const SECTIONS = [
-  { id: "writing", label: "Writing" },
-  { id: "projects", label: "Selected Work" },
+  { id: "blog", label: "Blog" },
+  { id: "projects", label: "Projects" },
   { id: "experience", label: "Experience" },
   { id: "certifications", label: "Certifications" },
   { id: "education", label: "Education" },
   { id: "capabilities", label: "Capabilities" },
   { id: "approach", label: "Approach" },
-  { id: "journey", label: "Journey" },
   { id: "recognition", label: "Recognition" },
 ] as const;
 

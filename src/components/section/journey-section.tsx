@@ -6,7 +6,7 @@ import { Reveal } from "@/components/motion/reveal";
  * with a node per milestone — rather than the same detached card every other
  * list uses. The order is what carries the meaning here.
  *
- * Newest first, matching Experience and Projects above it.
+ * Newest first, matching Experience above it.
  */
 export function JourneySection() {
   const milestones = [...DATA.journey].reverse();

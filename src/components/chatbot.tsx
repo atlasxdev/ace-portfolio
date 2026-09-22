@@ -1,7 +1,7 @@
 "use client";
 
 import { DATA } from "@/data/resume";
-import { Loader2, Mail, Maximize2, MessageCircle, Minimize2, Send, X } from "lucide-react";
+import { Loader2, Mail, Maximize2, Minimize2, Send, X } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
 
@@ -9,10 +9,13 @@ import { useContactDialog } from "@/components/contact-dialog";
 import { Monogram } from "@/components/monogram";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Popover, PopoverAnchor, PopoverClose, PopoverContent } from "@/components/ui/popover";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { CARD_STATE, SPRING } from "@/lib/motion";
+import { CARD_STATE } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+
+/** Dispatched by the sidebar's "Ask my AI assistant" button. */
+export const OPEN_CHAT_EVENT = "ag:open-chat";
 
 type Message = {
   id: number;
@@ -39,9 +42,15 @@ export default function Chatbot() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   // Set when the panel closes to hand off to the contact dialog, so Radix doesn't
-  // pull focus back to the bubble while the dialog is mounting.
+  // pull focus back to the sidebar while the dialog is mounting.
   const handingOff = useRef(false);
   const reduced = useReducedMotion();
+
+  useEffect(() => {
+    const open = () => setIsOpen(true);
+    window.addEventListener(OPEN_CHAT_EVENT, open);
+    return () => window.removeEventListener(OPEN_CHAT_EVENT, open);
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -243,31 +252,11 @@ export default function Chatbot() {
         )}
       </AnimatePresence>
 
-      <PopoverTrigger asChild>
-        <motion.button
-          type="button"
-          aria-label={isOpen ? "Close chat" : "Chat with Ace's AI assistant"}
-          whileHover={reduced ? undefined : { y: -2 }}
-          whileTap={reduced ? undefined : { scale: 0.96 }}
-          transition={SPRING}
-          className="glass fixed right-group bottom-group z-50 grid size-12 cursor-pointer place-items-center rounded-full">
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.span
-              key={isOpen ? "close" : "chat"}
-              initial={{ opacity: 0, rotate: isOpen ? -90 : 90 }}
-              animate={{ opacity: 1, rotate: 0 }}
-              exit={{ opacity: 0, rotate: isOpen ? 90 : -90 }}
-              transition={reduced ? { duration: 0.15 } : SPRING}
-              className="grid place-items-center">
-              {isOpen ? (
-                <X className="size-5 text-foreground" aria-hidden />
-              ) : (
-                <MessageCircle className="size-5 text-foreground" aria-hidden />
-              )}
-            </motion.span>
-          </AnimatePresence>
-        </motion.button>
-      </PopoverTrigger>
+      {/* No trigger of its own: the sidebar opens it. This pins the panel to
+          the bottom-right corner, where the bubble used to sit. */}
+      <PopoverAnchor asChild>
+        <span aria-hidden className="pointer-events-none fixed right-group bottom-group size-0" />
+      </PopoverAnchor>
     </Popover>
   );
 }
