@@ -9,8 +9,6 @@ import {
   FolderGit2,
   Home,
   Layers,
-  Mail,
-  MapPin,
   Menu,
   MessageSquare,
   Route,
@@ -90,19 +88,21 @@ function EmailRow() {
   };
 
   return (
-    <div className="relative">
-      <a href={`mailto:${DATA.contact.email}`} className={cn(ROW, "pr-10")}>
-        <Mail className={ROW_ICON} aria-hidden />
-        <span className="truncate">{DATA.contact.email}</span>
+    <p className="px-2.5 pt-2 text-body-sm leading-relaxed text-muted-foreground">
+      For work, collabs &amp; everything else, reach me at{" "}
+      <a
+        href={`mailto:${DATA.contact.email}`}
+        className="font-medium whitespace-nowrap text-foreground underline decoration-rule underline-offset-4 transition-colors hover:decoration-foreground">
+        {DATA.contact.email}
       </a>
       <button
         type="button"
         onClick={copy}
         aria-label={copied ? "Email copied" : "Copy email"}
-        className="absolute top-1/2 right-1.5 grid size-6 -translate-y-1/2 cursor-pointer place-items-center rounded-md text-ink-faint transition-colors hover:bg-foreground/5 hover:text-foreground">
+        className="ml-1 inline-grid size-6 cursor-pointer place-items-center rounded-md align-middle text-ink-faint transition-colors hover:bg-foreground/5 hover:text-foreground">
         {copied ? <Check className="size-3.5 text-available" aria-hidden /> : <Copy className="size-3.5" aria-hidden />}
       </button>
-    </div>
+    </p>
   );
 }
 
@@ -158,7 +158,6 @@ function SidebarContent({
             Schedule a call
             <ArrowUpRight className={TRAIL} aria-hidden />
           </a>
-          <EmailRow />
           <button
             type="button"
             onClick={onOpenChat}
@@ -166,6 +165,7 @@ function SidebarContent({
             <Sparkles className={ROW_ICON} aria-hidden />
             Ask my AI assistant
           </button>
+          <EmailRow />
         </Group>
 
         <Group label="Elsewhere">
@@ -180,10 +180,7 @@ function SidebarContent({
       </div>
 
       <div className="flex items-center justify-between gap-tight border-t border-rule px-5 py-snug">
-        <span className="flex min-w-0 items-center gap-2 text-[12.5px] text-ink-faint">
-          <MapPin className="size-3.5 shrink-0" aria-hidden />
-          <span className="truncate">{DATA.location} &middot; Remote</span>
-        </span>
+        <span className="text-[12.5px] text-ink-faint">Theme</span>
         <ModeToggle />
       </div>
     </div>
