@@ -1,6 +1,7 @@
 import { allPosts } from "content-collections";
 import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
 import { Reveal } from "@/components/motion/reveal";
@@ -34,6 +35,20 @@ export default function Page() {
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       <section className="shell pt-section pb-entry">
+        <Reveal kind="fade" onLoad delay={0.05}>
+          {/* A real image, not the inline <Monogram>: it's the page's first
+              image, so Google has the AG logo to pick as the result thumbnail.
+              Same file as primaryImageOfPage in person-schema.tsx. */}
+          <Image
+            src="/ag-logo-1200.png"
+            alt={`${DATA.name} logo`}
+            width={64}
+            height={64}
+            unoptimized
+            priority
+            className="mb-group size-14 rounded-xl md:size-16"
+          />
+        </Reveal>
         <Reveal kind="fade" onLoad delay={0.1} className="label">
           Full-stack &middot; Automation &middot; AI
         </Reveal>
