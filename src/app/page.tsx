@@ -61,10 +61,7 @@ export default function Page() {
             production.
           </p>
         </Reveal>
-        <Reveal kind="fade" onLoad delay={0.7}>
-          <p className="mt-3 text-sm text-muted-foreground">Currently System Engineer I at VizServe Private Limited.</p>
-        </Reveal>
-        <Reveal kind="open" onLoad delay={0.95}>
+        <Reveal kind="open" onLoad delay={0.7}>
           <div className="mt-7 flex flex-wrap items-center gap-3">
             <ContactTrigger className="glass glass-hover inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-sm font-medium">
               <MessageSquare className="size-4 text-available" aria-hidden />

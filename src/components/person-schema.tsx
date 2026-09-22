@@ -4,7 +4,7 @@ import { DATA } from "@/data/resume";
  * schema.org ProfilePage (with its Person) for the homepage.
  *
  * This is what turns a name search from "a page that mentions Ace Guevarra"
- * into a result Google can label with a job title, an employer and the right
+ * into a result Google can label with a job title and the right
  * profile links. Blog posts already emit their own Article schema; the site's
  * root had none.
  *
@@ -17,25 +17,18 @@ import { DATA } from "@/data/resume";
  * from what the page actually says.
  */
 export function PersonSchema() {
-  const current = DATA.work[0];
-
   const person = {
     "@type": "Person",
     name: DATA.name,
     url: DATA.url,
     email: `mailto:${DATA.contact.email}`,
     image: `${DATA.url}${DATA.avatarUrl}`,
-    jobTitle: current.title,
+    // No employer or company title: the site presents Ace, not a job.
+    jobTitle: "Full-Stack & Automation Engineer",
     description: DATA.description,
     address: {
       "@type": "PostalAddress",
       addressLocality: DATA.location,
-    },
-    // Name only, no url: linking vizserve.com tied the page to VizServe's
-    // entity, and Google borrowed its logo as the result thumbnail.
-    worksFor: {
-      "@type": "Organization",
-      name: current.company,
     },
     alumniOf: DATA.education.map((school) => ({
       "@type": "CollegeOrUniversity",
