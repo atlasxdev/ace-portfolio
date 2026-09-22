@@ -55,16 +55,14 @@ function Group({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-function Profile({ themeToggle }: { themeToggle: boolean }) {
+function Profile() {
   return (
-    <div className="relative flex flex-col gap-snug px-2.5">
+    <div className="flex flex-col gap-snug px-2.5">
       {/* Name only: the logo lives in the hero, where it has room. */}
       <Link href="/" className="leading-tight">
-        <span className="block pr-9 text-body font-semibold tracking-tight text-foreground">{DATA.name}</span>
+        <span className="block text-body font-semibold tracking-tight text-foreground">{DATA.name}</span>
         <span className="block text-body-sm text-muted-foreground">Full-stack &amp; automation engineer</span>
       </Link>
-      {/* Pinned to the name's line so the tagline keeps the full width. */}
-      {themeToggle && <ModeToggle className="absolute -top-1 right-1" />}
       <span className="inline-flex w-fit items-center gap-2 rounded-full border border-rule px-2.5 py-1 text-xs font-medium text-available">
         <span aria-hidden className="relative flex size-1.5">
           <span className="absolute inset-0 animate-ping rounded-full bg-current opacity-60 motion-reduce:hidden" />
@@ -112,13 +110,9 @@ function EmailInvite() {
 
 /** Everything the sidebar holds, shared by the desktop rail and the phone sheet. */
 function SidebarContent({
-  inSheet = false,
   onNavigate,
   onOpenChat = () => window.dispatchEvent(new Event(OPEN_CHAT_EVENT)),
 }: {
-  /** In the phone sheet the close button takes the top-right corner, so the
-      theme toggle lives in the top bar instead. */
-  inSheet?: boolean;
   onNavigate?: () => void;
   onOpenChat?: () => void;
 }) {
@@ -129,7 +123,7 @@ function SidebarContent({
   return (
     <div className="flex h-full flex-col">
       <div className="flex flex-1 flex-col gap-entry overflow-y-auto px-3 pt-group pb-group">
-        <Profile themeToggle={!inSheet} />
+        <Profile />
 
         <Group label="Menu">
           <nav className="flex flex-col gap-0.5">
@@ -184,6 +178,13 @@ function SidebarContent({
             </a>
           ))}
         </Group>
+
+        {/* Pushed to the bottom of the rail, just above the footer; on short
+            screens it scrolls with everything else. */}
+        <div className="mt-auto flex items-center justify-between gap-tight px-2.5">
+          <span className="label text-ink-faint">Theme</span>
+          <ModeToggle />
+        </div>
       </div>
 
       {/* Footer: the standing invite. */}
@@ -219,7 +220,6 @@ export function SiteSidebar() {
           </Link>
 
           <div className="flex items-center gap-tight">
-            <ModeToggle />
             <Sheet open={open} onOpenChange={setOpen}>
               <SheetTrigger asChild>
                 <button
@@ -241,8 +241,7 @@ export function SiteSidebar() {
                 <SheetTitle className="sr-only">Menu</SheetTitle>
                 <SheetDescription className="sr-only">Site navigation and contact</SheetDescription>
                 <SidebarContent
-                  inSheet
-                  onNavigate={() => setOpen(false)}
+                    onNavigate={() => setOpen(false)}
                   onOpenChat={() => {
                     chatPending.current = true;
                     setOpen(false);

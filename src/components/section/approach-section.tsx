@@ -304,7 +304,7 @@ export function ApproachSection() {
                       <span className="label text-ink-faint">
                         {String(i + 1).padStart(2, "0")}
                       </span>
-                      <h3 className="mt-1.5 text-[15.5px] leading-snug font-semibold tracking-[-0.01em]">
+                      <h3 className="mt-1.5 text-[14.5px] leading-snug font-semibold tracking-[-0.01em]">
                         {step.title}
                       </h3>
                       <p className="mt-2.5 max-w-[76ch] text-body-sm leading-[1.7] text-muted-foreground">

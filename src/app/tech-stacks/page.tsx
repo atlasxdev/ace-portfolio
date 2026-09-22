@@ -34,7 +34,7 @@ export default function TechStacksPage() {
           Tech Stacks
         </Reveal>
         <Reveal delay={0.07}>
-          <h1 className="mt-4 font-display text-[clamp(2rem,5.5vw,3rem)] leading-none font-semibold tracking-[-0.02em]">
+          <h1 className="mt-4 font-display text-[clamp(1.75rem,4.5vw,2.5rem)] leading-none font-semibold tracking-[-0.02em]">
             Everything I build with
           </h1>
         </Reveal>

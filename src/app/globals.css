@@ -39,30 +39,33 @@
      normal shell, so the edges don't read as a different page. */
   --container-wide: 1400px;
 
-  /* Type scale */
-  --text-display: 96px;
-  --text-display--line-height: 100px;
+  /* Type scale — two steps down from the original 96/64/24/18/16/14/12,
+     which crowded the columns once the sidebar took 288px off the page.
+     Tailwind's xs/sm/base are pulled down with it so utility-sized text
+     stays in step. */
+  --text-display: 60px;
+  --text-display--line-height: 64px;
   --text-display--letter-spacing: -0.03em;
-  --text-h2: 48px;
-  --text-h2--line-height: 54px;
+  --text-h2: 40px;
+  --text-h2--line-height: 46px;
   --text-h2--letter-spacing: -0.02em;
-  --text-h3: 19px;
-  --text-h3--line-height: 26px;
+  --text-h3: 17px;
+  --text-h3--line-height: 24px;
   --text-h3--letter-spacing: -0.01em;
-  --text-body-lg: 16px;
-  --text-body-lg--line-height: 26px;
-  --text-body: 15px;
-  --text-body--line-height: 24px;
-  --text-body-sm: 13px;
-  --text-body-sm--line-height: 20px;
-  --text-label: 11px;
-  --text-label--line-height: 15px;
-  --text-xs: 11px;
-  --text-xs--line-height: 16px;
-  --text-sm: 13px;
-  --text-sm--line-height: 20px;
-  --text-base: 15px;
-  --text-base--line-height: 24px;
+  --text-body-lg: 15px;
+  --text-body-lg--line-height: 24px;
+  --text-body: 14px;
+  --text-body--line-height: 22px;
+  --text-body-sm: 12.5px;
+  --text-body-sm--line-height: 19px;
+  --text-label: 10px;
+  --text-label--line-height: 14px;
+  --text-xs: 10.5px;
+  --text-xs--line-height: 15px;
+  --text-sm: 12.5px;
+  --text-sm--line-height: 19px;
+  --text-base: 14px;
+  --text-base--line-height: 22px;
   --color-ink-faint: var(--ink-faint);
   --color-rule: var(--rule);
   --color-available: var(--available);

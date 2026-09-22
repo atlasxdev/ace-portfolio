@@ -41,7 +41,7 @@ export function ExperienceSection() {
                     while there's room. On a phone that wrap left orphans like
                     a lone "I" from "System Engineer I", so the role drops to
                     its own line and the separator goes with it. */}
-                <h3 className="min-w-0 text-[15.5px] leading-snug font-semibold tracking-[-0.01em]">
+                <h3 className="min-w-0 text-[14.5px] leading-snug font-semibold tracking-[-0.01em]">
                   {job.company}
                   <span className="mx-2.5 font-normal text-ink-faint max-md:hidden">
                     /

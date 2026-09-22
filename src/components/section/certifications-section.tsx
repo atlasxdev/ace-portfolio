@@ -45,7 +45,7 @@ export function CertificationsSection() {
               )}
 
               <div className="min-w-0">
-                <h3 className="text-[15px] leading-snug font-semibold tracking-[-0.01em]">
+                <h3 className="text-[14px] leading-snug font-semibold tracking-[-0.01em]">
                   {cert.title}
                 </h3>
                 <p className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
