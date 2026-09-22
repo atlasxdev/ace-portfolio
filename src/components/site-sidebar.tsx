@@ -55,14 +55,16 @@ function Group({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-function Profile() {
+function Profile({ themeToggle }: { themeToggle: boolean }) {
   return (
-    <div className="flex flex-col gap-snug px-2.5">
+    <div className="relative flex flex-col gap-snug px-2.5">
       {/* Name only: the logo lives in the hero, where it has room. */}
       <Link href="/" className="leading-tight">
-        <span className="block text-body font-semibold tracking-tight text-foreground">{DATA.name}</span>
+        <span className="block pr-9 text-body font-semibold tracking-tight text-foreground">{DATA.name}</span>
         <span className="block text-body-sm text-muted-foreground">Full-stack &amp; automation engineer</span>
       </Link>
+      {/* Pinned to the name's line so the tagline keeps the full width. */}
+      {themeToggle && <ModeToggle className="absolute -top-1 right-1" />}
       <span className="inline-flex w-fit items-center gap-2 rounded-full border border-rule px-2.5 py-1 text-xs font-medium text-available">
         <span aria-hidden className="relative flex size-1.5">
           <span className="absolute inset-0 animate-ping rounded-full bg-current opacity-60 motion-reduce:hidden" />
@@ -88,29 +90,35 @@ function EmailInvite() {
   };
 
   return (
-    <p className="text-body-sm text-muted-foreground">
-      For work, collabs &amp; everything else, reach me at{" "}
-      <a
-        href={`mailto:${DATA.contact.email}`}
-        className="font-medium whitespace-nowrap text-foreground underline decoration-rule underline-offset-4 transition-colors hover:decoration-foreground">
-        {DATA.contact.email}
-      </a>
-      <button
-        type="button"
-        onClick={copy}
-        aria-label={copied ? "Email copied" : "Copy email"}
-        className="ml-1 inline-grid size-6 cursor-pointer place-items-center rounded-md align-middle text-ink-faint transition-colors hover:bg-foreground/5 hover:text-foreground">
-        {copied ? <Check className="size-3.5 text-available" aria-hidden /> : <Copy className="size-3.5" aria-hidden />}
-      </button>
-    </p>
+    <div className="rounded-lg border border-rule bg-foreground/3 p-3">
+      <p className="text-xs text-muted-foreground">For work, collabs &amp; everything else, reach me at</p>
+      <div className="mt-2 flex items-center gap-1">
+        <a
+          href={`mailto:${DATA.contact.email}`}
+          className="min-w-0 truncate text-body-sm font-medium text-foreground underline decoration-rule underline-offset-4 transition-colors hover:decoration-foreground">
+          {DATA.contact.email}
+        </a>
+        <button
+          type="button"
+          onClick={copy}
+          aria-label={copied ? "Email copied" : "Copy email"}
+          className="ml-auto grid size-7 shrink-0 cursor-pointer place-items-center rounded-md text-ink-faint transition-colors hover:bg-foreground/5 hover:text-foreground">
+          {copied ? <Check className="size-3.5 text-available" aria-hidden /> : <Copy className="size-3.5" aria-hidden />}
+        </button>
+      </div>
+    </div>
   );
 }
 
 /** Everything the sidebar holds, shared by the desktop rail and the phone sheet. */
 function SidebarContent({
+  inSheet = false,
   onNavigate,
   onOpenChat = () => window.dispatchEvent(new Event(OPEN_CHAT_EVENT)),
 }: {
+  /** In the phone sheet the close button takes the top-right corner, so the
+      theme toggle lives in the top bar instead. */
+  inSheet?: boolean;
   onNavigate?: () => void;
   onOpenChat?: () => void;
 }) {
@@ -121,7 +129,7 @@ function SidebarContent({
   return (
     <div className="flex h-full flex-col">
       <div className="flex flex-1 flex-col gap-entry overflow-y-auto px-3 pt-group pb-group">
-        <Profile />
+        <Profile themeToggle={!inSheet} />
 
         <Group label="Menu">
           <nav className="flex flex-col gap-0.5">
@@ -178,12 +186,9 @@ function SidebarContent({
         </Group>
       </div>
 
-      {/* Footer: the standing invite, with the theme toggle beside it. */}
-      <div className="flex items-start gap-tight border-t border-rule px-5 py-group">
-        <div className="min-w-0 flex-1">
-          <EmailInvite />
-        </div>
-        <ModeToggle />
+      {/* Footer: the standing invite. */}
+      <div className="border-t border-rule p-3">
+        <EmailInvite />
       </div>
     </div>
   );
@@ -213,35 +218,39 @@ export function SiteSidebar() {
             {DATA.name}
           </Link>
 
-          <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-              <button
-                type="button"
-                aria-label="Open menu"
-                className="grid size-8 place-items-center rounded-control border border-rule text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground">
-                <Menu className="size-4" aria-hidden />
-              </button>
-            </SheetTrigger>
-            <SheetContent
-              side="left"
-              className="w-[min(20rem,85vw)] bg-background p-0"
-              onCloseAutoFocus={(e) => {
-                if (!chatPending.current) return;
-                chatPending.current = false;
-                e.preventDefault();
-                window.dispatchEvent(new Event(OPEN_CHAT_EVENT));
-              }}>
-              <SheetTitle className="sr-only">Menu</SheetTitle>
-              <SheetDescription className="sr-only">Site navigation and contact</SheetDescription>
-              <SidebarContent
-                onNavigate={() => setOpen(false)}
-                onOpenChat={() => {
-                  chatPending.current = true;
-                  setOpen(false);
-                }}
-              />
-            </SheetContent>
-          </Sheet>
+          <div className="flex items-center gap-tight">
+            <ModeToggle />
+            <Sheet open={open} onOpenChange={setOpen}>
+              <SheetTrigger asChild>
+                <button
+                  type="button"
+                  aria-label="Open menu"
+                  className="grid size-8 place-items-center rounded-control border border-rule text-muted-foreground transition-colors hover:border-foreground/30 hover:text-foreground">
+                  <Menu className="size-4" aria-hidden />
+                </button>
+              </SheetTrigger>
+              <SheetContent
+                side="left"
+                className="w-[min(20rem,85vw)] bg-background p-0"
+                onCloseAutoFocus={(e) => {
+                  if (!chatPending.current) return;
+                  chatPending.current = false;
+                  e.preventDefault();
+                  window.dispatchEvent(new Event(OPEN_CHAT_EVENT));
+                }}>
+                <SheetTitle className="sr-only">Menu</SheetTitle>
+                <SheetDescription className="sr-only">Site navigation and contact</SheetDescription>
+                <SidebarContent
+                  inSheet
+                  onNavigate={() => setOpen(false)}
+                  onOpenChat={() => {
+                    chatPending.current = true;
+                    setOpen(false);
+                  }}
+                />
+              </SheetContent>
+            </Sheet>
+          </div>
         </div>
       </header>
     </>
