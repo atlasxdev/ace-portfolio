@@ -61,8 +61,8 @@ export default function Page() {
           </Reveal>
           <Reveal kind="open" onLoad delay={0.45}>
             <p className="mt-6 max-w-[40ch] text-body-lg text-balance">
-              I build production systems end&#8209;to&#8209;end, from the first stakeholder call to the thing running
-              in production.
+              I build production systems end&#8209;to&#8209;end, from the first stakeholder call to the thing running in
+              production.
             </p>
           </Reveal>
         </div>
