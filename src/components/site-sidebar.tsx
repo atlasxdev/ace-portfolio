@@ -15,6 +15,7 @@ import {
   Sparkles,
   type LucideIcon,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef, useState } from "react";
@@ -59,10 +60,21 @@ function Group({ label, children }: { label: string; children: React.ReactNode }
 function Profile() {
   return (
     <div className="flex flex-col gap-snug px-2.5">
-      {/* Name only: the logo lives in the hero, where it has room. */}
-      <Link href="/" className="leading-tight">
-        <span className="block text-body font-semibold tracking-tight text-foreground">{DATA.name}</span>
-        <span className="block text-body-sm text-muted-foreground">Full-stack &amp; automation engineer</span>
+      <Link href="/" className="flex flex-col gap-2.5">
+        {/* A real image, not the inline <Monogram>: it's the page's first
+            image, so Google has the AG logo to pick as the result thumbnail.
+            Same file as primaryImageOfPage in person-schema.tsx. The name is
+            the hero's h1, so it isn't repeated here. */}
+        <Image
+          src="/ag-logo-1200.png"
+          alt={`${DATA.name} logo`}
+          width={44}
+          height={44}
+          unoptimized
+          priority
+          className="size-11 rounded-xl"
+        />
+        <span className="text-body-sm text-muted-foreground">Full-stack &amp; automation engineer</span>
       </Link>
       <span className="inline-flex w-fit items-center gap-2 rounded-full border border-rule px-2.5 py-1 text-xs font-medium text-available">
         <span aria-hidden className="relative flex size-1.5">
@@ -222,8 +234,15 @@ export function SiteSidebar() {
       {/* phone + tablet */}
       <header className="sticky top-0 z-50 border-b border-rule bg-background/80 backdrop-blur-xl backdrop-saturate-150 lg:hidden">
         <div className="shell flex h-14 items-center justify-between gap-snug">
-          <Link href="/" className="text-body-sm font-semibold tracking-tight">
-            {DATA.name}
+          <Link href="/" aria-label={`${DATA.name} home`}>
+            <Image
+              src="/ag-logo-1200.png"
+              alt={`${DATA.name} logo`}
+              width={32}
+              height={32}
+              unoptimized
+              className="size-8 rounded-lg"
+            />
           </Link>
 
           <div className="flex items-center gap-tight">

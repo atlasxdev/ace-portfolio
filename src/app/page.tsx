@@ -1,7 +1,6 @@
 import { allPosts } from "content-collections";
 import { ArrowRight } from "lucide-react";
 import type { Metadata } from "next";
-import Image from "next/image";
 import Link from "next/link";
 
 import { BrandLogo } from "@/components/brand-logo";
@@ -41,23 +40,8 @@ export default function Page() {
       <PersonSchema />
 
       {/* ── Hero ─────────────────────────────────────────────────────── */}
-      {/* Logo left, details right from lg; stacked below that. */}
-      <section className="shell flex flex-col gap-group pt-entry pb-group md:flex-row md:items-center lg:gap-10">
-        <Reveal kind="fade" onLoad delay={0.05}>
-          {/* A real image, not the inline <Monogram>: it's the page's first
-              image, so Google has the AG logo to pick as the result thumbnail.
-              Same file as primaryImageOfPage in person-schema.tsx. */}
-          <Image
-            src="/ag-logo-1200.png"
-            alt={`${DATA.name} logo`}
-            width={240}
-            height={240}
-            unoptimized
-            priority
-            className="size-20 rounded-xl md:size-24 lg:size-32 lg:rounded-2xl xl:size-36"
-          />
-        </Reveal>
-        <div className="min-w-0 flex-1">
+      <section className="shell pt-entry pb-group">
+        <div className="min-w-0">
           <Reveal kind="fade" onLoad delay={0.1} className="label">
             Full-stack &middot; Automation &middot; AI
           </Reveal>
