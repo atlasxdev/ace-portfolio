@@ -18,8 +18,8 @@ export const RISE: Transition = { duration: 0.3, ease: EASE };
 /** Supporting details — a plain fade, no movement. */
 export const FADE: Transition = { duration: 0.25, ease: EASE };
 
-/** Card groups resizing. */
-export const CARD_STATE: Transition = { duration: 0.9, ease: EASE };
+/** The chat panel opening and closing. */
+export const CARD_STATE: Transition = { duration: 0.25, ease: EASE };
 
 export const STAGGER = 0.05;
 

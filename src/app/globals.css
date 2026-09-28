@@ -552,15 +552,6 @@
   }
 }
 
-/* The chatbot resizes with a CSS transition rather than a Framer one, so it
-   needs its own reduced-motion opt-out. */
-@media (prefers-reduced-motion: reduce) {
-  .transition-\[width\],
-  .transition-\[height\] {
-    transition: none;
-  }
-}
-
 /* --- Outgoing page drift -----------------------------------------------
    The wipe overlay handles the mask; this is the other half of the page
    transition — the outgoing page lifts slightly and fades beneath it.

@@ -138,7 +138,7 @@ export default function Chatbot() {
               transition={reduced ? { duration: 0.2 } : CARD_STATE}
               style={{ transformOrigin: "bottom right" }}
               className={cn(
-                "glass overflow-hidden bg-background/80 backdrop-blur-xl backdrop-saturate-150 transition-[width] duration-500 ease-out",
+                "glass overflow-hidden bg-background/80 backdrop-blur-xl backdrop-saturate-150",
                 expanded ? "w-[min(94vw,640px)]" : "w-[min(92vw,380px)]",
               )}>
               {/* header — label-led, divider instead of an inverted bar */}
@@ -175,7 +175,7 @@ export default function Chatbot() {
               {/* transcript */}
               <ScrollArea
                 viewportClassName="px-group py-group"
-                className={cn("transition-[height] duration-500 ease-out", expanded ? "h-[min(70vh,560px)]" : "h-90")}>
+                className={cn(expanded ? "h-[min(70vh,560px)]" : "h-90")}>
                 <div className="flex flex-col gap-snug">
                   {messages.map((message) => (
                     <div
