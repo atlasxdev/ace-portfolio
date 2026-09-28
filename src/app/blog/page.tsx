@@ -54,15 +54,15 @@ export default async function BlogPage({
     <div className="shell">
       <BreadcrumbJsonLd name="Blog" path="/blog" />
       <section className="pt-section pb-7">
-        <Reveal kind="fade" className="label">
+        <Reveal kind="fade" onLoad className="label">
           Writing
         </Reveal>
-        <Reveal delay={0.07}>
+        <Reveal onLoad>
           <h1 className="mt-4 font-display text-[clamp(1.75rem,4.5vw,2.5rem)] leading-none font-semibold tracking-[-0.02em]">
             Notes from the build
           </h1>
         </Reveal>
-        <Reveal kind="fade" delay={0.14}>
+        <Reveal kind="fade" onLoad>
           <p className="mt-5 max-w-[54ch] text-muted-foreground">
             Written from systems I actually shipped &mdash; what the problem
             was, what I did about it, and what I&rsquo;d do differently.

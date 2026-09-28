@@ -150,7 +150,7 @@ export default async function Blog({
     <div className="mx-auto max-w-6xl px-group pt-7 pb-20">
       <script type="application/ld+json" suppressHydrationWarning dangerouslySetInnerHTML={{ __html: jsonLdContent }} />
 
-      <Reveal kind="fade">
+      <Reveal kind="fade" onLoad>
         <Link
           href="/blog"
           className="label group inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
@@ -160,7 +160,7 @@ export default async function Blog({
         </Link>
       </Reveal>
 
-      <Reveal delay={0.06}>
+      <Reveal onLoad>
         <article className="glass mt-5 overflow-hidden p-group md:p-entry">
           {/* Bleeds past the article's own padding to meet the card edges. */}
           <div className="-mx-group mb-group md:-mx-entry md:-mt-entry md:mb-entry -mt-group">

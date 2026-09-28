@@ -5,33 +5,22 @@ import { cn } from "@/lib/utils";
 import {
   EASE,
   TRANSITIONS,
-  dramaticRise,
+  MAX_DELAY,
   fadeIn,
   inViewOnce,
-  openRise,
   riseIn,
-  ruleIn,
   stagger,
 } from "@/lib/motion";
 
 type RevealKind =
-  /** scroll-in content: up 20px */
+  /** scroll-in content: up 12px */
   | "rise"
-  /** supporting detail: opacity only */
-  | "fade"
-  /** opening sequence: up 80px */
-  | "open"
-  /** divider line: up 40px, late */
-  | "rule"
-  /** the one dramatic entry: up from far below over 2.1s */
-  | "dramatic";
+  /** supporting detail, and divider lines: opacity only */
+  | "fade";
 
 const VARIANTS: Record<RevealKind, Variants> = {
   rise: riseIn,
   fade: fadeIn,
-  open: openRise,
-  rule: ruleIn,
-  dramatic: dramaticRise,
 };
 
 interface RevealProps {
@@ -87,9 +76,9 @@ export function Reveal({
         whileInView={{ opacity: 1 }}
         viewport={inViewOnce}
         transition={{
-          duration: 0.35,
+          duration: 0.25,
           ease: EASE,
-          delay: Math.min(delay, 0.4),
+          delay: Math.min(delay, MAX_DELAY),
         }}
       >
         {children}
@@ -106,8 +95,8 @@ export function Reveal({
       viewport={inViewOnce}
       variants={VARIANTS[kind]}
       // Merge, don't replace: a bare `transition={{ delay }}` would discard
-      // the variant's spring and fall back to a default tween.
-      transition={{ ...TRANSITIONS[kind], delay }}
+      // the kind's timing and fall back to a default tween.
+      transition={{ ...TRANSITIONS[kind], delay: Math.min(delay, MAX_DELAY) }}
     >
       {children}
     </motion.div>
@@ -137,7 +126,7 @@ export function RevealGroup({
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={inViewOnce}
-        transition={{ duration: 0.35, ease: EASE }}
+        transition={{ duration: 0.25, ease: EASE }}
       >
         {children}
       </motion.div>
@@ -169,7 +158,7 @@ export function Rule({
 }) {
   return (
     <Reveal
-      kind="rule"
+      kind="fade"
       role="separator"
       delay={delay}
       onLoad={onLoad}

@@ -8,8 +8,8 @@ import { WIPE_MS, wipe } from "@/lib/motion";
 type Phase = "hidden" | "covering" | "revealing";
 
 /**
- * Page transition: a downward-to-upward wipe on a custom eased curve, about
- * half a second, with a matching entrance delay on the incoming page.
+ * Page transition: a downward-to-upward wipe on a custom eased curve, a
+ * quarter of a second each way.
  *
  * Two halves:
  *

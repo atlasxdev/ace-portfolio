@@ -3,59 +3,35 @@ import type { Transition, Variants } from "motion/react";
 /**
  * One source of truth for the site's motion.
  *
- * The language is editorial and calm: opacity plus vertical movement, slow
- * spring entrances, delayed sequencing, and a masked page transition. No
- * rotation, scaling, blur, parallax or bounce anywhere.
+ * Short and light: opacity plus a small vertical lift, 150–300ms, once, on
+ * entering the viewport. Only `transform` and `opacity` are animated, so every
+ * frame stays on the compositor. Above-the-fold content doesn't animate at
+ * all — see `onLoad` on <Reveal>.
  */
 
-/** Custom eased curve used by the page transition and the long tweens. */
+/** Custom eased curve used by the page transition and the reveals. */
 export const EASE = [0.22, 1, 0.36, 1] as const;
 
-/** The workhorse: a gentle 0.8s spring with no bounce. */
-export const SPRING: Transition = {
-  type: "spring",
-  duration: 0.8,
-  bounce: 0,
-};
+/** Content lifting into place. */
+export const RISE: Transition = { duration: 0.3, ease: EASE };
 
-/** Supporting details — a plain delayed fade, no movement. */
-export const FADE: Transition = { duration: 0.6, ease: EASE };
+/** Supporting details — a plain fade, no movement. */
+export const FADE: Transition = { duration: 0.25, ease: EASE };
 
-/** Card groups use a longer, smoother tween for state changes. */
+/** Card groups resizing. */
 export const CARD_STATE: Transition = { duration: 0.9, ease: EASE };
 
-export const STAGGER = 0.08;
+export const STAGGER = 0.05;
 
-/* ── Opening sequence ─────────────────────────────────────────────────────
-   The intro and About rise from 80px. Location/languages follow, then the
-   social links, and the divider lines land last. */
-
-export const openRise: Variants = {
-  hidden: { opacity: 0, y: 80 },
-  visible: { opacity: 1, y: 0 },
-};
-
-/** Divider lines: a 40px upward reveal, deliberately late in the sequence. */
-export const ruleIn: Variants = {
-  hidden: { opacity: 0, y: 40 },
-  visible: { opacity: 1, y: 0 },
-};
-
-/**
- * The footer name gets the most dramatic entry on the page: it rises from far
- * below over 2.1 seconds on a custom eased tween rather than a spring.
- */
-export const dramaticRise: Variants = {
-  hidden: { opacity: 0, y: 260 },
-  visible: { opacity: 1, y: 0 },
-};
+/** Ceiling on any reveal's delay, so a long list never keeps content waiting. */
+export const MAX_DELAY = 0.2;
 
 /* ── Scroll-in reveals ────────────────────────────────────────────────────
    Reusable content — card contents, work-history details, titles, metadata —
-   fades in while moving up 20px, once, on entering the viewport. */
+   fades in while moving up 12px, once, on entering the viewport. */
 
 export const riseIn: Variants = {
-  hidden: { opacity: 0, y: 20 },
+  hidden: { opacity: 0, y: 12 },
   visible: { opacity: 1, y: 0 },
 };
 
@@ -71,15 +47,15 @@ export const stagger = (delayChildren = 0): Variants => ({
 });
 
 /* ── Page transition ─────────────────────────────────────────────────────
-   A downward-to-upward wipe on a custom eased curve, roughly half a second,
-   with a matching entrance delay.
+   A downward-to-upward wipe on a custom eased curve, a quarter of a second
+   each way.
 
    Implemented as a fixed overlay rather than by exit-animating the outgoing
    page: App Router unmounts the old tree before AnimatePresence can play it.
    The outgoing page's slight upward drift is handled in CSS instead — see
    `[data-leaving]` in globals.css. */
 
-export const WIPE_MS = 500;
+export const WIPE_MS = 250;
 
 export const wipe: Variants = {
   hidden: { y: "-100%" },
@@ -87,15 +63,6 @@ export const wipe: Variants = {
   revealing: {
     y: "100%",
     transition: { duration: WIPE_MS / 1000, ease: EASE },
-  },
-};
-
-/** Incoming pages begin transparent and settle after the wipe clears. */
-export const pageEnter: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { duration: 0.5, ease: EASE, delay: 0.1 },
   },
 };
 
@@ -113,11 +80,8 @@ export const pageEnter: Variants = {
  * instead: `{ ...TRANSITIONS[kind], delay }`.
  */
 export const TRANSITIONS = {
-  rise: SPRING,
+  rise: RISE,
   fade: FADE,
-  open: SPRING,
-  rule: SPRING,
-  dramatic: { duration: 2.1, ease: EASE } as Transition,
 } as const;
 
 /** Shared viewport config so sections trigger at a consistent point. */

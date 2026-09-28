@@ -15,15 +15,15 @@ export default function ProjectsPage() {
     <div className="shell">
       <BreadcrumbJsonLd name="Projects" path="/projects" />
       <section className="pt-section pb-7">
-        <Reveal kind="fade" className="label">
+        <Reveal kind="fade" onLoad className="label">
           Projects
         </Reveal>
-        <Reveal delay={0.07}>
+        <Reveal onLoad>
           <h1 className="mt-4 font-display text-[clamp(1.75rem,4.5vw,2.5rem)] leading-none font-semibold tracking-[-0.02em]">
             Everything I&rsquo;ve built
           </h1>
         </Reveal>
-        <Reveal kind="fade" delay={0.14}>
+        <Reveal kind="fade" onLoad>
           <p className="mt-5 max-w-[54ch] text-muted-foreground">
             The homepage shows three; this is the whole list.
           </p>

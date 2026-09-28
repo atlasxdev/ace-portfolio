@@ -42,25 +42,25 @@ export default function Page() {
       {/* ── Hero ─────────────────────────────────────────────────────── */}
       {/* Photo left, details right from md; stacked below that. */}
       <section className="shell grid grid-cols-1 gap-group pt-entry pb-group md:grid-cols-[240px_minmax(0,1fr)] md:items-center md:gap-10 xl:grid-cols-[300px_minmax(0,1fr)] xl:gap-14">
-        <Reveal kind="fade" onLoad delay={0.05}>
+        <Reveal kind="fade" onLoad>
           <HeroPortrait className="w-full max-w-[280px] md:max-w-none overflow-hidden" />
         </Reveal>
         <div className="min-w-0">
-          <Reveal kind="fade" onLoad delay={0.1} className="label">
+          <Reveal kind="fade" onLoad className="label">
             Full-stack &middot; Automation &middot; AI
           </Reveal>
-          <Reveal kind="open" onLoad delay={0.2}>
+          <Reveal onLoad>
             <h1 className="mt-snug font-display text-[36px] leading-[40px] font-semibold tracking-[-0.03em] text-balance md:text-[48px] md:leading-[52px] xl:text-display xl:leading-16">
               {DATA.name}
             </h1>
           </Reveal>
-          <Reveal kind="open" onLoad delay={0.45}>
+          <Reveal onLoad>
             <p className="mt-snug max-w-[48ch] text-body-lg text-balance">
               I build production systems end&#8209;to&#8209;end, from the first stakeholder call to the thing running in
               production.
             </p>
           </Reveal>
-          <Reveal kind="fade" onLoad delay={0.75}>
+          <Reveal kind="fade" onLoad>
             <ul aria-label="Tools I work with" className="mt-group flex flex-wrap gap-1.5">
               {HERO_STACK.map((tech) => (
                 <li

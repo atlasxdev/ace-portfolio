@@ -15,15 +15,15 @@ export default function SchedulePage() {
     <div className="shell">
       <BreadcrumbJsonLd name="Schedule a call" path="/schedule" />
       <section className="pt-section pb-7">
-        <Reveal kind="fade" className="label">
+        <Reveal kind="fade" onLoad className="label">
           Schedule a call
         </Reveal>
-        <Reveal delay={0.07}>
+        <Reveal onLoad>
           <h1 className="mt-4 font-display text-[clamp(1.75rem,4.5vw,2.5rem)] leading-none font-semibold tracking-[-0.02em]">
             Let&rsquo;s talk
           </h1>
         </Reveal>
-        <Reveal kind="fade" delay={0.14}>
+        <Reveal kind="fade" onLoad>
           <p className="mt-5 max-w-[54ch] text-muted-foreground">
             Pick a time for a 15-minute call: a role, a project, or just a question.
           </p>
