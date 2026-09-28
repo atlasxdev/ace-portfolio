@@ -3,14 +3,14 @@
  * heading, so a label reads the same everywhere it's used.
  */
 export const SECTIONS = [
-  { id: "blog", label: "Blog" },
   { id: "projects", label: "Projects" },
+  { id: "approach", label: "Approach" },
   { id: "experience", label: "Experience" },
+  { id: "recognition", label: "Recognition" },
+  { id: "capabilities", label: "Capabilities" },
   { id: "certifications", label: "Certifications" },
   { id: "education", label: "Education" },
-  { id: "capabilities", label: "Capabilities" },
-  { id: "approach", label: "Approach" },
-  { id: "recognition", label: "Recognition" },
+  { id: "blog", label: "Blog" },
 ] as const;
 
 export type SectionId = (typeof SECTIONS)[number]["id"];

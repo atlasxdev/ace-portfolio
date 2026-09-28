@@ -79,50 +79,33 @@ export default function Page() {
         </div>
       </section>
 
-      {/* ── Blog ───────────────────────────────────────────────────────
-          First after the hero, so its divider closes the opening screen and
-          lands last in the load cascade instead of reappearing on scroll. */}
-      {posts.length > 0 && (
-        <SectionRow label={section("blog").label} id="blog" ruleOnLoad ruleDelay={RULE_DELAY.min} className="pt-entry">
-          <Reveal>
-            <ItemList>
-              {posts.map((post) => (
-                <ItemRow
-                  key={post._meta.path}
-                  title={post.title}
-                  meta={new Date(post.publishedAt).toLocaleDateString("en-US", {
-                    month: "short",
-                    year: "numeric",
-                  })}
-                  href={`/blog/${post._meta.path}`}>
-                  {post.summary}
-                </ItemRow>
-              ))}
-            </ItemList>
-          </Reveal>
-          <Reveal kind="fade" delay={0.12}>
-            <Link
-              href="/blog"
-              className="label mt-6 inline-flex items-center gap-2 transition-all hover:gap-3 hover:text-foreground">
-              All posts <ArrowRight className="size-3" aria-hidden />
-            </Link>
-          </Reveal>
-        </SectionRow>
-      )}
-
       {/* ── Projects ─────────────────────────────────────────────────── */}
-      {/* Takes over the load-cascade divider when there are no posts. */}
+      {/* First after the hero, so its divider closes the opening screen and
+          lands last in the load cascade instead of reappearing on scroll. */}
       <SectionRow
         label={section("projects").label}
         id="projects"
-        ruleOnLoad={posts.length === 0}
-        ruleDelay={RULE_DELAY.min}>
+        ruleOnLoad
+        ruleDelay={RULE_DELAY.min}
+        className="pt-entry">
         <ProjectsSection limit={3} />
         <Reveal kind="fade" delay={0.12}>
           <Link
             href="/projects"
             className="label mt-6 inline-flex items-center gap-2 transition-all hover:gap-3 hover:text-foreground">
             All projects <ArrowRight className="size-3" aria-hidden />
+          </Link>
+        </Reveal>
+      </SectionRow>
+
+      {/* ── Approach ─────────────────────────────────────────────────── */}
+      <SectionRow label={section("approach").label} id="approach" wide>
+        <ApproachSection />
+        <Reveal kind="fade" delay={0.2}>
+          <Link
+            href="/blog/sdlc-in-claude-code"
+            className="label mt-8 inline-flex items-center gap-2 transition-all hover:gap-3 hover:text-foreground">
+            Read the full write-up <ArrowRight className="size-3" aria-hidden />
           </Link>
         </Reveal>
       </SectionRow>
@@ -139,16 +122,10 @@ export default function Page() {
         </Reveal>
       </SectionRow>
 
-      {/* ── Certifications ───────────────────────────────────────────── */}
-      <SectionRow label={section("certifications").label} id="certifications">
-        <CertificationsSection />
+      {/* ── Recognition ──────────────────────────────────────────────── */}
+      <SectionRow label={section("recognition").label} id="recognition">
+        <RecognitionSection />
       </SectionRow>
-
-      {/* ── Education ────────────────────────────────────────────────── */}
-      <SectionRow label={section("education").label} id="education">
-        <EducationSection />
-      </SectionRow>
-
       {/* ── Capabilities ─────────────────────────────────────────────── */}
       <SectionRow label={section("capabilities").label} id="capabilities">
         <Reveal className="glass p-group">
@@ -178,22 +155,46 @@ export default function Page() {
         </Reveal>
       </SectionRow>
 
-      {/* ── Approach ─────────────────────────────────────────────────── */}
-      <SectionRow label={section("approach").label} id="approach" wide>
-        <ApproachSection />
-        <Reveal kind="fade" delay={0.2}>
-          <Link
-            href="/blog/sdlc-in-claude-code"
-            className="label mt-8 inline-flex items-center gap-2 transition-all hover:gap-3 hover:text-foreground">
-            Read the full write-up <ArrowRight className="size-3" aria-hidden />
-          </Link>
-        </Reveal>
+      {/* ── Certifications ───────────────────────────────────────────── */}
+      <SectionRow label={section("certifications").label} id="certifications">
+        <CertificationsSection />
       </SectionRow>
 
-      {/* ── Recognition ──────────────────────────────────────────────── */}
-      <SectionRow label={section("recognition").label} id="recognition">
-        <RecognitionSection />
+      {/* ── Education ────────────────────────────────────────────────── */}
+      <SectionRow label={section("education").label} id="education">
+        <EducationSection />
       </SectionRow>
+
+      {/* ── Blog ─────────────────────────────────────────────────────── */}
+      {/* Last: once the work is made, the writing is where to keep reading. */}
+      {posts.length > 0 && (
+        <SectionRow label={section("blog").label} id="blog">
+          <Reveal>
+            <ItemList>
+              {posts.map((post) => (
+                <ItemRow
+                  key={post._meta.path}
+                  title={post.title}
+                  meta={new Date(post.publishedAt).toLocaleDateString("en-US", {
+                    month: "short",
+                    year: "numeric",
+                  })}
+                  href={`/blog/${post._meta.path}`}>
+                  {post.summary}
+                </ItemRow>
+              ))}
+            </ItemList>
+          </Reveal>
+          <Reveal kind="fade" delay={0.12}>
+            <Link
+              href="/blog"
+              className="label mt-6 inline-flex items-center gap-2 transition-all hover:gap-3 hover:text-foreground">
+              All posts <ArrowRight className="size-3" aria-hidden />
+            </Link>
+          </Reveal>
+        </SectionRow>
+      )}
+
     </>
   );
 }
