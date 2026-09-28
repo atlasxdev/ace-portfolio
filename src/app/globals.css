@@ -616,8 +616,11 @@
     color: var(--step);
   }
 
-  /* The one flourish: the step's hue blooms when its tile is hovered. */
-  .group:hover .step-badge {
+  /* The one flourish: the step's hue blooms when its tile is hovered, or
+     when it is the open step in Approach. */
+  .group:hover .step-badge,
+  .step-badge:hover,
+  .step-badge[data-active] {
     border-color: color-mix(in srgb, var(--step) 62%, transparent);
     box-shadow: 0 0 34px -6px color-mix(in srgb, var(--step) 75%, transparent);
   }

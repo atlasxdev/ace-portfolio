@@ -1,323 +1,230 @@
 "use client";
 
 import { motion, useInView, useReducedMotion } from "motion/react";
-import { FolderCog, PhoneCall, Rocket, ScanEye, Waypoints } from "lucide-react";
-import { useEffect, useId, useRef, useState } from "react";
+import { ChevronDown, FolderCog, PhoneCall, Rocket, ScanEye, Waypoints } from "lucide-react";
+import { useRef, useState } from "react";
 
 import { Reveal } from "@/components/motion/reveal";
 import { useOpeningReady } from "@/components/motion/opening";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { APPROACH } from "@/data/approach";
 import { EASE, inViewOnce } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 /**
- * How the work actually gets done, as five ordered stages.
+ * How the work actually gets done: the five stages as a lifecycle, drawn as a
+ * ring, beside a collapsible list that carries the words.
  *
- * The brief was a stock "HOW WE WORK?" infographic — numbered steps, an icon in
- * a coloured circle, and a curved path weaving between them, each step sitting
- * alternately above and below that path. The shape is replicated; the skin is
- * not. Red and yellow on white would read as imported, so the colour comes
- * instead from the four hues the ambient field behind the page is already built
- * from, and the path is the site's own hairline rather than a dashed rule.
+ * A ring rather than a row because the stages loop — review feeds the next
+ * stakeholder call — and a line that ends at step five says the opposite. The
+ * 5 → 1 arc is dashed to mark it as the return, not another step.
  *
- * The alternation has a hard requirement: each step must stay short. Steps two
- * slots apart share a band, so a block can only be wider than its own column
- * while it's short enough not to run into that neighbour. The reference gets
- * away with it on eight-word captions — hence one sentence per step here, with
- * the paragraph version in the linked post.
+ * The ring is a diagram, not a second copy of the list: no numbers and no
+ * titles on it. The arrows give the order and the list gives the numbers.
+ * Clicking a node opens its row, and the open row lights its node, so the two
+ * read as one control.
  *
- * Below 1200px it all stacks and the path runs straight down. Five columns need
- * width that simply isn't there on a phone or a tablet.
+ * The list is an accordion with one row open at a time. Five sentences side by
+ * side with the ring made the section tall, and on a phone it ran to a full
+ * screen of text; one open row keeps it to the ring plus five titles.
+ *
+ * Colour comes from the four hues the ambient field behind the page is built
+ * from, cycling, so step five shares step one's blue — fitting for the step
+ * that hands back to the start.
  */
 
 /** The ambient field's palette — see `#ambient` in globals.css. */
 const HUES = ["#3178c6", "#3ecf8e", "#d97757", "#ea4b71"] as const;
+const hue = (i: number) => HUES[i % HUES.length];
 
 const ICONS = [PhoneCall, FolderCog, Waypoints, Rocket, ScanEye] as const;
 
-const BADGE = 56;
-/** How far the low steps sit below the high ones. Matches `lg:pt-19` below. */
-const SWING = 76;
-/** Matches `lg:gap-snug` on the grid. */
-const GAP = 16;
-/**
- * Badge-to-card clearance on desktop (`lg:gap-entry`). It has to be at least
- * SWING - BADGE/2 or the low arc of the curve dips behind the high cards,
- * which shows through the glass as a line crossing the card.
- */
-const CLEARANCE = 48;
+/** The ring's own coordinate space. It scales as a whole with the dial. */
+const SIZE = 340;
+const C = SIZE / 2;
+const R = 124;
+/** Node radius in the same space, plus clearance, sets where each arc stops. */
+const NODE = 24;
+const ARC_GAP = ((NODE + 7) / R) * (180 / Math.PI);
 
-/** Odd steps ride low, even steps ride high — the reference's rhythm. */
-const isLow = (i: number) => i % 2 === 0;
+const rad = (d: number) => (d * Math.PI) / 180;
+/** Rounded: Node and the browser disagree in the last float digit of the trig,
+ *  and an unrounded coordinate fails hydration. */
+const round = (n: number) => Math.round(n * 100) / 100;
+const at = (r: number, deg: number) =>
+  [round(C + r * Math.cos(rad(deg))), round(C + r * Math.sin(rad(deg)))] as const;
+/** Step i's angle: step one at twelve o'clock, clockwise from there. */
+const angle = (i: number) => -90 + (360 / APPROACH.length) * i;
+const pct = (v: number) => `${(v / SIZE) * 100}%`;
 
-/**
- * The weaving path.
- *
- * Drawn from measured pixels rather than a percentage viewBox: stretching an
- * SVG to fit would distort the stroke, and the whole point of this shape is
- * that it reads as a drawn line. A ResizeObserver keeps it honest on resize.
- *
- * Dashed like the reference. That rules out Framer's `pathLength` draw, which
- * animates the same `stroke-dasharray` the pattern needs, so the line is wiped
- * in behind a clip rect instead — every segment runs left to right, so a
- * left-to-right wipe reads as drawing regardless. Arrowheads stay solid.
- */
-function CurvedPath({ width, play }: { width: number; play: boolean }) {
-  const reduced = useReducedMotion();
-  const uid = useId();
-  if (!width) return null;
+const ARCS = APPROACH.map((_, i) => {
+  const a1 = angle(i) + ARC_GAP;
+  const a2 = angle(i + 1) - ARC_GAP;
+  const [x1, y1] = at(R, a1);
+  const [x2, y2] = at(R, a2);
+  // Chevron at the arc's end, opening back along the tangent.
+  const [ax, ay] = [x2, y2];
+  const t = a2 + 90;
+  const k = 5;
+  const back = [round(-Math.cos(rad(t)) * k), round(-Math.sin(rad(t)) * k)];
+  const side = [round(Math.cos(rad(a2)) * k * 0.8), round(Math.sin(rad(a2)) * k * 0.8)];
+  return {
+    d: `M${x1} ${y1} A${R} ${R} 0 0 1 ${x2} ${y2}`,
+    head: `M${ax + back[0] + side[0]} ${ay + back[1] + side[1]} L${ax} ${ay} L${ax + back[0] - side[0]} ${ay + back[1] - side[1]}`,
+    loop: i === APPROACH.length - 1,
+  };
+});
 
-  const cell = (width - GAP * (APPROACH.length - 1)) / APPROACH.length;
-  // Cell centre: each badge is centred over its own card, so which step a badge
-  // belongs to is unambiguous. Left-aligning them put every badge nearer the
-  // gap between two cards than to either one.
-  const cx = (i: number) => i * (cell + GAP) + cell / 2;
-  const cy = (i: number) => (isLow(i) ? SWING : 0) + BADGE / 2;
+/** Tick marks on an outer scale, a longer one every fifth. */
+const TICKS = Array.from({ length: 60 }, (_, i) => {
+  const long = i % 12 === 0;
+  const [x1, y1] = at(R + 16, i * 6 - 90);
+  const [x2, y2] = at(R + 16 + (long ? 7 : 3), i * 6 - 90);
+  return { x1, y1, x2, y2, long };
+});
 
-  /** Clear of the badge rim at both ends, with room for the arrowhead. */
-  const OUT = BADGE / 2 + 7;
-  const IN = BADGE / 2 + 10;
+const LOOP_NOTE = at(R + 34, -126);
 
-  const segments = APPROACH.slice(0, -1).map((_, i) => {
-    const [x1, y1] = [cx(i) + OUT, cy(i)];
-    const [x2, y2] = [cx(i + 1) - IN, cy(i + 1)];
-    // Leave and arrive horizontally. That's partly how the curve should read,
-    // and partly what makes the arrowhead free: the tangent at the end is
-    // always +x, so the chevron never needs rotating.
-    const bend = (x2 - x1) * 0.5;
-    return {
-      d: `M${x1} ${y1} C ${x1 + bend} ${y1}, ${x2 - bend} ${y2}, ${x2} ${y2}`,
-      head: `M${x2 - 6} ${y2 - 4.5} L${x2} ${y2} L${x2 - 6} ${y2 + 4.5}`,
-      x1,
-      w: x2 - x1,
-      at: i * 0.22,
-    };
-  });
-
+function Dial({ open, onSelect, play }: { open: string; onSelect: (v: string) => void; play: boolean }) {
+  const reduced = useReducedMotion() ?? false;
   const on = play || reduced;
 
   return (
-    <svg
-      aria-hidden
-      className="pointer-events-none absolute inset-x-0 top-0"
-      width={width}
-      height={SWING + BADGE}
-      fill="none"
-    >
-      {segments.map((seg, i) => {
-        const clip = `${uid}-${i}`;
-        return (
-          <g key={i} className="stroke-ink-faint/85 dark:stroke-ink-faint/70" strokeWidth={1}>
-            {/* Wiped in behind a clip rect rather than drawn with `pathLength`.
-                pathLength animates via stroke-dasharray, which is the same
-                property the dash pattern needs — the two cannot coexist, and
-                the dashes are the point. A left-to-right wipe reads as drawing
-                anyway, because every segment runs left to right.
-
-                The rect drives `animate` off a measured in-view flag instead of
-                `whileInView`: it lives inside <clipPath> and is never painted,
-                so an IntersectionObserver on it would have nothing to observe. */}
-            <clipPath id={clip}>
-              <motion.rect
-                x={seg.x1 - 6}
-                y={0}
-                height={SWING + BADGE}
-                initial={{ width: reduced ? seg.w + 14 : 0 }}
-                animate={{ width: on ? seg.w + 14 : 0 }}
-                transition={{ duration: 0.75, ease: EASE, delay: seg.at }}
-              />
-            </clipPath>
-
-            {/* One path per segment rather than one path of many subpaths: a
-                marker-end only lands on the last vertex of a whole path, so
-                subpaths would have given four lines and a single arrowhead. */}
-            <path
-              d={seg.d}
-              clipPath={`url(#${clip})`}
-              strokeDasharray="4 5"
-              strokeLinecap="round"
-            />
-
-            {/* Solid, and it arrives once its line has, so the sequence reads
-                1 to 5 rather than five arrows appearing at once. */}
-            <motion.path
-              d={seg.head}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              initial={{ opacity: reduced ? 1 : 0 }}
-              animate={{ opacity: on ? 1 : 0 }}
-              transition={{ duration: 0.3, ease: EASE, delay: seg.at + 0.6 }}
-            />
-          </g>
-        );
-      })}
-    </svg>
-  );
-}
-
-/**
- * The stacked equivalent of one curve segment.
- *
- * The dash is a repeating gradient rather than an SVG stroke because the row
- * height varies with the card, and a stretched SVG would stretch its dashes
- * with it. A gradient tiles at whatever height it's given. The reveal is a clip
- * inset rather than scaleY for the same reason — scaling would smear the
- * pattern instead of uncovering it.
- *
- * Line and head are siblings, not nested. The head sat inside the line at
- * first, where the clip that reveals the line also clipped the head away to
- * nothing: a clip-path applies to the whole subtree, and the head deliberately
- * overhangs the line's box.
- *
- * The run starts at the badge's bottom edge, not its centre. Starting at the
- * centre drew the first 28px of dashes straight through the icon.
- */
-function StackedConnector({
-  play,
-  reduced,
-  delay,
-}: {
-  play: boolean;
-  reduced: boolean;
-  delay: number;
-}) {
-  const hidden = { clipPath: "inset(0 0 100% 0)" };
-  const shown = { clipPath: "inset(0 0 0% 0)" };
-  const ink = "text-ink-faint/85 dark:text-ink-faint/70";
-
-  return (
-    <>
-      {/* badge bottom (56px) down to just short of the next badge */}
-      <motion.span
+    <div className="relative mx-auto aspect-square w-[230px] md:w-[300px] lg:w-[340px]">
+      {/* Drafting grid, reaching past the ring and fading out beyond it. */}
+      <div
         aria-hidden
-        className={cn(
-          "absolute top-14 -bottom-1 left-7 w-px -translate-x-1/2 lg:hidden",
-          ink
-        )}
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(to bottom, currentColor 0 4px, transparent 4px 9px)",
-        }}
-        initial={reduced ? shown : hidden}
-        transition={{ duration: 0.7, ease: EASE, delay }}
-        {...(reduced || !play
-          ? {}
-          : { whileInView: shown, viewport: inViewOnce })}
+        className="absolute -inset-[30%] rounded-full [background-image:linear-gradient(color-mix(in_srgb,var(--foreground)_7%,transparent)_1px,transparent_1px),linear-gradient(90deg,color-mix(in_srgb,var(--foreground)_7%,transparent)_1px,transparent_1px)] [background-position:center] [background-size:3.125%_3.125%] [mask-image:radial-gradient(circle,#000_38%,transparent_70%)]"
       />
 
-      {/* seated in the 16px gap between rows, clear of both badges */}
-      <motion.svg
+      <svg aria-hidden viewBox={`0 0 ${SIZE} ${SIZE}`} className="absolute inset-0 size-full overflow-visible" fill="none">
+        <circle cx={C} cy={C} r={R} className="stroke-rule" strokeWidth={1} vectorEffect="non-scaling-stroke" />
+        {TICKS.map(({ long, ...line }, i) => (
+          <line
+            key={i}
+            {...line}
+            className={long ? "stroke-foreground/30" : "stroke-foreground/14"}
+            strokeWidth={1}
+            vectorEffect="non-scaling-stroke"
+          />
+        ))}
+
+        {ARCS.map((arc, i) => {
+          const delay = i * 0.18;
+          const active = open === String(i) || open === String((i + 1) % APPROACH.length);
+          return (
+            <g key={i} stroke={hue(i)} strokeLinecap="round" strokeLinejoin="round">
+              {/* Solid arcs draw on; the dashed return can't (pathLength and a
+                  dash pattern both drive stroke-dasharray), so it fades in. */}
+              {arc.loop ? (
+                <motion.path
+                  d={arc.d}
+                  strokeWidth={1.5}
+                  strokeDasharray="3 4"
+                  initial={{ opacity: reduced ? 0.7 : 0 }}
+                  animate={{ opacity: on ? 0.7 : 0 }}
+                  transition={{ duration: 0.6, ease: EASE, delay }}
+                />
+              ) : (
+                <motion.path
+                  d={arc.d}
+                  strokeWidth={active ? 2 : 1.5}
+                  initial={{ pathLength: reduced ? 1 : 0, opacity: 0.85 }}
+                  animate={{ pathLength: on ? 1 : 0 }}
+                  transition={{ duration: 0.6, ease: EASE, delay }}
+                />
+              )}
+              <motion.path
+                d={arc.head}
+                strokeWidth={1.5}
+                initial={{ opacity: reduced ? 1 : 0 }}
+                animate={{ opacity: on ? 1 : 0 }}
+                transition={{ duration: 0.3, ease: EASE, delay: delay + 0.45 }}
+              />
+            </g>
+          );
+        })}
+      </svg>
+
+      {/* overflow-hidden: .glass's top-sheen ::before is a rounded rect, and
+          on a circle its corners poke out past the rim. */}
+      <div className="glass absolute top-1/2 left-1/2 grid size-[39%] -translate-x-1/2 -translate-y-1/2 place-items-center overflow-hidden rounded-full text-center">
+        <div>
+          <span className="label text-[9.5px] text-ink-faint">Lifecycle</span>
+          <p className="mt-1 font-display text-[12.5px] leading-[1.1] font-semibold tracking-[-0.02em] md:text-[15px] lg:text-[17px]">
+            Ship, learn,
+            <br />
+            repeat
+          </p>
+        </div>
+      </div>
+
+      {APPROACH.map((step, i) => {
+        const Icon = ICONS[i];
+        const [x, y] = at(R, angle(i));
+        return (
+          <button
+            key={step.title}
+            type="button"
+            aria-label={`Step ${i + 1}: ${step.title}`}
+            aria-pressed={open === String(i)}
+            data-active={open === String(i) || undefined}
+            onClick={() => onSelect(String(i))}
+            className="step-badge absolute z-10 grid size-10 -translate-x-1/2 -translate-y-1/2 cursor-pointer place-items-center rounded-full outline-offset-2 focus-visible:outline-2 focus-visible:outline-(--step) lg:size-12"
+            style={{ left: pct(x), top: pct(y), "--step": hue(i) } as React.CSSProperties}>
+            <Icon className="size-4 lg:size-[18px]" strokeWidth={1.75} />
+          </button>
+        );
+      })}
+
+      <span
         aria-hidden
-        className={cn(
-          "absolute -bottom-2.5 left-7 -translate-x-1/2 lg:hidden",
-          ink
-        )}
-        width="11"
-        height="6"
-        fill="none"
-        initial={{ opacity: reduced ? 1 : 0 }}
-        transition={{ duration: 0.3, ease: EASE, delay: delay + 0.55 }}
-        {...(reduced || !play
-          ? {}
-          : { whileInView: { opacity: 1 }, viewport: inViewOnce })}
-      >
-        <path
-          d="M0.5 0.5 L5.5 5.5 L10.5 0.5"
-          stroke="currentColor"
-          strokeWidth={1}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </motion.svg>
-    </>
+        className="label absolute hidden -translate-x-[70%] -translate-y-full text-[9.5px] whitespace-nowrap text-ink-faint md:block"
+        style={{ left: pct(LOOP_NOTE[0]), top: pct(LOOP_NOTE[1]) }}>
+        ↺ Next iteration
+      </span>
+    </div>
   );
 }
 
 export function ApproachSection() {
-  const reduced = useReducedMotion() ?? false;
   const openingReady = useOpeningReady();
   const band = useRef<HTMLDivElement>(null);
-  const [width, setWidth] = useState(0);
-
-  // Measured here and handed down, because the clip rect that drives the wipe
-  // is never painted and so can't observe its own intersection.
   const inView = useInView(band, inViewOnce);
-
-  useEffect(() => {
-    const el = band.current;
-    if (!el) return;
-    const ro = new ResizeObserver(([e]) => setWidth(e.contentRect.width));
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, []);
+  const [open, setOpen] = useState("0");
 
   return (
-    <div ref={band} className="relative">
-      {/* Desktop only — below lg the steps stack and the path becomes a
-          straight hairline drawn per row instead. */}
-      <div className="hidden lg:block">
-        <CurvedPath width={width} play={openingReady && inView} />
-      </div>
+    <div
+      ref={band}
+      className="flex flex-col items-center gap-group lg:grid lg:grid-cols-[340px_minmax(0,560px)] lg:justify-center lg:gap-14">
+      <Reveal kind="fade">
+        <Dial open={open} onSelect={setOpen} play={openingReady && inView} />
+      </Reveal>
 
-      <ol className="flex flex-col gap-snug lg:grid lg:grid-cols-5 lg:items-start">
-        {APPROACH.map((step, i) => {
-          const Icon = ICONS[i];
-          const last = i === APPROACH.length - 1;
-
-          return (
-            <li
+      <Reveal delay={0.1} className="w-full">
+        <Accordion type="single" collapsible value={open} onValueChange={setOpen} className="glass w-full py-1.5">
+          {APPROACH.map((step, i) => (
+            <AccordionItem
               key={step.title}
-              className="relative"
-              style={{ "--step": HUES[i % HUES.length] } as React.CSSProperties}
-            >
-              {/* Stacked only: the same dashed run and arrowhead as the
-                  desktop curve, turned through 90 degrees. Runs from the badge
-                  centre down across the 16px gap to the next badge's edge. */}
-              {!last && (
-                <StackedConnector
-                  play={openingReady}
-                  reduced={reduced}
-                  delay={Math.min(i * 0.06, 0.24)}
-                />
-              )}
-
-              {/* The alternation. Low steps drop a full swing; high steps sit
-                  flush with the top of the band. */}
-              <div className={isLow(i) ? "lg:pt-19" : undefined}>
-                <Reveal delay={Math.min(i * 0.06, 0.24)}>
-                  {/* Badge beside the card when stacked, above it when the row
-                      weaves. No lift on hover — the badge sits on the path, so
-                      moving it would pull it off the line. The hue bloom is the
-                      hover state instead. */}
-                  <div className="group flex items-start gap-snug lg:flex-col lg:items-center lg:gap-entry">
-                    <span
-                      aria-hidden
-                      className="step-badge relative z-10 grid size-14 shrink-0 place-items-center rounded-full"
-                    >
-                      <Icon className="size-5" strokeWidth={1.75} />
-                    </span>
-
-                    {/* label -> title -> detail, the order used page-wide. The
-                        number stays neutral: at 12px these hues miss AA on the
-                        light ground, and the badge already carries the colour. */}
-                    <div className="glass min-w-0 flex-1 p-group lg:w-full lg:flex-none">
-                      <span className="label text-ink-faint">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <h3 className="mt-1.5 text-[14.5px] leading-snug font-semibold tracking-[-0.01em]">
-                        {step.title}
-                      </h3>
-                      <p className="mt-2.5 max-w-[76ch] text-body-sm leading-[1.7] text-muted-foreground">
-                        {step.body}
-                      </p>
-                    </div>
-                  </div>
-                </Reveal>
-              </div>
-            </li>
-          );
-        })}
-      </ol>
+              value={String(i)}
+              style={{ "--step": hue(i) } as React.CSSProperties}
+              className="border-b-0 transition-colors not-first:border-t not-first:border-foreground/9 data-[state=open]:bg-[color-mix(in_srgb,var(--step)_5%,transparent)]">
+              <AccordionTrigger className="cursor-pointer gap-3 px-4 py-3.5 hover:no-underline md:px-5">
+                <span className="flex min-w-0 flex-col gap-1 md:flex-row md:items-center md:gap-4">
+                  <span className="label w-[92px] shrink-0 text-[10px] text-ink-faint">
+                    <span className="text-foreground">{String(i + 1).padStart(2, "0")}</span> {step.stage}
+                  </span>
+                  <span className="text-[14px] leading-snug font-semibold tracking-[-0.01em]">{step.title}</span>
+                </span>
+                <ChevronDown aria-hidden className="size-3.5 shrink-0 text-ink-faint transition-transform duration-300" />
+              </AccordionTrigger>
+              <AccordionContent className="px-4 pb-4 text-body-sm leading-[1.6] text-muted-foreground md:pr-5 md:pl-[calc(20px+92px+16px)]">
+                {step.body}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </Reveal>
     </div>
   );
 }

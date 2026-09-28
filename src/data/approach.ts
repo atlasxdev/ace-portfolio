@@ -7,32 +7,35 @@
  * isn't already claimed on the resume or in the post.
  *
  * These are ordered stages of a real lifecycle, which is the only reason they
- * carry numbers — the sequence is information, not decoration.
+ * carry numbers — the sequence is information, not decoration. `stage` is the
+ * one-word phase name shown beside the number.
  *
- * Bodies are deliberately one sentence. The section renders them as a weaving
- * step flow with the cards alternating above and below the path, and blocks
- * that alternate can only be wider than their own column if they're short
- * enough not to collide with the one two slots along. The full paragraph
- * version of each is in the linked post.
+ * Bodies stay one sentence: each sits in a collapsible row beside the cycle
+ * diagram, and the paragraph version of each is in the linked post.
  */
 export const APPROACH = [
   {
+    stage: "Discover",
     title: "Requirements from the call",
     body: "Stakeholder calls are recorded in Fathom and surfaced by a custom MCP server, so decisions reach the work without being re-typed.",
   },
   {
+    stage: "Prepare",
     title: "Context before code",
     body: "Project rules, reusable skills, custom commands and architecture notes live in the repo, so output stays on the codebase's conventions.",
   },
   {
+    stage: "Design",
     title: "Architecture before implementation",
     body: "Stack and phases are settled up front — saying the sequence out loud surfaces the dependency you'd otherwise hit halfway through.",
   },
   {
+    stage: "Build",
     title: "Tests, pipelines, deploys",
     body: "The laborious, well-understood parts are the first cut under a deadline. Lowering their cost is what gets them done at all.",
   },
   {
+    stage: "Review",
     title: "Review everything that lands",
     body: "AI gets to a reviewable draft faster; it doesn't decide what to build. Real data and the people affected do.",
   },
