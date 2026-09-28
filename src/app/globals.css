@@ -719,29 +719,6 @@
   animation: ambient-drift 34s ease-in-out infinite alternate;
 }
 
-/* Preloader bloom — the same four brand hues as #ambient, but gathered toward
-   the middle instead of pushed into the corners, so it reads as a wash behind
-   the name rather than as page atmosphere. Opacity is animated by the
-   component; this is only the artwork. */
-.preload-glow {
-  position: absolute;
-  inset: -28vmax;
-  pointer-events: none;
-  background:
-    radial-gradient(30vmax 30vmax at 33% 38%, #3178c6 0%, transparent 60%),
-    radial-gradient(26vmax 26vmax at 67% 36%, #3ecf8e 0%, transparent 58%),
-    radial-gradient(32vmax 32vmax at 54% 66%, #d97757 0%, transparent 60%),
-    radial-gradient(24vmax 24vmax at 39% 70%, #ea4b71 0%, transparent 56%);
-  filter: blur(72px) saturate(0.75);
-  animation: ambient-drift 34s ease-in-out infinite alternate;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .preload-glow {
-    animation: none;
-  }
-}
-
 @property --cta-angle {
   syntax: "<angle>";
   initial-value: 0deg;

@@ -4,8 +4,6 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import Chatbot from "@/components/chatbot";
 import { ContactDialogProvider } from "@/components/contact-dialog";
 import { PageWipe } from "@/components/motion/page-wipe";
-import { OpeningProvider } from "@/components/motion/opening";
-import { Preloader } from "@/components/preloader";
 import { SiteSidebar } from "@/components/site-sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -117,11 +115,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <TooltipProvider delayDuration={0}>
-            <OpeningProvider>
             {/* Gives the glass surfaces something to refract. */}
             <div id="ambient" aria-hidden />
 
-            <Preloader />
             <PageWipe />
 
             <ContactDialogProvider>
@@ -135,13 +131,12 @@ export default function RootLayout({
               {/* Inside the provider: it offers the contact form mid-chat. */}
               <Chatbot />
             </ContactDialogProvider>
-            </OpeningProvider>
 
             {/* Outside the providers: neither renders anything, and neither
                 should be re-rendered by a theme or tooltip state change.
                 Cookieless, so there's no consent banner to add. Speed Insights
                 reports real Core Web Vitals from actual visitors, which is the
-                only honest read on whether the preloader costs anything. */}
+                only honest read on what the motion costs. */}
             <Analytics />
             <SpeedInsights />
           </TooltipProvider>

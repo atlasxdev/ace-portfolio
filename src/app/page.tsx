@@ -19,7 +19,6 @@ import { DATA } from "@/data/resume";
 import { section } from "@/data/sections";
 import { CAPABILITIES, TECH_BAND } from "@/data/stacks";
 import { LOGOS } from "@/lib/logos";
-import { RULE_DELAY } from "@/lib/motion";
 
 /** The stack at a glance, in the hero; the full set is under Capabilities. */
 const HERO_STACK = TECH_BAND.filter((t) =>
@@ -86,7 +85,6 @@ export default function Page() {
         label={section("projects").label}
         id="projects"
         ruleOnLoad
-        ruleDelay={RULE_DELAY.min}
         className="pt-entry">
         <ProjectsSection limit={3} />
         <Reveal kind="fade" delay={0.12}>

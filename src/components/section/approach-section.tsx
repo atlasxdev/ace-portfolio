@@ -5,7 +5,6 @@ import { ChevronDown, FolderCog, PhoneCall, Rocket, ScanEye, Waypoints } from "l
 import { useRef, useState } from "react";
 
 import { Reveal } from "@/components/motion/reveal";
-import { useOpeningReady } from "@/components/motion/opening";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { APPROACH } from "@/data/approach";
 import { EASE, inViewOnce } from "@/lib/motion";
@@ -188,7 +187,6 @@ function Dial({ open, onSelect, play }: { open: string; onSelect: (v: string) =>
 }
 
 export function ApproachSection() {
-  const openingReady = useOpeningReady();
   const band = useRef<HTMLDivElement>(null);
   const inView = useInView(band, inViewOnce);
   const [open, setOpen] = useState("0");
@@ -198,7 +196,7 @@ export function ApproachSection() {
       ref={band}
       className="flex flex-col items-center gap-group lg:grid lg:grid-cols-[340px_minmax(0,560px)] lg:justify-center lg:gap-14">
       <Reveal kind="fade">
-        <Dial open={open} onSelect={setOpen} play={openingReady && inView} />
+        <Dial open={open} onSelect={setOpen} play={inView} />
       </Reveal>
 
       <Reveal delay={0.1} className="w-full">
