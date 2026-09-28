@@ -202,7 +202,7 @@ export function ApproachSection() {
       </Reveal>
 
       <Reveal delay={0.1} className="w-full">
-        <Accordion type="single" collapsible value={open} onValueChange={setOpen} className="glass w-full py-1.5">
+        <Accordion type="single" collapsible value={open} onValueChange={setOpen} className="glass w-full overflow-hidden">
           {APPROACH.map((step, i) => (
             <AccordionItem
               key={step.title}
