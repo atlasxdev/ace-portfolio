@@ -120,10 +120,6 @@
      was snapping instantly rather than easing. */
   --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
 
-  /* The dock'''s magnification runs longer and flatter than the page'''s other
-     motion: the row has to settle behind a moving cursor, not land once. */
-  --ease-dock: cubic-bezier(0.16, 1, 0.3, 1);
-
   /* Light-mode greys run darker than a straight inversion of dark mode: the
      body face is light-weight, so mid-grey on off-white read washed out.
 
@@ -398,196 +394,15 @@
 
   .glass-hover {
     transition:
-      transform 0.35s var(--ease-spring),
-      border-color 0.3s ease,
-      background-color 0.3s ease;
+      transform 0.25s var(--ease-spring),
+      border-color 0.2s ease,
+      background-color 0.2s ease;
   }
 
   .glass-hover:hover {
     transform: translateY(-2px);
     border-color: color-mix(in srgb, var(--foreground) 22%, transparent);
     background: color-mix(in srgb, var(--card) 68%, transparent);
-  }
-
-  /* --- Section dock --------------------------------------------------------
-     macOS-style proximity magnification on a vertical rail, done in CSS rather
-     than in a pointer handler. Hovering a chip grows it and the two neighbours
-     either side taper back to the resting size, so the column swells around
-     the cursor instead of one chip popping on its own.
-
-     THE RAMP ANIMATES HEIGHT, and the chip takes its width from that via
-     `aspect-ratio` — one animated property, with the square falling out for
-     free. Animating both independently would let them disagree mid-transition
-     and the chip would breathe out of square on the way to peak.
-
-     CSS has no previous-sibling combinator, so each falloff ring is written
-     twice: `:has(+ …:hover)` reaches backwards from the hovered chip, the `+`
-     chain reaches forwards. Drop either half and the swell goes lopsided.
-
-     Magnification is pointer-only, deliberately. Adding :focus-within to all
-     six selectors would double them to catch a state that gains nothing —
-     keyboard users need the label, which the tooltip rule below does handle,
-     not the size.
-
-     Sizes are bounded by viewport HEIGHT, not width: ten chips at rest is
-     ~29rem, which clears a 600px-tall window once the capsule's padding and
-     margins are counted. Raising --dock-rest much past 3rem starts to overrun
-     short laptop screens at the xl breakpoint, where the rail is visible. */
-
-  .dock {
-    --dock-rest: 2.9rem;
-    --dock-far: 3.2rem;
-    --dock-near: 3.55rem;
-    --dock-peak: 4.2rem;
-  }
-
-  .dock-item {
-    height: var(--dock-rest);
-    padding-block: 0.35rem;
-    transition: height 0.5s var(--ease-dock);
-  }
-
-  .dock-item:hover {
-    height: var(--dock-peak);
-  }
-
-  .dock-item:has(+ .dock-item:hover),
-  .dock-item:hover + .dock-item {
-    height: var(--dock-near);
-  }
-
-  .dock-item:has(+ .dock-item + .dock-item:hover),
-  .dock-item:hover + .dock-item + .dock-item {
-    height: var(--dock-far);
-  }
-
-  /* The chip fills the item's content box, so the height ramp above is what
-     the eye reads as magnification.
-
-     The radius is a PERCENTAGE on purpose. A fixed 12px is a squircle at rest
-     and nearly a square at peak — the corner stops scaling with the box. 28%
-     holds the same silhouette across the whole ramp. */
-  .dock-chip {
-    height: 100%;
-    width: auto;
-    aspect-ratio: 1;
-    border-radius: 28%;
-  }
-
-  .dock-mark {
-    width: 45%;
-    height: auto;
-  }
-
-  .dock-tip {
-    opacity: 0;
-    transform: translateX(-0.25rem);
-    pointer-events: none;
-    transition:
-      opacity 0.35s var(--ease-dock),
-      transform 0.35s var(--ease-dock);
-  }
-
-  .dock-item:hover .dock-tip,
-  .dock-item:focus-visible .dock-tip {
-    opacity: 1;
-    transform: translateX(0.25rem);
-  }
-
-  /* The contact chip's label peeks out on its own, on a slow loop, so the
-     chip names itself without waiting for a hover. Hover or focus takes over
-     from the loop and holds it open. */
-  .dock-tip-peek {
-    animation: dock-peek 7s var(--ease-dock) 1.2s infinite;
-  }
-
-  .dock-item:hover .dock-tip-peek,
-  .dock-item:focus-visible .dock-tip-peek {
-    animation: none;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    /* The label still appears — it's information. The swell doesn't, since
-       it's movement nobody asked for. */
-    .dock-item,
-    .dock-item:hover,
-    .dock-item:has(+ .dock-item:hover),
-    .dock-item:hover + .dock-item,
-    .dock-item:has(+ .dock-item + .dock-item:hover),
-    .dock-item:hover + .dock-item + .dock-item {
-      height: var(--dock-rest);
-    }
-
-    .dock-item,
-    .dock-tip {
-      transition: none;
-    }
-
-    .dock-item:hover .dock-tip,
-    .dock-item:focus-visible .dock-tip {
-      transform: none;
-    }
-
-    /* Still peeks, but fades in place rather than sliding. */
-    .dock-tip-peek {
-      animation-name: dock-peek-fade;
-    }
-  }
-
-
-  /* --- Contact chip (dock) ---------------------------------------------------
-     The one element on the page that keeps moving, so it's the one that reads
-     as an invitation. A short gold highlight travels round the chip's edge on
-     a slow, even loop, and a soft glow breathes underneath it.
-
-     The highlight is a conic gradient masked down to a 1.5px ring; its start
-     angle is a registered custom property, which is what lets the gradient
-     itself rotate rather than the whole box. Under reduced motion the orbit
-     stops (the ring stays, parked) and only the glow's brightness changes. */
-
-  .cta-orbit {
-    position: relative;
-    isolation: isolate;
-  }
-
-  .cta-orbit::before {
-    content: "";
-    position: absolute;
-    inset: -1.5px;
-    padding: 1.5px;
-    border-radius: inherit;
-    background: conic-gradient(
-      from var(--cta-angle),
-      transparent 0deg 240deg,
-      color-mix(in srgb, var(--available) 45%, transparent) 300deg,
-      var(--available) 340deg,
-      color-mix(in srgb, var(--available) 40%, #fff) 352deg,
-      transparent 360deg
-    );
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-    animation: cta-orbit 3.2s linear infinite;
-  }
-
-  .cta-orbit::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    box-shadow: 0 0 20px -2px color-mix(in srgb, var(--available) 60%, transparent);
-    pointer-events: none;
-    animation: cta-breathe 3.2s ease-in-out infinite;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .cta-orbit::before {
-      animation: none;
-    }
   }
 
   /* --- Approach step badge -------------------------------------------------
@@ -717,56 +532,6 @@
     radial-gradient(30vmax 30vmax at 22% 88%, #ea4b71 0%, transparent 58%);
   filter: blur(64px) saturate(0.7);
   animation: ambient-drift 34s ease-in-out infinite alternate;
-}
-
-@property --cta-angle {
-  syntax: "<angle>";
-  initial-value: 0deg;
-  inherits: false;
-}
-
-@keyframes cta-orbit {
-  to {
-    --cta-angle: 360deg;
-  }
-}
-
-@keyframes cta-breathe {
-  0%,
-  100% {
-    opacity: 0.3;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-@keyframes dock-peek {
-  0%,
-  48%,
-  100% {
-    opacity: 0;
-    transform: translateX(-0.25rem);
-  }
-  6%,
-  40% {
-    opacity: 1;
-    transform: translateX(0.25rem);
-  }
-}
-
-@keyframes dock-peek-fade {
-  0%,
-  48%,
-  100% {
-    opacity: 0;
-    transform: none;
-  }
-  6%,
-  40% {
-    opacity: 1;
-    transform: none;
-  }
 }
 
 @keyframes ambient-drift {
