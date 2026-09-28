@@ -92,8 +92,8 @@ export default function Page() {
         <Reveal kind="fade" delay={0.12}>
           <Link
             href="/projects"
-            className="label mt-6 inline-flex items-center gap-2 transition-all hover:gap-3 hover:text-foreground">
-            All projects <ArrowRight className="size-3" aria-hidden />
+            className="label mt-6 group inline-flex items-center gap-2 transition-colors hover:text-foreground">
+            All projects <ArrowRight className="size-3 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
           </Link>
         </Reveal>
       </SectionRow>
@@ -104,8 +104,8 @@ export default function Page() {
         <Reveal kind="fade" delay={0.2}>
           <Link
             href="/blog/sdlc-in-claude-code"
-            className="label mt-8 inline-flex items-center gap-2 transition-all hover:gap-3 hover:text-foreground">
-            Read the full write-up <ArrowRight className="size-3" aria-hidden />
+            className="label mt-8 group inline-flex items-center gap-2 transition-colors hover:text-foreground">
+            Read the full write-up <ArrowRight className="size-3 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
           </Link>
         </Reveal>
       </SectionRow>
@@ -116,8 +116,8 @@ export default function Page() {
         <Reveal kind="fade" delay={0.12}>
           <Link
             href="/journey"
-            className="label mt-6 inline-flex items-center gap-2 transition-all hover:gap-3 hover:text-foreground">
-            Full history <ArrowRight className="size-3" aria-hidden />
+            className="label mt-6 group inline-flex items-center gap-2 transition-colors hover:text-foreground">
+            Full history <ArrowRight className="size-3 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
           </Link>
         </Reveal>
       </SectionRow>
@@ -149,8 +149,8 @@ export default function Page() {
         <Reveal kind="fade" delay={0.2}>
           <Link
             href="/tech-stacks"
-            className="label mt-8 inline-flex items-center gap-2 transition-all hover:gap-3 hover:text-foreground">
-            View all tech stacks <ArrowRight className="size-3" aria-hidden />
+            className="label mt-8 group inline-flex items-center gap-2 transition-colors hover:text-foreground">
+            View all tech stacks <ArrowRight className="size-3 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
           </Link>
         </Reveal>
       </SectionRow>
@@ -188,8 +188,8 @@ export default function Page() {
           <Reveal kind="fade" delay={0.12}>
             <Link
               href="/blog"
-              className="label mt-6 inline-flex items-center gap-2 transition-all hover:gap-3 hover:text-foreground">
-              All posts <ArrowRight className="size-3" aria-hidden />
+              className="label mt-6 group inline-flex items-center gap-2 transition-colors hover:text-foreground">
+              All posts <ArrowRight className="size-3 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
             </Link>
           </Reveal>
         </SectionRow>
