@@ -217,8 +217,8 @@ export default function Page() {
           </Button>
           <Link
             href="/schedule"
-            className="label group inline-flex items-center gap-2 px-2 transition-colors hover:text-foreground">
-            Schedule a call <ArrowRight className="size-3 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
+            className="inline-flex items-center gap-2 rounded-full border border-rule px-5 py-2.5 text-body-sm font-medium text-foreground transition-colors hover:border-foreground/40">
+            Schedule a call
           </Link>
         </Reveal>
       </SectionRow>

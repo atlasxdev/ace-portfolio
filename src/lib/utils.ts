@@ -1,5 +1,14 @@
 import { type ClassValue, clsx } from "clsx";
-import { twMerge } from "tailwind-merge";
+import { extendTailwindMerge } from "tailwind-merge";
+
+/**
+ * The type scale's custom sizes (globals.css `--text-*`). Unregistered,
+ * tailwind-merge reads `text-body-sm` as a colour and drops the real colour
+ * beside it, which left the pill button white on white.
+ */
+const twMerge = extendTailwindMerge({
+  extend: { theme: { text: ["display", "h2", "h3", "body-lg", "body", "body-sm", "label"] } },
+});
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
