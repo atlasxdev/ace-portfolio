@@ -15,6 +15,7 @@ import { RecognitionSection } from "@/components/section/recognition-section";
 import { ItemList, ItemRow, SectionRow } from "@/components/section/section-row";
 import { ExperienceSection } from "@/components/section/work-section";
 import { TechGrid } from "@/components/tech-tile";
+import { Button } from "@/components/ui/button";
 import { DATA } from "@/data/resume";
 import { section } from "@/data/sections";
 import { CAPABILITIES, TECH_BAND } from "@/data/stacks";
@@ -96,18 +97,6 @@ export default function Page() {
         </Reveal>
       </SectionRow>
 
-      {/* ── Approach ─────────────────────────────────────────────────── */}
-      <SectionRow label={section("approach").label} id="approach" wide>
-        <ApproachSection />
-        <Reveal kind="fade" delay={0.2}>
-          <Link
-            href="/blog/sdlc-in-claude-code"
-            className="label mt-8 group inline-flex items-center gap-2 transition-colors hover:text-foreground">
-            Read the full write-up <ArrowRight className="size-3 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
-          </Link>
-        </Reveal>
-      </SectionRow>
-
       {/* ── Experience ───────────────────────────────────────────────── */}
       <SectionRow label={section("experience").label} id="experience">
         <ExperienceSection />
@@ -124,6 +113,20 @@ export default function Page() {
       <SectionRow label={section("recognition").label} id="recognition">
         <RecognitionSection />
       </SectionRow>
+
+      {/* ── Approach ─────────────────────────────────────────────────── */}
+      {/* After the proof: the work and the jobs first, then how it's done. */}
+      <SectionRow label={section("approach").label} id="approach" wide>
+        <ApproachSection />
+        <Reveal kind="fade" delay={0.2}>
+          <Link
+            href="/blog/sdlc-in-claude-code"
+            className="label mt-8 group inline-flex items-center gap-2 transition-colors hover:text-foreground">
+            Read the full write-up <ArrowRight className="size-3 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
+          </Link>
+        </Reveal>
+      </SectionRow>
+
       {/* ── Capabilities ─────────────────────────────────────────────── */}
       <SectionRow label={section("capabilities").label} id="capabilities">
         <Reveal className="glass p-group">
@@ -193,6 +196,32 @@ export default function Page() {
         </SectionRow>
       )}
 
+      {/* ── Contact ──────────────────────────────────────────────────── */}
+      {/* The page's closing ask. The sidebar carries the same links, but on a
+          phone it's behind the menu button, so the end of the page needs its
+          own. `#contact` opens the site-wide dialog. */}
+      <SectionRow label={section("contact").label} id="contact-cta">
+        <Reveal>
+          <p className="font-display text-[26px] leading-[32px] font-semibold tracking-[-0.02em] text-balance md:text-[32px] md:leading-[38px]">
+            Have a system that needs building?
+          </p>
+          <p className="mt-snug max-w-[52ch] text-body-lg text-muted-foreground text-balance">
+            A role, a project, or a process that should run itself. Tell me what you&rsquo;re working on.
+          </p>
+        </Reveal>
+        <Reveal kind="fade" delay={0.12} className="mt-group flex flex-wrap items-center gap-3">
+          <Button asChild variant="pill" size="pill">
+            <a href="#contact">
+              Get in touch <ArrowRight className="size-3.5" aria-hidden />
+            </a>
+          </Button>
+          <Link
+            href="/schedule"
+            className="label group inline-flex items-center gap-2 px-2 transition-colors hover:text-foreground">
+            Schedule a call <ArrowRight className="size-3 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
+          </Link>
+        </Reveal>
+      </SectionRow>
     </>
   );
 }
