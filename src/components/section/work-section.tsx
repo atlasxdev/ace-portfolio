@@ -1,6 +1,5 @@
 import { DATA } from "@/data/resume";
 import { Reveal } from "@/components/motion/reveal";
-import { OrgLogo } from "@/components/org-logo";
 
 /**
  * Work experience: employer, role, and what was achieved there.
@@ -8,6 +7,9 @@ import { OrgLogo } from "@/components/org-logo";
  * Deliberately no project breakdowns — those are their own section, and the
  * promotion is a milestone on the timeline. This answers "where has he worked
  * and what came of it", nothing else.
+ *
+ * No employer logos: next to a job they read as the company vouching for the
+ * site. Logos stay where they mark a credential (certs, schools, awards).
  */
 const BULLET =
   "relative pl-5 before:absolute before:left-0 before:top-[0.62em] before:size-[5px] before:rounded-full before:bg-ink-faint";
@@ -33,10 +35,7 @@ export function ExperienceSection() {
             delay={i * 0.08}
             className="glass p-group md:p-entry"
           >
-            <div className="flex items-start gap-4">
-              <OrgLogo src={job.logoUrl} alt={job.company} />
-
-              <div className="flex min-w-0 flex-1 items-baseline justify-between gap-6 max-lg:flex-col max-lg:items-start max-lg:gap-1.5">
+            <div className="flex min-w-0 flex-1 items-baseline justify-between gap-6 max-lg:flex-col max-lg:items-start max-lg:gap-1.5">
                 {/* Company and role share a line with a slash between them
                     while there's room. On a phone that wrap left orphans like
                     a lone "I" from "System Engineer I", so the role drops to
@@ -53,7 +52,6 @@ export function ExperienceSection() {
                 <span className="label text-ink-faint lg:shrink-0">
                   {job.start} — {job.end}
                 </span>
-              </div>
             </div>
 
             {bullets.length > 1 ? (
