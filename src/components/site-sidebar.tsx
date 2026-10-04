@@ -61,11 +61,11 @@ function Profile() {
     <div className="flex flex-col gap-snug px-2.5">
       <Link href="/" className="flex flex-col gap-2.5">
         {/* A real image, not the inline <Monogram>: it's the page's first
-            image, so Google has the ACE logo to pick as the result thumbnail.
+            image, so Google has the AG logo to pick as the result thumbnail.
             Same file as primaryImageOfPage in person-schema.tsx. The name is
             the hero's h1, so it isn't repeated here. */}
         <Image
-          src="/ace-logo-1200.png"
+          src="/ag-logo-1200.png"
           alt={`${DATA.name} logo`}
           width={44}
           height={44}
@@ -232,7 +232,7 @@ export function SiteSidebar() {
         <div className="shell flex h-14 items-center justify-between gap-snug">
           <Link href="/" aria-label={`${DATA.name} home`}>
             <Image
-              src="/ace-logo-1200.png"
+              src="/ag-logo-1200.png"
               alt={`${DATA.name} logo`}
               width={32}
               height={32}
