@@ -612,3 +612,16 @@ html[data-leaving] main {
   .chat-dot { animation: none; opacity: 0.6; }
   .chat-caret { animation: none; }
 }
+
+/* Ag, the site pet (ag-pet.tsx). */
+.ag-bob { animation: ag-bob 2.4s ease-in-out infinite; }
+@keyframes ag-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+.ag-blink { animation: ag-blink 4.5s infinite; transform-box: fill-box; transform-origin: center; }
+@keyframes ag-blink { 0%, 93%, 100% { transform: scaleY(1); } 96% { transform: scaleY(0.1); } }
+.ag-chew { animation: ag-chew 0.22s steps(1) infinite; transform-box: fill-box; transform-origin: top; }
+@keyframes ag-chew { 50% { transform: scaleY(2); } }
+.ag-step-0 { animation: ag-step 0.3s steps(1) infinite; }
+.ag-step-1 { animation: ag-step 0.3s steps(1) infinite reverse; }
+@keyframes ag-step { 0% { opacity: 1; } 50% { opacity: 0; } }
+.ag-zzz { animation: ag-zzz 2s ease-out infinite; }
+@keyframes ag-zzz { 0% { opacity: 0; transform: translate(0, 4px); } 30% { opacity: 1; } 100% { opacity: 0; transform: translate(8px, -14px); } }

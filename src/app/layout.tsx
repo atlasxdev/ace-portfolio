@@ -5,6 +5,7 @@ import Chatbot from "@/components/chatbot";
 import { ContactDialogProvider } from "@/components/contact-dialog";
 import { PageWipe } from "@/components/motion/page-wipe";
 import { SiteSidebar } from "@/components/site-sidebar";
+import { AgPet } from "@/components/ag-pet";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { DATA } from "@/data/resume";
@@ -131,6 +132,9 @@ export default function RootLayout({
               {/* Inside the provider: it offers the contact form mid-chat. */}
               <Chatbot />
             </ContactDialogProvider>
+
+            {/* Hidden until summoned (Ctrl/⌘ + . or "/pet" in the chat). */}
+            <AgPet />
 
             {/* Outside the providers: neither renders anything, and neither
                 should be re-rendered by a theme or tooltip state change.

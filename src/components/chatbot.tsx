@@ -21,6 +21,7 @@ import type { ChatEvent } from "@/app/api/chat/route";
 import { useContactDialog } from "@/components/contact-dialog";
 import { Monogram } from "@/components/monogram";
 import { findChatProject } from "@/lib/chat-projects";
+import { togglePet } from "@/lib/pet-store";
 import { CARD_STATE, EASE } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -54,6 +55,11 @@ const STARTERS: Starter[] = [
   { icon: CircleCheck, text: "Is Ace open to new work?" },
   { icon: Mail, text: "Send Ace a message", contact: true },
 ];
+
+/** Hidden commands: typing "/" in the palette lists them instead of asking the assistant. */
+const COMMANDS = [{ cmd: "/pet", label: "Ag, the site pet", desc: "Summon it, or send it away" }];
+
+const matchCommands = (text: string) => COMMANDS.filter((c) => c.cmd.startsWith(text.trim().toLowerCase()));
 
 /** Reads the route's newline-delimited JSON events as they arrive. */
 async function readEvents(body: ReadableStream<Uint8Array>, onEvent: (event: ChatEvent) => void) {
@@ -170,9 +176,20 @@ export default function Chatbot() {
 
   const stop = () => abortRef.current?.abort();
 
+  const runCommand = (cmd: string) => {
+    if (cmd === "/pet") togglePet();
+    setInput("");
+    setIsOpen(false);
+  };
+
   const ask = async (text: string) => {
     const question = text.trim();
     if (!question || busy) return;
+    if (question.startsWith("/")) {
+      const [command] = matchCommands(question);
+      if (command) runCommand(command.cmd);
+      return;
+    }
 
     const user: Message = { id: nextId.current++, role: "user", content: question };
     const reply: Message = { id: nextId.current++, role: "assistant", content: "", streaming: true };
@@ -243,6 +260,7 @@ export default function Chatbot() {
   };
 
   const empty = messages.length === 0;
+  const commandMode = input.trimStart().startsWith("/");
   const last = messages[messages.length - 1];
 
   return (
@@ -372,9 +390,11 @@ export default function Chatbot() {
                   {/* transcript */}
                   <div
                     ref={scrollRef}
-                    className={cn("order-2 min-h-0 flex-1 overflow-y-auto overscroll-contain", empty && "lg:flex-none")}>
-                    <div ref={contentRef} className={cn("flex min-h-full flex-col md:mx-auto md:max-w-2xl lg:max-w-none", !empty && "gap-5 px-4 py-5 lg:px-6")}>
-                      {empty ? (
+                    className={cn("order-2 min-h-0 flex-1 overflow-y-auto overscroll-contain", (empty || commandMode) && "lg:flex-none")}>
+                    <div ref={contentRef} className={cn("flex min-h-full flex-col md:mx-auto md:max-w-2xl lg:max-w-none", !empty && !commandMode && "gap-5 px-4 py-5 lg:px-6")}>
+                      {commandMode ? (
+                        <CommandList matches={matchCommands(input)} onRun={runCommand} />
+                      ) : empty ? (
                         <Welcome active={active} onHover={setActive} onPick={pickStarter} />
                       ) : (
                         <div role="log" aria-label="Conversation" className="flex flex-col gap-5">
@@ -415,7 +435,7 @@ export default function Chatbot() {
                       )}
                     </span>
                     <span className="flex items-center gap-4">
-                      {empty && (
+                      {empty && !commandMode && (
                         <span className="flex items-center gap-1.5">
                           <Key>↑</Key>
                           <Key>↓</Key>
@@ -424,8 +444,14 @@ export default function Chatbot() {
                       )}
                       <span className="flex items-center gap-1.5">
                         <Key>{busy ? "Esc" : "Enter"}</Key>
-                        {busy ? "to stop" : "to ask"}
+                        {busy ? "to stop" : commandMode ? "to run" : "to ask"}
                       </span>
+                      {!commandMode && !busy && (
+                        <span className="flex items-center gap-1.5">
+                          <Key>/</Key>
+                          for commands
+                        </span>
+                      )}
                     </span>
                   </div>
                 </motion.div>
@@ -461,6 +487,40 @@ function Key({ children }: { children: React.ReactNode }) {
     <kbd className="min-w-5 rounded-[5px] border border-rule bg-foreground/4 px-1.5 text-center font-sans text-[11px] leading-5 text-muted-foreground">
       {children}
     </kbd>
+  );
+}
+
+function CommandList({ matches, onRun }: { matches: typeof COMMANDS; onRun: (cmd: string) => void }) {
+  return (
+    <div className="mt-auto flex flex-col gap-1 px-4 py-5 lg:mt-0 lg:p-2">
+      <p className="px-2.5 pt-2 pb-1.5 text-xs text-ink-faint">Hidden commands</p>
+      {matches.length === 0 ? (
+        <p className="px-2.5 pb-2 text-body-sm text-muted-foreground">No command by that name.</p>
+      ) : (
+        <ul>
+          {matches.map((c, i) => (
+            <li key={c.cmd}>
+              <button
+                type="button"
+                onClick={() => onRun(c.cmd)}
+                className={cn(
+                  "flex h-12 w-full cursor-pointer items-center gap-3 rounded-[10px] px-2.5 text-left text-[15px] text-foreground hover:bg-foreground/4 lg:text-body",
+                  i === 0 && "bg-foreground/7",
+                )}>
+                <span className="min-w-14 font-mono text-body-sm">{c.cmd}</span>
+                <span>{c.label}</span>
+                <span className="hidden text-body-sm text-muted-foreground sm:inline">{c.desc}</span>
+                {i === 0 && (
+                  <span className="ml-auto hidden lg:inline">
+                    <Key>Enter</Key>
+                  </span>
+                )}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
 
