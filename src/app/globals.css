@@ -581,66 +581,24 @@ html[data-leaving] main {
   mix-blend-mode: normal;
 }
 
-/* Custom cursor (custom-cursor.tsx). The class only lands on mouse/trackpad
-   devices, so touch keeps its defaults. Text fields keep the native I-beam. */
-html.custom-cursor,
-html.custom-cursor * {
-  cursor: none !important;
-}
-html.custom-cursor :is(input, textarea, [contenteditable="true"]) {
-  cursor: text !important;
-}
-
-.cursor-dot,
-.cursor-ring {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 2147483647;
-  pointer-events: none;
-  border-radius: 9999px;
-  /* Difference blending keeps one white cursor legible on both themes. */
-  mix-blend-mode: difference;
-  opacity: 0;
-  will-change: transform;
-  transition:
-    opacity 200ms ease,
-    scale 350ms var(--ease-spring),
-    background-color 200ms ease;
-}
-.cursor-dot {
-  width: 6px;
-  height: 6px;
-  margin: -3px 0 0 -3px;
-  background: #fff;
-}
-.cursor-ring {
-  width: 34px;
-  height: 34px;
-  margin: -17px 0 0 -17px;
-  border: 1px solid #fff;
-}
-.cursor-dot[data-visible],
-.cursor-ring[data-visible] {
-  opacity: 1;
-}
-/* Over something clickable the ring fills and inverts what's under it. */
-.cursor-ring[data-hover] {
-  scale: 1.5;
-  background-color: #fff;
-}
-.cursor-dot[data-hover] {
-  scale: 0;
-}
-.cursor-ring[data-down] {
-  scale: 0.85;
-}
-.cursor-ring[data-hover][data-down] {
-  scale: 1.25;
-}
-.cursor-dot[data-text],
-.cursor-ring[data-text] {
-  opacity: 0;
+/* Mac-style cursor: a black arrow with a white edge, and a pointing hand
+   over anything clickable. Plain CSS cursors, so it moves exactly like the
+   system pointer. Mouse and trackpad only; text fields keep the I-beam and
+   disabled controls keep their not-allowed cursor. */
+@media (hover: hover) and (pointer: fine) {
+  html,
+  html * {
+    cursor: url("/cursors/arrow.svg") 6 4, default !important;
+  }
+  html :is(a[href], button, [role="button"], [role="radio"], [role="option"], [role="tab"], label[for], summary, select, .cursor-pointer) {
+    cursor: url("/cursors/hand.svg") 13 3, pointer !important;
+  }
+  html :is(input:not([type="checkbox"], [type="radio"], [type="range"], [type="button"], [type="submit"]), textarea, [contenteditable="true"]) {
+    cursor: text !important;
+  }
+  html :is(:disabled, [aria-disabled="true"], .cursor-not-allowed) {
+    cursor: not-allowed !important;
+  }
 }
 
 /* Chat: the typing dots and the cursor at the end of a streaming reply. */

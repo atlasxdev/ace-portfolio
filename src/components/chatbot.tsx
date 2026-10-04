@@ -291,7 +291,7 @@ export default function Chatbot() {
                     // Phones and tablets: the whole screen.
                     "fixed inset-0 z-[60] flex h-dvh flex-col bg-card text-foreground",
                     // Desktop: a command palette.
-                    "lg:inset-x-0 lg:top-[12vh] lg:bottom-auto lg:mx-auto lg:h-auto lg:max-h-[min(76vh,720px)] lg:w-[min(92vw,640px)] lg:overflow-hidden lg:rounded-2xl lg:border lg:border-foreground/12 lg:shadow-[inset_0_1px_0_var(--glass-hi),0_40px_90px_-24px_rgb(0_0_0/0.65)]",
+                    "lg:inset-0 lg:m-auto lg:h-fit lg:max-h-[min(80vh,720px)] lg:w-[min(92vw,640px)] lg:overflow-hidden lg:rounded-2xl lg:border lg:border-foreground/12 lg:shadow-[inset_0_1px_0_var(--glass-hi),0_40px_90px_-24px_rgb(0_0_0/0.65)]",
                   )}>
                   <DialogPrimitive.Title className="sr-only">Ask about Ace</DialogPrimitive.Title>
 

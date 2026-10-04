@@ -5,7 +5,6 @@ import Chatbot from "@/components/chatbot";
 import { ContactDialogProvider } from "@/components/contact-dialog";
 import { PageWipe } from "@/components/motion/page-wipe";
 import { SiteSidebar } from "@/components/site-sidebar";
-import { CustomCursor } from "@/components/custom-cursor";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { DATA } from "@/data/resume";
@@ -120,7 +119,6 @@ export default function RootLayout({
             <div id="ambient" aria-hidden />
 
             <PageWipe />
-            <CustomCursor />
 
             <ContactDialogProvider>
               <SiteSidebar />
