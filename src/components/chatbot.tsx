@@ -45,11 +45,44 @@ export default function Chatbot() {
   // pull focus back to the sidebar while the dialog is mounting.
   const handingOff = useRef(false);
   const reduced = useReducedMotion();
+  const isOpenRef = useRef(isOpen);
+  isOpenRef.current = isOpen;
 
   useEffect(() => {
     const open = () => setIsOpen(true);
     window.addEventListener(OPEN_CHAT_EVENT, open);
     return () => window.removeEventListener(OPEN_CHAT_EVENT, open);
+  }, []);
+
+  // ⌘K / Ctrl+K toggles the chat from anywhere; "/" opens it unless you're
+  // already typing somewhere. ⌘. / Ctrl+. resizes it while open. Esc closing
+  // comes free from the popover.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const mod = e.metaKey || e.ctrlKey;
+      if (mod && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setIsOpen((open) => {
+          if (open) setExpanded(false);
+          return !open;
+        });
+        return;
+      }
+      if (mod && e.key === ".") {
+        if (!isOpenRef.current) return;
+        e.preventDefault();
+        setExpanded((v) => !v);
+        return;
+      }
+      if (e.key === "/" && !mod && !e.altKey && !isOpenRef.current) {
+        const t = e.target as HTMLElement | null;
+        if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+        e.preventDefault();
+        setIsOpen(true);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
   }, []);
 
   useEffect(() => {
