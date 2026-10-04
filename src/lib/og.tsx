@@ -34,8 +34,9 @@ export async function ogFonts() {
   }
 }
 
-// Satori can't resolve local paths, so the logo goes in as a data URI.
-const LOGO_SRC = `data:image/png;base64,${readFileSync(join(process.cwd(), "public", "ace-logo.png")).toString("base64")}`;
+// Satori can't resolve local paths, so the logo goes in as a data URI. The
+// transparent mark, so it sits on the card's own background.
+const LOGO_SRC = `data:image/png;base64,${readFileSync(join(process.cwd(), "public", "brand", "ace-mark-white.png")).toString("base64")}`;
 
 // The site's dark-mode tokens (globals.css `.dark`). Always dark: the card is
 // shown in other apps' chrome, where the site's theme toggle doesn't reach.
@@ -107,13 +108,7 @@ export function OgCard({
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
           {/* eslint-disable-next-line @next/next/no-img-element -- Satori renders <img>, not next/image */}
-          <img
-            src={LOGO_SRC}
-            alt=""
-            width={64}
-            height={64}
-            style={{ borderRadius: "18px", border: `1px solid ${INK.rule}` }}
-          />
+          <img src={LOGO_SRC} alt="" width={64} height={64} />
           <div style={label}>{eyebrow}</div>
         </div>
         <div style={label}>{corner}</div>
@@ -177,6 +172,16 @@ export function OgCard({
           </div>
         )}
       </div>
+
+      {/* The monogram again, oversized and faint, bleeding off the right edge */}
+      {/* eslint-disable-next-line @next/next/no-img-element -- Satori renders <img>, not next/image */}
+      <img
+        src={LOGO_SRC}
+        alt=""
+        width={560}
+        height={560}
+        style={{ position: "absolute", right: "-120px", top: "-40px", opacity: 0.07 }}
+      />
 
       {/* Brand strip along the bottom edge */}
       <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: "6px", display: "flex" }}>
