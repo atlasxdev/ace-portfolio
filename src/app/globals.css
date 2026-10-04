@@ -581,26 +581,6 @@ html[data-leaving] main {
   mix-blend-mode: normal;
 }
 
-/* Mac-style cursor: a black arrow with a white edge, and a pointing hand
-   over anything clickable. Plain CSS cursors, so it moves exactly like the
-   system pointer. Mouse and trackpad only; text fields keep the I-beam and
-   disabled controls keep their not-allowed cursor. */
-@media (hover: hover) and (pointer: fine) {
-  html,
-  html * {
-    cursor: url("/cursors/arrow.svg") 6 4, default !important;
-  }
-  html :is(a[href], button, [role="button"], [role="radio"], [role="option"], [role="tab"], label[for], summary, select, .cursor-pointer) {
-    cursor: url("/cursors/hand.svg") 13 3, pointer !important;
-  }
-  html :is(input:not([type="checkbox"], [type="radio"], [type="range"], [type="button"], [type="submit"]), textarea, [contenteditable="true"]) {
-    cursor: text !important;
-  }
-  html :is(:disabled, [aria-disabled="true"], .cursor-not-allowed) {
-    cursor: not-allowed !important;
-  }
-}
-
 /* Chat: the typing dots and the cursor at the end of a streaming reply. */
 .chat-dot {
   width: 6px;
