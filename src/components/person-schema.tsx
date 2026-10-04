@@ -52,8 +52,15 @@ export function PersonSchema() {
     ],
   };
 
-  const schema = {
-    "@context": "https://schema.org",
+  // WebSite is what Google reads for the site name shown above the result.
+  const website = {
+    "@type": "WebSite",
+    name: DATA.name,
+    alternateName: ["AG", "aceguevarra.xyz"],
+    url: DATA.url,
+  };
+
+  const profile = {
     "@type": "ProfilePage",
     url: DATA.url,
     primaryImageOfPage: {
@@ -64,6 +71,8 @@ export function PersonSchema() {
     },
     mainEntity: person,
   };
+
+  const schema = { "@context": "https://schema.org", "@graph": [website, profile] };
 
   return (
     <script

@@ -109,7 +109,7 @@ function Dial({ open, onSelect, play }: { open: string; onSelect: (v: string) =>
         ))}
 
         {ARCS.map((arc, i) => {
-          const delay = i * 0.18;
+          const delay = i * 0.08;
           const active = open === String(i) || open === String((i + 1) % APPROACH.length);
           return (
             <g key={i} stroke={hue(i)} strokeLinecap="round" strokeLinejoin="round">
@@ -122,7 +122,7 @@ function Dial({ open, onSelect, play }: { open: string; onSelect: (v: string) =>
                   strokeDasharray="3 4"
                   initial={{ opacity: reduced ? 0.7 : 0 }}
                   animate={{ opacity: on ? 0.7 : 0 }}
-                  transition={{ duration: 0.6, ease: EASE, delay }}
+                  transition={{ duration: 0.35, ease: EASE, delay }}
                 />
               ) : (
                 <motion.path
@@ -130,7 +130,7 @@ function Dial({ open, onSelect, play }: { open: string; onSelect: (v: string) =>
                   strokeWidth={active ? 2 : 1.5}
                   initial={{ pathLength: reduced ? 1 : 0, opacity: 0.85 }}
                   animate={{ pathLength: on ? 1 : 0 }}
-                  transition={{ duration: 0.6, ease: EASE, delay }}
+                  transition={{ duration: 0.35, ease: EASE, delay }}
                 />
               )}
               <motion.path
@@ -138,7 +138,7 @@ function Dial({ open, onSelect, play }: { open: string; onSelect: (v: string) =>
                 strokeWidth={1.5}
                 initial={{ opacity: reduced ? 1 : 0 }}
                 animate={{ opacity: on ? 1 : 0 }}
-                transition={{ duration: 0.3, ease: EASE, delay: delay + 0.45 }}
+                transition={{ duration: 0.2, ease: EASE, delay: delay + 0.25 }}
               />
             </g>
           );
