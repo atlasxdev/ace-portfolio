@@ -1,11 +1,9 @@
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
-import Chatbot from "@/components/chatbot";
 import { ContactDialogProvider } from "@/components/contact-dialog";
-import { PageWipe } from "@/components/motion/page-wipe";
+import { DeferredExtras } from "@/components/deferred-extras";
 import { SiteSidebar } from "@/components/site-sidebar";
-import { AgPet } from "@/components/ag-pet";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { DATA } from "@/data/resume";
@@ -119,8 +117,6 @@ export default function RootLayout({
             {/* Gives the glass surfaces something to refract. */}
             <div id="ambient" aria-hidden />
 
-            <PageWipe />
-
             <ContactDialogProvider>
               <SiteSidebar />
               {/* Clears the fixed desktop sidebar (w-72). No site footer: its
@@ -129,12 +125,10 @@ export default function RootLayout({
                 <main className="flex-1">{children}</main>
               </div>
 
-              {/* Inside the provider: it offers the contact form mid-chat. */}
-              <Chatbot />
+              {/* Chat, pet and page wipe, loaded after first paint. Inside
+                  the provider: the chat offers the contact form mid-chat. */}
+              <DeferredExtras />
             </ContactDialogProvider>
-
-            {/* Hidden until summoned (Ctrl/⌘ + . or "/pet" in the chat). */}
-            <AgPet />
 
             {/* Outside the providers: neither renders anything, and neither
                 should be re-rendered by a theme or tooltip state change.

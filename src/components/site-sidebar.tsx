@@ -20,7 +20,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRef, useState } from "react";
 
-import { OPEN_CHAT_EVENT } from "@/components/chatbot";
+import { OPEN_CHAT_EVENT } from "@/lib/chat-events";
 import { useContactDialog } from "@/components/contact-dialog";
 import { Icons } from "@/components/icons";
 import { ModeToggle } from "@/components/mode-toggle";

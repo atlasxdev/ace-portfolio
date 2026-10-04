@@ -22,13 +22,12 @@ import { useContactDialog } from "@/components/contact-dialog";
 import { Monogram } from "@/components/monogram";
 import { PaletteSnake } from "@/components/palette-snake";
 import { PaletteSource } from "@/components/palette-source";
+import { OPEN_CHAT_EVENT } from "@/lib/chat-events";
 import { findChatProject } from "@/lib/chat-projects";
 import { keepOpenForPet, togglePet } from "@/lib/pet-store";
 import { CARD_STATE, EASE } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
-/** Dispatched by the sidebar's "Ask my AI assistant" button. */
-export const OPEN_CHAT_EVENT = "ag:open-chat";
 
 type Message = {
   id: number;
@@ -120,8 +119,9 @@ function useTypedText(text: string, animate: boolean) {
   return smooth ? text.slice(0, shown) : text;
 }
 
-export default function Chatbot() {
-  const [isOpen, setIsOpen] = useState(false);
+export default function Chatbot({ openOnMount = false }: { openOnMount?: boolean }) {
+  // Opened before it had loaded (see DeferredExtras): start open.
+  const [isOpen, setIsOpen] = useState(openOnMount);
   const [screen, setScreen] = useState<Screen | null>(null);
   // Closing the palette, however it closes, leaves any command screen.
   if (!isOpen && screen) setScreen(null);
