@@ -8,7 +8,7 @@ import { DATA } from "@/data/resume";
  * profile links. Blog posts already emit their own Article schema; the site's
  * root had none.
  *
- * `primaryImageOfPage` points Google's result thumbnail at the AG monogram.
+ * `primaryImageOfPage` points Google's result thumbnail at the ACE monogram.
  * Without it Google picked an on-page image of its own (the VizServe logo in
  * the work section). It's a large PNG because Google passes over small images
  * for thumbnails; robots.ts also keeps the company logos out of its reach.
@@ -58,7 +58,7 @@ export function PersonSchema() {
     url: DATA.url,
     primaryImageOfPage: {
       "@type": "ImageObject",
-      url: `${DATA.url}/ag-logo-1200.png`,
+      url: `${DATA.url}/ace-logo-1200.png`,
       width: 1200,
       height: 1200,
     },

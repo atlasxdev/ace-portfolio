@@ -35,7 +35,7 @@ export async function ogFonts() {
 }
 
 // Satori can't resolve local paths, so the logo goes in as a data URI.
-const LOGO_SRC = `data:image/png;base64,${readFileSync(join(process.cwd(), "public", "ag-logo.png")).toString("base64")}`;
+const LOGO_SRC = `data:image/png;base64,${readFileSync(join(process.cwd(), "public", "ace-logo.png")).toString("base64")}`;
 
 // The site's dark-mode tokens (globals.css `.dark`). Always dark: the card is
 // shown in other apps' chrome, where the site's theme toggle doesn't reach.

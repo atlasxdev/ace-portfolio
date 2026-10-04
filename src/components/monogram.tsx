@@ -1,23 +1,49 @@
+import { useId } from "react";
+
 import { cn } from "@/lib/utils";
 
 /**
- * The monogram, cut from ClashDisplay-Semibold — the same face as the wordmark,
- * so the mark and the name are the same letterforms rather than two unrelated
- * designs. Uses currentColor, so it follows the theme with no variants.
+ * The ACE monogram: a circle cut by a Y into three wedges, one letter per
+ * wedge (A top-left, C top-right, E bottom), all in one stroke weight.
+ * Drawn as strokes into a mask so the cuts stay transparent and the mark
+ * fills with currentColor, following the theme with no variants.
  *
  * The favicon (src/app/icon.svg) and the iOS icon (src/app/apple-icon.tsx)
  * carry their own opaque colours instead, because browser chrome renders them
  * against backgrounds we cannot predict.
  */
 export function Monogram({ className }: { className?: string }) {
+  // useId output carries characters that break url(#…) references.
+  const id = `mono${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
   return (
     <svg
-      viewBox="0 0 64 64"
+      viewBox="142 142 740 740"
       className={cn("size-6", className)}
       aria-hidden="true"
       focusable="false"
     >
-      <g fill="currentColor"><path d="M6.357014925373139 46.72H-1.0249552238805912L11.849552238805975 17.28H21.25277611940299L34.215164179104484 46.72H26.657432835820902L23.889194029850753 40.21683582089552H9.169194029850752ZM14.485970149253736 27.86961194029851 11.717731343283587 34.284895522388055H21.340656716417914L18.572417910447765 27.86961194029851L16.770865671641797 23.299820895522387H16.287522388059706Z"/><path d="M46.438208955223885 47.15940298507463Q39.715343283582094 47.15940298507463 35.80465671641791 43.050985074626865Q31.893970149253732 38.9425671641791 31.893970149253732 32.0Q31.893970149253732 25.057432835820894 36.288 20.949014925373135Q40.68202985074627 16.840597014925372 48.23976119402985 16.840597014925372Q55.182328358208956 16.840597014925372 59.24680597014925 19.89444776119403Q63.31128358208956 22.948298507462685 63.31128358208956 28.221134328358207V28.57265671641791H55.973253731343284V28.221134328358207Q55.973253731343284 25.62865671641791 54.105791044776126 24.398328358208957Q52.23832835820896 23.168 48.064 23.168Q43.010865671641795 23.168 40.94567164179105 25.14531343283582Q38.8804776119403 27.12262686567164 38.8804776119403 32.0Q38.8804776119403 36.87737313432836 40.879761194029854 38.85468656716418Q42.87904477611941 40.832 47.756417910447766 40.832Q52.853492537313436 40.832 54.74292537313433 39.84334328358209Q56.632358208955225 38.85468656716418 56.76417910447761 36.042507462686565H46.789731343283584V31.165134328358207H63.35522388059702V46.72H57.24752238805971V40.39259701492537H56.896Q55.1383880597015 47.15940298507463 46.438208955223885 47.15940298507463Z"/></g>
+      <mask id={id} maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024">
+        <rect width="1024" height="1024" fill="#000" />
+        <g fill="none" stroke="#fff" strokeWidth="60">
+          <circle cx="512" cy="512" r="340" />
+          <path d="M465.0 542.0L465.0 172.0" />
+          <path d="M559.0 542.0L559.0 172.0" />
+          <path d="M535.5 471.3L829.9 641.3" />
+          <path d="M457.3 534.7L712.8 682.2" />
+          <path d="M566.7 534.7L241.1 722.7" />
+          <path d="M465.0 365.9L172.8 534.7" />
+          <path d="M419.0 620.0L601.3 725.2" />
+        </g>
+        <g fill="none" stroke="#000">
+          <path d="M772.5 293.5A340 340 0 0 1 848.7 464.7" strokeWidth="64" />
+          <path d="M806.4 682.0A340 340 0 0 1 682.0 806.4" strokeWidth="64" />
+          <path d="M512.0 512.0L512.0 112.0" strokeWidth="34" />
+          <path d="M512.0 512.0L165.6 712.0" strokeWidth="34" />
+          <path d="M512.0 512.0L858.4 712.0" strokeWidth="34" />
+          <path d="M428 507H506L506 514L428 552Z" fill="#000" stroke="none" />
+        </g>
+      </mask>
+      <rect width="1024" height="1024" fill="currentColor" mask={`url(#${id})`} />
     </svg>
   );
 }
