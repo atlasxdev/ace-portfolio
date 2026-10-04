@@ -15,8 +15,11 @@ export function HeroPortrait({ className }: { className?: string }) {
         src="/me-light.jpg"
         alt={`Photo of ${DATA.name}`}
         fill
-        priority
-        sizes="(min-width: 1024px) 300px, (min-width: 768px) 260px, 90vw"
+        preload
+        fetchPriority="high"
+        quality={60}
+        // Under md the frame is capped at max-w-[280px], not the full width.
+        sizes="(min-width: 1024px) 300px, (min-width: 768px) 260px, 280px"
         className="scale-125 object-cover"
       />
     </div>

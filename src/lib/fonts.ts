@@ -13,6 +13,8 @@ export const geistMono = Geist_Mono({
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-mono",
   display: "swap",
+  // Only small labels use it; don't let it compete with the hero photo.
+  preload: false,
 });
 
 // The display face. Already in the repo — it was only being used to render OG

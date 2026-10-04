@@ -70,7 +70,6 @@ function Profile() {
           width={44}
           height={44}
           unoptimized
-          priority
           className="size-11 rounded-xl"
         />
         <span className="text-body-sm text-muted-foreground">Full-stack &amp; automation engineer</span>
@@ -235,7 +234,7 @@ export function SiteSidebar() {
         <div className="shell flex h-14 items-center justify-between gap-snug">
           <Link href="/" aria-label={`${DATA.name} home`}>
             <Image
-              src="/ag-logo-1200.png"
+              src="/ag-logo.png"
               alt={`${DATA.name} logo`}
               width={32}
               height={32}
