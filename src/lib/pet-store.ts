@@ -50,3 +50,19 @@ export function setPetShown(shown: boolean) {
 
 export const togglePet = () => setPetShown(!isPetShown());
 export const setPetMuted = (muted: boolean) => write(MUTED, muted);
+
+/** Fired by the contact form when a message goes through, so Ag can cheer. */
+export const CONTACT_SENT_EVENT = "ag:contact-sent";
+
+/**
+ * For a dialog's onPointerDownOutside / onInteractOutside: clicking Ag while
+ * a dialog is open shouldn't dismiss the dialog (and lose what was typed).
+ */
+export function keepOpenForPet(e: {
+  target: EventTarget | null;
+  detail?: { originalEvent?: Event };
+  preventDefault(): void;
+}) {
+  const target = (e.detail?.originalEvent?.target ?? e.target) as Element | null;
+  if (target?.closest?.("[data-ag-pet]")) e.preventDefault();
+}

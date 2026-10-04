@@ -14,7 +14,14 @@ function audio() {
   return ctx;
 }
 
-function sweep(from: number, to: number, start: number, duration: number, type: OscillatorType = "sine", volume = 0.05) {
+function sweep(
+  from: number,
+  to: number,
+  start: number,
+  duration: number,
+  type: OscillatorType = "sine",
+  volume = 0.05,
+) {
   const a = audio();
   if (!a) return;
   const t = a.currentTime + start;
@@ -46,6 +53,15 @@ export const petSounds = {
   pet() {
     sweep(700, 1050, 0, 0.09);
     sweep(800, 1200, 0.11, 0.11);
+  },
+  /** A grumpy low buzz. */
+  huff() {
+    sweep(220, 160, 0, 0.18, "sawtooth", 0.025);
+    sweep(200, 150, 0.2, 0.2, "sawtooth", 0.025);
+  },
+  /** A small hiccup. */
+  hic() {
+    sweep(500, 900, 0, 0.07, "square", 0.02);
   },
   /** Three low nibbles. */
   feed() {

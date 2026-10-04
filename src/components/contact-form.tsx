@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { DATA } from "@/data/resume";
+import { CONTACT_SENT_EVENT } from "@/lib/pet-store";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
@@ -122,6 +123,7 @@ export function ContactForm() {
       form.reset();
       setVerified(!TURNSTILE_SITE_KEY);
       setStatus("sent");
+      window.dispatchEvent(new Event(CONTACT_SENT_EVENT));
     } catch {
       setError("Couldn't reach the server. Please email me directly.");
       setStatus("error");
