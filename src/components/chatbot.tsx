@@ -20,8 +20,10 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import type { ChatEvent } from "@/app/api/chat/route";
 import { useContactDialog } from "@/components/contact-dialog";
 import { Monogram } from "@/components/monogram";
+import { PaletteSnake } from "@/components/palette-snake";
+import { PaletteSource } from "@/components/palette-source";
 import { findChatProject } from "@/lib/chat-projects";
-import { togglePet } from "@/lib/pet-store";
+import { keepOpenForPet, togglePet } from "@/lib/pet-store";
 import { CARD_STATE, EASE } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
@@ -57,7 +59,22 @@ const STARTERS: Starter[] = [
 ];
 
 /** Hidden commands: typing "/" in the palette lists them instead of asking the assistant. */
-const COMMANDS = [{ cmd: "/pet", label: "Ag, the site pet", desc: "Summon it, or send it away" }];
+const COMMANDS = [
+  {
+    cmd: "/pet",
+    label: "Ag, the site pet",
+    desc: "Summon it, or send it away",
+  },
+  { cmd: "/play", label: "Snake", desc: "A quick game, right here" },
+  {
+    cmd: "/source",
+    label: "How this site is built",
+    desc: "The stack behind it",
+  },
+];
+
+/** What a command opens inside the palette, in place of the conversation. */
+type Screen = "play" | "source";
 
 const matchCommands = (text: string) => COMMANDS.filter((c) => c.cmd.startsWith(text.trim().toLowerCase()));
 
@@ -105,6 +122,9 @@ function useTypedText(text: string, animate: boolean) {
 
 export default function Chatbot() {
   const [isOpen, setIsOpen] = useState(false);
+  const [screen, setScreen] = useState<Screen | null>(null);
+  // Closing the palette, however it closes, leaves any command screen.
+  if (!isOpen && screen) setScreen(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
@@ -177,9 +197,12 @@ export default function Chatbot() {
   const stop = () => abortRef.current?.abort();
 
   const runCommand = (cmd: string) => {
-    if (cmd === "/pet") togglePet();
     setInput("");
-    setIsOpen(false);
+    if (cmd === "/pet") {
+      togglePet();
+      setIsOpen(false);
+    } else setScreen(cmd === "/play" ? "play" : "source");
+    inputRef.current?.focus();
   };
 
   const ask = async (text: string) => {
@@ -190,9 +213,19 @@ export default function Chatbot() {
       if (command) runCommand(command.cmd);
       return;
     }
+    setScreen(null);
 
-    const user: Message = { id: nextId.current++, role: "user", content: question };
-    const reply: Message = { id: nextId.current++, role: "assistant", content: "", streaming: true };
+    const user: Message = {
+      id: nextId.current++,
+      role: "user",
+      content: question,
+    };
+    const reply: Message = {
+      id: nextId.current++,
+      role: "assistant",
+      content: "",
+      streaming: true,
+    };
     const history = [...messages.filter((m) => m.content), user];
     setMessages((prev) => [...prev, user, reply]);
     setInput("");
@@ -208,14 +241,21 @@ export default function Chatbot() {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: history.map(({ role, content }) => ({ role, content })) }),
+        body: JSON.stringify({
+          messages: history.map(({ role, content }) => ({ role, content })),
+        }),
         signal: controller.signal,
       });
       if (!response.ok || !response.body) throw new Error(`Chat request failed (${response.status})`);
       await readEvents(response.body, (event) => {
         if (event.type === "delta") patch((m) => ({ ...m, content: m.content + event.text }));
         else if (event.type === "done")
-          patch((m) => ({ ...m, showContact: event.showContact, projects: event.projects, followUps: event.followUps }));
+          patch((m) => ({
+            ...m,
+            showContact: event.showContact,
+            projects: event.projects,
+            followUps: event.followUps,
+          }));
         else patch((m) => ({ ...m, failed: !m.content }));
       });
     } catch (error) {
@@ -248,7 +288,7 @@ export default function Chatbot() {
   };
 
   const onInputKey = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (messages.length > 0 || input) return;
+    if (screen || messages.length > 0 || input) return;
     if (e.key === "ArrowDown" || e.key === "ArrowUp") {
       e.preventDefault();
       const step = e.key === "ArrowDown" ? 1 : -1;
@@ -293,17 +333,31 @@ export default function Chatbot() {
                     e.preventDefault();
                   }
                 }}
+                onPointerDownOutside={keepOpenForPet}
+                onInteractOutside={keepOpenForPet}
                 onEscapeKeyDown={(e) => {
-                  // Esc stops a reply in progress first; a second Esc closes.
+                  // Esc stops a reply in progress first, or leaves a command
+                  // screen; otherwise it closes.
                   if (busy) {
                     e.preventDefault();
                     stop();
+                  } else if (screen) {
+                    e.preventDefault();
+                    setScreen(null);
                   }
                 }}>
                 <motion.div
-                  initial={{ opacity: 0, y: reduced ? 0 : 12, scale: reduced ? 1 : 0.985 }}
+                  initial={{
+                    opacity: 0,
+                    y: reduced ? 0 : 12,
+                    scale: reduced ? 1 : 0.985,
+                  }}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: reduced ? 0 : 8, scale: reduced ? 1 : 0.985 }}
+                  exit={{
+                    opacity: 0,
+                    y: reduced ? 0 : 8,
+                    scale: reduced ? 1 : 0.985,
+                  }}
                   transition={CARD_STATE}
                   className={cn(
                     // Phones and tablets: the whole screen.
@@ -323,13 +377,22 @@ export default function Chatbot() {
                       </div>
                     </div>
                     <div className="flex items-center gap-1">
-                      {!empty && (
+                      {screen ? (
                         <button
                           type="button"
-                          onClick={newChat}
+                          onClick={() => setScreen(null)}
                           className="h-11 cursor-pointer rounded-control px-3 text-body-sm text-muted-foreground hover:text-foreground">
-                          New chat
+                          Back
                         </button>
+                      ) : (
+                        !empty && (
+                          <button
+                            type="button"
+                            onClick={newChat}
+                            className="h-11 cursor-pointer rounded-control px-3 text-body-sm text-muted-foreground hover:text-foreground">
+                            New chat
+                          </button>
+                        )
                       )}
                       <DialogPrimitive.Close
                         aria-label="Close chat"
@@ -357,7 +420,13 @@ export default function Chatbot() {
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={onInputKey}
-                        placeholder={empty ? "Ask about Ace's work" : "Ask a follow-up"}
+                        placeholder={
+                          screen
+                            ? "Ask about Ace, or type / for commands"
+                            : empty
+                              ? "Ask about Ace's work"
+                              : "Ask a follow-up"
+                        }
                         autoComplete="off"
                         className="h-10 min-w-0 flex-1 bg-transparent text-[16px] text-foreground outline-none placeholder:text-ink-faint lg:text-[17px]"
                       />
@@ -390,10 +459,22 @@ export default function Chatbot() {
                   {/* transcript */}
                   <div
                     ref={scrollRef}
-                    className={cn("order-2 min-h-0 flex-1 overflow-y-auto overscroll-contain", (empty || commandMode) && "lg:flex-none")}>
-                    <div ref={contentRef} className={cn("flex min-h-full flex-col md:mx-auto md:max-w-2xl lg:max-w-none", !empty && !commandMode && "gap-5 px-4 py-5 lg:px-6")}>
+                    className={cn(
+                      "order-2 min-h-0 flex-1 overflow-y-auto overscroll-contain",
+                      (empty || commandMode || screen) && "lg:flex-none",
+                    )}>
+                    <div
+                      ref={contentRef}
+                      className={cn(
+                        "flex min-h-full flex-col md:mx-auto md:max-w-2xl lg:max-w-none",
+                        !empty && !commandMode && !screen && "gap-5 px-4 py-5 lg:px-6",
+                      )}>
                       {commandMode ? (
                         <CommandList matches={matchCommands(input)} onRun={runCommand} />
+                      ) : screen === "play" ? (
+                        <PaletteSnake />
+                      ) : screen === "source" ? (
+                        <PaletteSource />
                       ) : empty ? (
                         <Welcome active={active} onHover={setActive} onPick={pickStarter} />
                       ) : (
@@ -434,25 +515,40 @@ export default function Chatbot() {
                         </button>
                       )}
                     </span>
-                    <span className="flex items-center gap-4">
-                      {empty && !commandMode && (
+                    {screen && !commandMode ? (
+                      <span className="flex items-center gap-4">
+                        {screen === "play" && (
+                          <span className="flex items-center gap-1.5">
+                            <Key>←↑↓→</Key>
+                            to steer
+                          </span>
+                        )}
                         <span className="flex items-center gap-1.5">
-                          <Key>↑</Key>
-                          <Key>↓</Key>
-                          to move
+                          <Key>Esc</Key>
+                          to go back
                         </span>
-                      )}
-                      <span className="flex items-center gap-1.5">
-                        <Key>{busy ? "Esc" : "Enter"}</Key>
-                        {busy ? "to stop" : commandMode ? "to run" : "to ask"}
                       </span>
-                      {!commandMode && !busy && (
+                    ) : (
+                      <span className="flex items-center gap-4">
+                        {empty && !commandMode && (
+                          <span className="flex items-center gap-1.5">
+                            <Key>↑</Key>
+                            <Key>↓</Key>
+                            to move
+                          </span>
+                        )}
                         <span className="flex items-center gap-1.5">
-                          <Key>/</Key>
-                          for commands
+                          <Key>{busy ? "Esc" : "Enter"}</Key>
+                          {busy ? "to stop" : commandMode ? "to run" : "to ask"}
                         </span>
-                      )}
-                    </span>
+                        {!commandMode && !busy && (
+                          <span className="flex items-center gap-1.5">
+                            <Key>/</Key>
+                            for commands
+                          </span>
+                        )}
+                      </span>
+                    )}
                   </div>
                 </motion.div>
               </DialogPrimitive.Content>
@@ -462,8 +558,9 @@ export default function Chatbot() {
       </DialogPrimitive.Root>
 
       {/* Phones and tablets have no sidebar rail on screen, so the chat gets
-          its own way in at the bottom of the page. */}
-      <AnimatePresence>
+          its own way in at the bottom of the page. It's there from the first
+          paint; it only animates when the chat opens and closes. */}
+      <AnimatePresence initial={false}>
         {!isOpen && (
           <motion.button
             type="button"
