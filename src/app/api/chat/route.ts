@@ -1,6 +1,9 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { NextResponse } from "next/server";
 
+import { CHAT_PROJECTS } from "@/lib/chat-projects";
+import { readPartialString } from "@/lib/partial-json";
+
 const client = new GoogleGenAI({
   apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY || "",
 });
@@ -43,6 +46,8 @@ Instructions:
 5. Always speak in the third person about Ace (e.g., "Ace has experience with..." or "He developed...").
 6. Keep replies short and simple: one to three sentences, plain text, no lists or headings. Answer only what was asked; the visitor can ask a follow-up.
 7. Set "showContact" to true when the visitor wants to reach Ace: hire him, work with him, book a call, ask how to get in touch, or ask something only Ace can answer. A "Message Ace" button then appears directly under your reply and opens a contact form, so in "reply" point them to that button rather than spelling out contact details. Otherwise set it to false.
+8. In "projects", name up to two of Ace's projects that your reply is about, using these exact titles: ${CHAT_PROJECTS.map((p) => p.title).join("; ")}. They appear as cards under your reply, so don't paste their URLs. Leave it empty when the reply isn't about a specific project.
+9. In "followUps", suggest two short questions (under 40 characters each) the visitor might ask next about Ace, phrased as the visitor would type them.
 `;
 
 // Structured output, so "does this visitor want to reach Ace?" arrives as a
@@ -52,10 +57,21 @@ const RESPONSE_SCHEMA = {
   properties: {
     reply: { type: Type.STRING },
     showContact: { type: Type.BOOLEAN },
+    projects: {
+      type: Type.ARRAY,
+      items: { type: Type.STRING, enum: CHAT_PROJECTS.map((p) => p.title) },
+    },
+    followUps: { type: Type.ARRAY, items: { type: Type.STRING } },
   },
-  required: ["reply", "showContact"],
-  propertyOrdering: ["reply", "showContact"],
+  required: ["reply", "showContact", "projects", "followUps"],
+  // "reply" first, so it can be streamed to the visitor as it's written.
+  propertyOrdering: ["reply", "showContact", "projects", "followUps"],
 };
+
+export type ChatEvent =
+  | { type: "delta"; text: string }
+  | { type: "done"; showContact: boolean; projects: string[]; followUps: string[] }
+  | { type: "error" };
 
 export async function POST(req: Request) {
   try {
@@ -70,7 +86,7 @@ export async function POST(req: Request) {
       parts: [{ text: msg.content }],
     }));
 
-    const result = await client.models.generateContent({
+    const stream = await client.models.generateContentStream({
       model: "gemini-2.5-flash",
       contents: contents,
       config: {
@@ -84,22 +100,55 @@ export async function POST(req: Request) {
       },
     });
 
-    let reply = "";
-    let showContact = false;
-    try {
-      const parsed = JSON.parse(result.text || "{}");
-      reply = typeof parsed.reply === "string" ? parsed.reply : "";
-      showContact = parsed.showContact === true;
-    } catch {
-      // Cut off at maxOutputTokens mid-JSON: the raw text would show as
-      // broken JSON, so say something useful instead.
-      console.error("Chat API: unparseable reply", result.candidates?.[0]?.finishReason);
-    }
-    if (!reply) {
-      reply = "Sorry, I couldn't finish that answer. Could you ask it a shorter way?";
-    }
+    // Newline-delimited JSON events: "delta" carries the next slice of the
+    // reply text as it's written, "done" the fields that come after it.
+    const encoder = new TextEncoder();
+    const body = new ReadableStream({
+      async start(controller) {
+        const send = (event: ChatEvent) => controller.enqueue(encoder.encode(JSON.stringify(event) + "\n"));
+        let raw = "";
+        let sent = 0;
+        try {
+          for await (const chunk of stream) {
+            raw += chunk.text ?? "";
+            const reply = readPartialString(raw, "reply");
+            if (reply.length > sent) {
+              send({ type: "delta", text: reply.slice(sent) });
+              sent = reply.length;
+            }
+          }
 
-    return NextResponse.json({ content: reply, showContact });
+          let parsed: { showContact?: unknown; projects?: unknown; followUps?: unknown } = {};
+          try {
+            parsed = JSON.parse(raw);
+          } catch {
+            // Cut off at maxOutputTokens mid-JSON: keep whatever reply text
+            // arrived, and drop the fields that never did.
+            console.error("Chat API: unparseable reply");
+          }
+          if (sent === 0) {
+            send({ type: "delta", text: "Sorry, I couldn't finish that answer. Could you ask it a shorter way?" });
+          }
+          const strings = (v: unknown) =>
+            Array.isArray(v) ? v.filter((t): t is string => typeof t === "string" && t.trim() !== "").slice(0, 2) : [];
+          send({
+            type: "done",
+            showContact: parsed.showContact === true,
+            projects: strings(parsed.projects),
+            followUps: strings(parsed.followUps),
+          });
+        } catch (error) {
+          console.error("Chat API stream error:", error);
+          send({ type: "error" });
+        } finally {
+          controller.close();
+        }
+      },
+    });
+
+    return new Response(body, {
+      headers: { "Content-Type": "application/x-ndjson; charset=utf-8", "Cache-Control": "no-store" },
+    });
   } catch (error) {
     console.error("Chat API error:", error);
     return NextResponse.json({ error: "Failed to process chat request" }, { status: 500 });
