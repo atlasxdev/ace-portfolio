@@ -12,14 +12,14 @@ import {
   Menu,
   MessageSquare,
   Route,
-  Sparkles,
   type LucideIcon,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useRef, useState } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 
+import { AgFace } from "@/components/ag-face";
 import { OPEN_CHAT_EVENT } from "@/lib/chat-events";
 import { useContactDialog } from "@/components/contact-dialog";
 import { Icons } from "@/components/icons";
@@ -45,6 +45,8 @@ const SOCIALS = [
 const ROW =
   "group flex h-9 w-full cursor-pointer items-center gap-3 rounded-control px-2.5 text-body-sm text-muted-foreground transition-colors hover:bg-foreground/5 hover:text-foreground";
 const ROW_ICON = "size-4 shrink-0";
+const KEY =
+  "min-w-5 rounded-[5px] border border-rule bg-foreground/4 px-1.5 text-center font-sans text-[11px] leading-5 text-ink-faint transition-colors group-hover:text-foreground";
 const TRAIL = "ml-auto size-3.5 shrink-0 text-ink-faint transition-colors group-hover:text-foreground";
 
 function Group({ label, children }: { label: string; children: React.ReactNode }) {
@@ -119,6 +121,8 @@ function EmailInvite() {
   );
 }
 
+const noop = () => () => {};
+
 /** Everything the sidebar holds, shared by the desktop rail and the phone sheet. */
 function SidebarContent({
   onNavigate,
@@ -129,6 +133,12 @@ function SidebarContent({
 }) {
   const pathname = usePathname();
   const openContact = useContactDialog();
+  // Read after hydration: the server can't know the platform, so it renders "Ctrl".
+  const mac = useSyncExternalStore(
+    noop,
+    () => /Mac|iPhone|iPad/.test(navigator.platform),
+    () => false,
+  );
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
   return (
@@ -178,11 +188,14 @@ function SidebarContent({
             type="button"
             onClick={onOpenChat}
             className={ROW}>
-            <Sparkles className={ROW_ICON} aria-hidden />
+            {/* Ag at 2px per art pixel, wider than the other icons; the
+                negative margin keeps the label in line with theirs. */}
+            <AgFace className="-mx-1" />
             Ask Ag, my AI assistant
-            <kbd className="ml-auto hidden rounded border border-rule px-1.5 font-sans text-[11px] leading-5 text-ink-faint transition-colors group-hover:text-foreground md:inline">
-              Ctrl K
-            </kbd>
+            <span className="ml-auto hidden items-center gap-1 md:flex" aria-hidden>
+              <kbd className={KEY}>{mac ? "⌘" : "Ctrl"}</kbd>
+              <kbd className={KEY}>K</kbd>
+            </span>
           </button>
         </Group>
 
