@@ -626,3 +626,56 @@ html[data-leaving] main {
 .ag-zzz { animation: ag-zzz 2s ease-out infinite; }
 @keyframes ag-zzz { 0% { opacity: 0; transform: translate(0, 4px); } 30% { opacity: 1; } 100% { opacity: 0; transform: translate(8px, -14px); } }
 .ag-annoyed { filter: sepia(0.6) saturate(3) hue-rotate(-45deg) drop-shadow(0 2px 0 rgb(0 0 0 / 0.25)); }
+
+/* Ag's speech bubble and menu: a pixel window in Ag's own silver, with
+   notched corners, a bevel and a hard shadow. Same in both themes. */
+.ag-box {
+  --ag-px: 3px;
+  --ag-ink: #2a2d33;
+  background: #f4f5f7;
+  color: #141414;
+  box-shadow:
+    0 calc(-1 * var(--ag-px)) 0 0 var(--ag-ink),
+    0 var(--ag-px) 0 0 var(--ag-ink),
+    calc(-1 * var(--ag-px)) 0 0 0 var(--ag-ink),
+    var(--ag-px) 0 0 0 var(--ag-ink),
+    inset 0 calc(-1 * var(--ag-px)) 0 0 #cfd3d8,
+    inset var(--ag-px) var(--ag-px) 0 0 #ffffff;
+  filter: drop-shadow(var(--ag-px) var(--ag-px) 0 rgb(0 0 0 / 0.3));
+  font-size: 14px;
+  line-height: 1.25;
+  -webkit-font-smoothing: none;
+}
+.ag-item { position: relative; }
+.ag-item:hover, .ag-item:focus-visible { background: #dfe2e6; outline: none; }
+.ag-item:active { transform: translateY(1px); }
+/* the menu cursor: a pixel arrow beside the chosen item */
+.ag-item::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 50%;
+  width: 6px;
+  height: 10px;
+  margin-top: -5px;
+  background: #2a2d33;
+  /* a stepped triangle, 2px pixels */
+  clip-path: polygon(0 0, 2px 0, 2px 2px, 4px 2px, 4px 4px, 6px 4px, 6px 6px, 4px 6px, 4px 8px, 2px 8px, 2px 10px, 0 10px);
+  opacity: 0;
+}
+.ag-item:hover::before, .ag-item:focus-visible::before { opacity: 1; }
+.ag-kbd {
+  display: inline-block;
+  min-width: 1.4em;
+  padding: 0 4px;
+  margin: 0 5px;
+  background: #fff;
+  box-shadow: 0 -2px 0 0 #2a2d33, 0 2px 0 0 #2a2d33, -2px 0 0 0 #2a2d33, 2px 0 0 0 #2a2d33, inset 0 -2px 0 0 #cfd3d8;
+  font-family: inherit;
+  text-align: center;
+}
+/* the one action in the note: dark, like a pressed key */
+.ag-cta { background: #2a2d33; color: #f4f5f7; padding: 0 12px; height: 30px; cursor: pointer; white-space: nowrap; }
+.ag-cta:hover, .ag-cta:focus-visible { background: #4a4f57; outline: none; }
+.ag-cta:focus-visible { box-shadow: 0 0 0 2px #f4f5f7, 0 0 0 4px #2a2d33; }
+.ag-cta:active { transform: translateY(1px); }

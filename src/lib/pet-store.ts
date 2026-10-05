@@ -10,6 +10,7 @@ import { petSounds } from "@/lib/pet-sounds";
 
 const SHOWN = "ag-pet";
 const MUTED = "ag-pet-muted";
+const MET = "ag-pet-met";
 
 const memory = new Map<string, boolean>();
 const listeners = new Set<() => void>();
@@ -46,10 +47,19 @@ export const serverSnapshot = () => false;
 export function setPetShown(shown: boolean) {
   if (shown === isPetShown()) return;
   if (!isPetMuted()) (shown ? petSounds.spawn : petSounds.despawn)();
+  summoned = shown;
   write(SHOWN, shown);
 }
 
 export const togglePet = () => setPetShown(!isPetShown());
+
+/** Whether this visitor has been introduced to Ag before. */
+export const hasMetPet = () => read(MET);
+export const markPetMet = () => write(MET, true);
+
+/** Set when a visitor calls Ag in (rather than it arriving with the page), so it can say so. */
+let summoned = false;
+export const wasSummoned = () => summoned;
 export const setPetMuted = (muted: boolean) => write(MUTED, muted);
 
 /** Fired by the contact form when a message goes through, so Ag can cheer. */
@@ -64,7 +74,6 @@ export function keepOpenForPet(e: {
   detail?: { originalEvent?: Event };
   preventDefault(): void;
 }) {
-  const target = (e.detail?.originalEvent?.target ??
-    e.target) as Element | null;
+  const target = (e.detail?.originalEvent?.target ?? e.target) as Element | null;
   if (target?.closest?.("[data-ag-pet]")) e.preventDefault();
 }

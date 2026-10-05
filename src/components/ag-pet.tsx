@@ -14,24 +14,22 @@ import {
 } from "motion/react";
 import { useTheme } from "next-themes";
 import { usePathname } from "next/navigation";
-import {
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-  useSyncExternalStore,
-} from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 
+import { pixelify } from "@/lib/pet-font";
 import { petSounds } from "@/lib/pet-sounds";
 import {
   CONTACT_SENT_EVENT,
+  hasMetPet,
   isPetMuted,
   isPetShown,
+  markPetMet,
   serverSnapshot,
   setPetMuted,
   setPetShown,
   subscribePet,
   togglePet,
+  wasSummoned,
 } from "@/lib/pet-store";
 import { cn } from "@/lib/utils";
 
@@ -39,7 +37,8 @@ import { cn } from "@/lib/utils";
  * Ag, the site pet: a small silver pixel creature (Ag is silver, element 47,
  * and Ace's initials). Out by default on every page, above everything else,
  * until it's sent away; Ctrl/⌘ + . or "/pet" in the chat palette brings it
- * back (and sends it off again).
+ * back (and sends it off again), and a note says so once it's gone. It drops
+ * in from the top of the screen and introduces itself to new visitors.
  *
  * It plays on the page itself: hops up onto headings, images, cards and
  * buttons, walks along their top edges, jumps between them, rides along when
@@ -70,14 +69,7 @@ const COLORS: Record<string, string> = {
   S: "#cfd3d8",
   H: "#ffffff",
 };
-const HEART = [
-  ".XX.XX.",
-  "XXXXXXX",
-  "XXXXXXX",
-  ".XXXXX.",
-  "..XXX..",
-  "...X...",
-];
+const HEART = [".XX.XX.", "XXXXXXX", "XXXXXXX", ".XXXXX.", "..XXX..", "...X..."];
 const WIDTH = 12 * PX;
 const HEIGHT = 11 * PX;
 
@@ -90,14 +82,14 @@ const SCROLL_LINES = {
   up: ["Going up!", "Back up we go!", "Elevator up!"],
   wild: ["Whoa, slow down!", "Too fast!", "My stomach!"],
 };
-const pick = (lines: string[]) =>
-  lines[Math.floor(Math.random() * lines.length)];
+/** Pixel UI pops in frames, not glides. */
+const stepped = (t: number) => Math.ceil(t * 3) / 3;
+const pick = (lines: string[]) => lines[Math.floor(Math.random() * lines.length)];
 const FLOOR_GAP = 12;
 /** Room above a perch for the speech bubble. */
 const HEADROOM = 70;
 /** What Ag can climb onto. */
-const PERCHES =
-  "main :is(h1, h2, h3, img, a[href], button, .glass), aside :is(a[href], button, img)";
+const PERCHES = "main :is(h1, h2, h3, img, a[href], button, .glass), aside :is(a[href], button, img)";
 /** Text sits on its words, not on the full width of its box. */
 const TEXT_PERCHES = "h1, h2, h3, a";
 
@@ -124,18 +116,7 @@ const PET_LINES = ["Purr.", "Ag approves.", "Again!", "Shiny and happy."];
 
 type Mode = "idle" | "walk" | "jump" | "sleep";
 type Reaction =
-  | "pet"
-  | "feed"
-  | "mute"
-  | "unmute"
-  | "bye"
-  | "land"
-  | "huff"
-  | "refuse"
-  | "hic"
-  | "startle"
-  | "yawn"
-  | "nod";
+  "pet" | "feed" | "mute" | "unmute" | "bye" | "wave" | "land" | "huff" | "refuse" | "hic" | "startle" | "yawn" | "nod";
 /** Too much of a good thing: grumpy after a petting spree, round after a feast. */
 type Mood = "content" | "annoyed" | "full";
 type Perch = { el: Element; dx: number };
@@ -156,6 +137,11 @@ const REACTIONS: Record<Reaction, TargetAndTransition> = {
   mute: { rotate: [0, -12, 12, -9, 9, 0], transition: { duration: 0.55 } },
   unmute: { y: [0, -10, 0], rotate: [0, 6, 0], transition: { duration: 0.4 } },
   bye: { rotate: [0, -14, 14, -14, 14, 0], transition: { duration: 0.6 } },
+  wave: {
+    rotate: [0, -10, 10, -10, 10, 0],
+    y: [0, -8, 0, -8, 0, 0],
+    transition: { duration: 0.8 },
+  },
   land: {
     scaleY: [0.78, 1.06, 1],
     scaleX: [1.15, 0.97, 1],
@@ -192,50 +178,22 @@ const CHEW = 1_400;
 const FOODS: { rows: string[]; colors: Record<string, string> }[] = [
   {
     // an apple
-    rows: [
-      "...LS...",
-      "....S...",
-      ".RRRRRR.",
-      "RRWRRRRR",
-      "RRRRRRRR",
-      "RRRRRRRR",
-      ".RRRRRR.",
-      "..RRRR..",
-    ],
+    rows: ["...LS...", "....S...", ".RRRRRR.", "RRWRRRRR", "RRRRRRRR", "RRRRRRRR", ".RRRRRR.", "..RRRR.."],
     colors: { R: "#d9534f", W: "#f5b5b2", S: "#6b4423", L: "#6fbf5f" },
   },
   {
     // a cookie
-    rows: [
-      "..CCCC..",
-      ".CCDCCC.",
-      "CCCCCDCC",
-      "CDCCCCCC",
-      "CCCCDCCC",
-      "CCDCCCDC",
-      ".CCCCCC.",
-      "..CCCC..",
-    ],
+    rows: ["..CCCC..", ".CCDCCC.", "CCCCCDCC", "CDCCCCCC", "CCCCDCCC", "CCDCCCDC", ".CCCCCC.", "..CCCC.."],
     colors: { C: "#d9a441", D: "#6b4423" },
   },
   {
     // a fish
-    rows: [
-      "........",
-      "..BBB..T",
-      ".BBBBBTT",
-      "BEBBBBTT",
-      "BBBBBBTT",
-      ".BBBBBTT",
-      "..BBB..T",
-      "........",
-    ],
+    rows: ["........", "..BBB..T", ".BBBBBTT", "BEBBBBTT", "BBBBBBTT", ".BBBBBTT", "..BBB..T", "........"],
     colors: { B: "#7fb3d5", E: "#141414", T: "#5a8fb3" },
   },
 ];
 
-const clamp = (n: number, min: number, max: number) =>
-  Math.min(Math.max(n, min), max);
+const clamp = (n: number, min: number, max: number) => Math.min(Math.max(n, min), max);
 const between = (min: number, max: number) => min + Math.random() * (max - min);
 
 const floorY = () => window.innerHeight - HEIGHT - FLOOR_GAP;
@@ -259,20 +217,12 @@ function exposed(el: Element, r: DOMRect) {
   return !!hit && (hit === el || el.contains(hit) || hit.contains(el));
 }
 
-function perchesNear(
-  from: { x: number; y: number },
-  exclude: Element | undefined,
-  root: Element | null,
-) {
+function perchesNear(from: { x: number; y: number }, exclude: Element | undefined, root: Element | null) {
   return [...document.querySelectorAll(PERCHES)]
     .filter((el) => el !== exclude && !root?.contains(el))
     .map((el) => ({ el, r: perchBox(el) }))
     .filter(({ el, r }) => fits(r) && exposed(el, r))
-    .sort(
-      (a, b) =>
-        Math.hypot(a.r.left - from.x, a.r.top - from.y) -
-        Math.hypot(b.r.left - from.x, b.r.top - from.y),
-    )
+    .sort((a, b) => Math.hypot(a.r.left - from.x, a.r.top - from.y) - Math.hypot(b.r.left - from.x, b.r.top - from.y))
     .slice(0, 6);
 }
 
@@ -291,7 +241,55 @@ export function AgPet() {
     return () => window.removeEventListener("keydown", onKey);
   }, []);
 
-  return <AnimatePresence>{shown && <Ag key="ag" />}</AnimatePresence>;
+  // Once it's sent away, say how to get it back.
+  const [hint, setHint] = useState(false);
+  const [seenShown, setSeenShown] = useState(shown);
+  if (shown !== seenShown) {
+    setSeenShown(shown);
+    setHint(!shown);
+  }
+  useEffect(() => {
+    if (!hint) return;
+    const t = setTimeout(() => setHint(false), 8_000);
+    return () => clearTimeout(t);
+  }, [hint]);
+
+  return (
+    <>
+      <AnimatePresence>{shown && <Ag key="ag" />}</AnimatePresence>
+      <AnimatePresence>{hint && <ComebackHint key="hint" onClose={() => setHint(false)} />}</AnimatePresence>
+    </>
+  );
+}
+
+/** A note left behind when Ag is sent away: how to call it back. */
+function ComebackHint({ onClose }: { onClose: () => void }) {
+  const mac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform);
+  return (
+    <motion.div
+      role="status"
+      initial={{ opacity: 0, y: 9 }}
+      animate={{ opacity: 1, y: 0, transition: { delay: 0.7, duration: 0.15, ease: stepped } }}
+      exit={{ opacity: 0, y: 9, transition: { duration: 0.12, ease: stepped } }}
+      className={cn(
+        "ag-box fixed bottom-6 left-1/2 z-[70] flex w-max max-w-[calc(100vw-32px)] -translate-x-1/2 items-center gap-3 py-1.5 pr-1.5 pl-3",
+        pixelify.className,
+      )}>
+      <p>
+        Ag went home. <kbd className="ag-kbd">{mac ? "⌘" : "Ctrl"}</kbd>
+        <kbd className="ag-kbd">.</kbd> or <kbd className="ag-kbd">/pet</kbd> brings it back.
+      </p>
+      <button
+        type="button"
+        onClick={() => {
+          onClose();
+          setPetShown(true);
+        }}
+        className="ag-cta shrink-0">
+        Call Ag back
+      </button>
+    </motion.div>
+  );
 }
 
 function Ag() {
@@ -314,15 +312,9 @@ function Ag() {
   const [lookY, setLookY] = useState(0);
   /** Scroll speed (px/ms, + is down), sprung, so Ag stretches and squashes with the ride. */
   const ride = useSpring(0, { stiffness: 260, damping: 18 });
-  const rideY = useTransform(
-    ride,
-    (v) => 1 + clamp(v, -SCROLL_WILD, SCROLL_WILD) * 0.035,
-  );
-  const rideX = useTransform(
-    ride,
-    (v) => 1 - clamp(v, -SCROLL_WILD, SCROLL_WILD) * 0.02,
-  );
-  const [bubble, setBubble] = useState<string | null>("Hi, I'm Ag.");
+  const rideY = useTransform(ride, (v) => 1 + clamp(v, -SCROLL_WILD, SCROLL_WILD) * 0.035);
+  const rideX = useTransform(ride, (v) => 1 - clamp(v, -SCROLL_WILD, SCROLL_WILD) * 0.02);
+  const [bubble, setBubble] = useState<string | null>(null);
   const [menu, setMenu] = useState(false);
   const [reaction, setReaction] = useState<{
     kind: Reaction;
@@ -372,8 +364,7 @@ function Ag() {
     }
   }
 
-  const react = (kind: Reaction) =>
-    setReaction((r) => ({ kind, id: (r?.id ?? 0) + 1 }));
+  const react = (kind: Reaction) => setReaction((r) => ({ kind, id: (r?.id ?? 0) + 1 }));
   const stopMoves = () => {
     moves.current.forEach((m) => m.stop());
     moves.current = [];
@@ -387,6 +378,33 @@ function Ag() {
     y.set(floorY());
     return () => moves.current.forEach((m) => m.stop());
   }, [x, y]);
+
+  // Say hello once it has landed: an introduction the first time, a welcome
+  // after that, and a cheerier one when it was called back.
+  // (Read before the effect runs, so a second run of it still sees a newcomer.)
+  const [{ summoned, met }] = useState(() => ({ summoned: wasSummoned(), met: hasMetPet() }));
+  useEffect(() => {
+    markPetMet();
+    const hour = new Date().getHours();
+    const lines = summoned
+      ? [pick(["I'm back!", "You called?", "Missed me?"])]
+      : met
+        ? [hour < 12 ? "Morning! Welcome back." : hour < 18 ? "Welcome back!" : "Evening! Welcome back."]
+        : ["Hi, I'm Ag!", "Click me to play."];
+    const land = reduced ? 200 : 950;
+    const timers = lines.map((line, i) =>
+      setTimeout(
+        () => {
+          setBubble(line);
+          if (i > 0) return;
+          setReaction((r) => ({ kind: summoned ? "pet" : "wave", id: (r?.id ?? 0) + 1 }));
+          if (summoned || !met) setHappy(true);
+        },
+        land + i * 3_000,
+      ),
+    );
+    return () => timers.forEach(clearTimeout);
+  }, [reduced, summoned, met]);
 
   // Keep Ag on its perch as the page scrolls or reflows, and drop it to the
   // floor when the perch scrolls away or leaves the page.
@@ -516,9 +534,7 @@ function Ag() {
   const [seenPath, setSeenPath] = useState(pathname);
   if (pathname !== seenPath) {
     setSeenPath(pathname);
-    const line = Object.entries(PAGE_LINES).find(([path]) =>
-      pathname.startsWith(path),
-    )?.[1];
+    const line = Object.entries(PAGE_LINES).find(([path]) => pathname.startsWith(path))?.[1];
     if (line) setBubble(line);
   }
 
@@ -531,13 +547,9 @@ function Ag() {
       lastDialog.current = open;
       if (!open) return;
       const name =
-        open.getAttribute("aria-label") ??
-        open.querySelector("h2, [data-slot$='-title']")?.textContent ??
-        "";
-      if (/working on|message/i.test(name))
-        setBubble("A message for Ace? I'll keep quiet.");
-      else if (/ask about ace/i.test(name))
-        setBubble("Ask away. I'm listening.");
+        open.getAttribute("aria-label") ?? open.querySelector("h2, [data-slot$='-title']")?.textContent ?? "";
+      if (/working on|message/i.test(name)) setBubble("A message for Ace? I'll keep quiet.");
+      else if (/ask about ace/i.test(name)) setBubble("Ask away. I'm listening.");
       else return; // menus and other sheets: no visit
       lastActive.current = Date.now();
       visit.current = open;
@@ -552,19 +564,11 @@ function Ag() {
     let keys = 0;
     const onKey = (e: KeyboardEvent) => {
       const field = e.target as HTMLElement | null;
-      if (
-        !field?.closest('[role="dialog"]') ||
-        !field.matches("input, textarea")
-      )
-        return;
+      if (!field?.closest('[role="dialog"]') || !field.matches("input, textarea")) return;
       const box = field.getBoundingClientRect();
       const me = petRef.current?.getBoundingClientRect();
-      if (me)
-        setLook(
-          box.left + box.width / 2 < me.left ? -1 : box.left > me.right ? 1 : 0,
-        );
-      if (++keys % 12 === 0)
-        setReaction((r) => ({ kind: "nod", id: (r?.id ?? 0) + 1 }));
+      if (me) setLook(box.left + box.width / 2 < me.left ? -1 : box.left > me.right ? 1 : 0);
+      if (++keys % 12 === 0) setReaction((r) => ({ kind: "nod", id: (r?.id ?? 0) + 1 }));
     };
     const onSent = () => {
       setBubble("Sent! Ace will get back to you.");
@@ -606,12 +610,7 @@ function Ag() {
     const t = setInterval(() => {
       // A full Ag nods off almost at once: a food coma.
       // In the dark it's drowsier, too.
-      const after =
-        moodRef.current === "full"
-          ? 6_000
-          : themeRef.current === "dark"
-            ? 20_000
-            : SLEEP_AFTER;
+      const after = moodRef.current === "full" ? 6_000 : themeRef.current === "dark" ? 20_000 : SLEEP_AFTER;
       const idle = Date.now() - lastActive.current > after;
       const m = modeRef.current;
       if (idle && m === "idle" && !menu) setMode("sleep");
@@ -654,8 +653,7 @@ function Ag() {
               duration: distance / 60,
               ease: "linear",
               onComplete: () => {
-                if (perch.current)
-                  perch.current.dx = x.get() - perchBox(perch.current.el).left;
+                if (perch.current) perch.current.dx = x.get() - perchBox(perch.current.el).left;
                 setMode((m) => (m === "walk" ? "idle" : m));
               },
             }),
@@ -666,19 +664,14 @@ function Ag() {
         // Jump: onto a dialog that just opened, to a nearby perch, or down to the floor.
         const target = visit.current;
         visit.current = null;
-        const targetBox = target?.isConnected
-          ? target.getBoundingClientRect()
-          : null;
-        if (!target && p?.el.matches('[role="dialog"]'))
-          return setBeat((b) => b + 1);
+        const targetBox = target?.isConnected ? target.getBoundingClientRect() : null;
+        if (!target && p?.el.matches('[role="dialog"]')) return setBeat((b) => b + 1);
         const options = perchesNear(here, p?.el, rootRef.current);
         let dest: { el: Element | null; x: number; y: number };
         if (target && targetBox && fits(targetBox)) {
           dest = {
             el: target,
-            x: Math.round(
-              clamp(here.x, targetBox.left + 8, targetBox.right - WIDTH - 8),
-            ),
+            x: Math.round(clamp(here.x, targetBox.left + 8, targetBox.right - WIDTH - 8)),
             y: targetBox.top - HEIGHT,
           };
         } else if ((p && Math.random() < 0.3) || options.length === 0) {
@@ -712,10 +705,7 @@ function Ag() {
           };
         }
         const peak = Math.min(here.y, dest.y) - between(40, 70);
-        const duration = Math.min(
-          0.9,
-          0.4 + Math.hypot(dest.x - here.x, dest.y - here.y) / 1400,
-        );
+        const duration = Math.min(0.9, 0.4 + Math.hypot(dest.x - here.x, dest.y - here.y) / 1400);
         setLook(dest.x > here.x ? 1 : -1);
         setMode("jump");
         moves.current = [
@@ -725,18 +715,12 @@ function Ag() {
             times: [0, 0.4, 1],
             ease: ["easeOut", "easeIn"],
             onComplete: () => {
-              perch.current = dest.el
-                ? { el: dest.el, dx: dest.x - perchBox(dest.el).left }
-                : null;
+              perch.current = dest.el ? { el: dest.el, dx: dest.x - perchBox(dest.el).left } : null;
               setMode("idle");
               react("land");
               // Whatever it lands on gives a little under its weight.
               dest.el?.animate(
-                [
-                  { transform: "translateY(0)" },
-                  { transform: "translateY(3px)" },
-                  { transform: "translateY(0)" },
-                ],
+                [{ transform: "translateY(0)" }, { transform: "translateY(3px)" }, { transform: "translateY(0)" }],
                 { duration: 260, easing: "ease-out" },
               );
             },
@@ -752,12 +736,7 @@ function Ag() {
   useEffect(() => {
     const onDown = (e: PointerEvent) => {
       const p = perch.current;
-      if (
-        !p ||
-        modeRef.current === "jump" ||
-        rootRef.current?.contains(e.target as Node)
-      )
-        return;
+      if (!p || modeRef.current === "jump" || rootRef.current?.contains(e.target as Node)) return;
       if (!p.el.contains(e.target as Node)) return;
       setBubble("Whoa!");
       setReaction((r) => ({ kind: "startle", id: (r?.id ?? 0) + 1 }));
@@ -773,11 +752,7 @@ function Ag() {
     const t = setTimeout(
       () => {
         setMood("content");
-        setBubble(
-          mood === "annoyed"
-            ? "Fine. You're forgiven."
-            : "Okay, I can move again.",
-        );
+        setBubble(mood === "annoyed" ? "Fine. You're forgiven." : "Okay, I can move again.");
       },
       mood === "annoyed" ? PET_SPREE.cooldown : FEAST.cooldown,
     );
@@ -836,15 +811,9 @@ function Ag() {
   };
 
   /** Records an interaction and says whether it tipped over into a spree. */
-  const tally = (
-    times: React.RefObject<number[]>,
-    rule: { count: number; window: number },
-  ) => {
+  const tally = (times: React.RefObject<number[]>, rule: { count: number; window: number }) => {
     const now = Date.now();
-    times.current = [
-      ...times.current.filter((t) => now - t < rule.window),
-      now,
-    ];
+    times.current = [...times.current.filter((t) => now - t < rule.window), now];
     return times.current.length >= rule.count;
   };
 
@@ -937,21 +906,36 @@ function Ag() {
               opacity: [1, 1, 0],
               transition: { duration: 0.6, times: [0, 0.9, 1] },
             },
-      }}
-    >
+      }}>
+      {/* its shadow on the ground grows as it falls in */}
+      {!reduced && (
+        <motion.span
+          aria-hidden
+          className="absolute -bottom-1 left-1/2 -ml-6 block h-1.5 w-12 bg-black/20"
+          variants={{
+            hidden: { scaleX: 0.2, opacity: 0 },
+            shown: { scaleX: [0.2, 1, 1], opacity: [0, 1, 0], transition: { duration: 1.1, times: [0, 0.5, 1] } },
+            gone: { opacity: 0 },
+          }}
+        />
+      )}
       <motion.div
         className="relative"
+        style={{ transformOrigin: "50% 100%" }}
         variants={
           reduced
             ? undefined
             : {
-                hidden: { y: 140 },
+                // Drops in from above the screen, squashes on landing, bounces once.
+                hidden: { y: -720 },
                 shown: {
-                  y: [140, -18, 0],
+                  y: [-720, 0, -20, 0],
+                  scaleY: [1.3, 0.68, 1.1, 1],
+                  scaleX: [0.85, 1.3, 0.94, 1],
                   transition: {
-                    duration: 0.6,
-                    times: [0, 0.6, 1],
-                    ease: "easeOut",
+                    duration: 0.95,
+                    times: [0, 0.5, 0.75, 1],
+                    ease: ["easeIn", "easeOut", "easeIn"],
                   },
                 },
                 gone: {
@@ -963,49 +947,55 @@ function Ag() {
                   },
                 },
               }
-        }
-      >
-        {/* dust puff on arrival */}
+        }>
+        {/* dust and sparkles on landing */}
         {!reduced && (
           <span aria-hidden className="absolute bottom-0 left-1/2">
             {[-1, 1].map((side) =>
-              [0, 1].map((n) => (
+              [0, 1, 2].map((n) => (
                 <motion.span
                   key={`${side}${n}`}
                   className="absolute size-1.5 bg-[#cfd3d8]"
                   initial={{ x: 0, y: 0, opacity: 0 }}
                   animate={{
-                    x: side * (16 + n * 12),
-                    y: -4 - n * 6,
+                    x: side * (14 + n * 14),
+                    y: -2 - n * 7,
                     opacity: [0, 0.9, 0],
                   }}
-                  transition={{ delay: 0.3, duration: 0.5, ease: "easeOut" }}
+                  transition={{ delay: 0.47, duration: 0.55, ease: "easeOut" }}
                 />
               )),
             )}
+            {[-34, -10, 18, 36].map((dx, i) => (
+              <motion.span
+                key={dx}
+                className="absolute size-1 bg-white shadow-[0_0_0_1px_#5f646c]"
+                initial={{ x: dx, y: -30, opacity: 0, scale: 0 }}
+                animate={{ y: -50 - (i % 2) * 18, opacity: [0, 1, 0], scale: [0, 1.5, 0] }}
+                transition={{ delay: 0.55 + i * 0.07, duration: 0.6, ease: stepped }}
+              />
+            ))}
           </span>
         )}
 
         {/* speech bubble, with the menu under it when open */}
-        <div className="absolute bottom-full left-1/2 mb-2 flex -translate-x-1/2 flex-col items-center gap-2">
+        <div
+          className={cn(
+            "absolute bottom-full left-1/2 mb-3 flex -translate-x-1/2 flex-col items-center gap-3",
+            pixelify.className,
+          )}>
           <AnimatePresence mode="wait">
             {bubble && (
               <motion.p
                 key={bubble}
                 role="status"
-                initial={{ opacity: 0, y: 6, scale: 0.95 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 4 }}
-                transition={{ duration: 0.18 }}
-                className="relative w-max max-w-52 rounded-xl bg-foreground px-3 py-1.5 text-center text-body-sm text-background"
-              >
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 3 }}
+                transition={{ duration: 0.15, ease: stepped }}
+                className="ag-box relative w-max max-w-52 px-2.5 py-1.5 text-center">
                 {bubble}
-                {!menu && (
-                  <span
-                    aria-hidden
-                    className="absolute top-full left-1/2 -ml-1.5 border-x-[6px] border-t-[6px] border-x-transparent border-t-foreground"
-                  />
-                )}
+                {!menu && <BubbleTail />}
               </motion.p>
             )}
           </AnimatePresence>
@@ -1014,17 +1004,14 @@ function Ag() {
               <motion.div
                 role="menu"
                 aria-label="Ag"
-                initial={{ opacity: 0, y: 6, scale: 0.96 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: 6, scale: 0.96 }}
-                transition={{ duration: 0.15 }}
-                className="pointer-events-auto flex items-center gap-1 rounded-full border border-foreground/12 bg-card p-1 shadow-[0_12px_32px_-12px_rgb(0_0_0/0.5)]"
-              >
+                initial={{ opacity: 0, y: 6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 6 }}
+                transition={{ duration: 0.12, ease: stepped }}
+                className="ag-box pointer-events-auto flex items-center p-[3px]">
                 <MenuButton onClick={pet}>Pet</MenuButton>
                 <MenuButton onClick={feed}>Feed</MenuButton>
-                <MenuButton onClick={toggleMute}>
-                  {muted ? "Sound on" : "Mute"}
-                </MenuButton>
+                <MenuButton onClick={toggleMute}>{muted ? "Sound on" : "Mute"}</MenuButton>
                 <MenuButton onClick={sendAway}>Send away</MenuButton>
               </motion.div>
             )}
@@ -1033,18 +1020,13 @@ function Ag() {
 
         {/* zzz */}
         {asleep && (
-          <span
-            aria-hidden
-            className="ag-zzz absolute -top-3 right-0 font-mono text-xs text-muted-foreground"
-          >
+          <span aria-hidden className="ag-zzz absolute -top-3 right-0 font-mono text-xs text-muted-foreground">
             z
           </span>
         )}
 
         {/* reaction effects */}
-        {reaction && !reduced && (
-          <Effects key={reaction.id} kind={reaction.kind} seed={reaction.id} />
-        )}
+        {reaction && !reduced && <Effects key={reaction.id} kind={reaction.kind} seed={reaction.id} />}
 
         <button
           ref={petRef}
@@ -1057,14 +1039,12 @@ function Ag() {
             // Opening the menu stops it mid-stride; play pauses while it's open.
             if (mode === "walk") {
               stopMoves();
-              if (perch.current)
-                perch.current.dx = x.get() - perchBox(perch.current.el).left;
+              if (perch.current) perch.current.dx = x.get() - perchBox(perch.current.el).left;
               setMode("idle");
             }
             setMenu((m) => !m);
           }}
-          className="pointer-events-auto block cursor-pointer rounded-md outline-offset-4 focus-visible:outline-2 focus-visible:outline-foreground"
-        >
+          className="pointer-events-auto block cursor-pointer rounded-md outline-offset-4 focus-visible:outline-2 focus-visible:outline-foreground">
           {/* a full Ag is a round Ag */}
           <motion.span
             className="block"
@@ -1072,24 +1052,17 @@ function Ag() {
               transformOrigin: "50% 100%",
               scaleX: rideX,
               scaleY: rideY,
-            }}
-          >
+            }}>
             <motion.span
               className="block"
               style={{ transformOrigin: "50% 100%" }}
-              animate={
-                mood === "full" && !reduced
-                  ? { scaleX: 1.2, scaleY: 0.92 }
-                  : { scaleX: 1, scaleY: 1 }
-              }
-              transition={{ type: "spring", stiffness: 260, damping: 14 }}
-            >
+              animate={mood === "full" && !reduced ? { scaleX: 1.2, scaleY: 0.92 } : { scaleX: 1, scaleY: 1 }}
+              transition={{ type: "spring", stiffness: 260, damping: 14 }}>
               <motion.span
                 key={reaction?.id ?? 0}
                 className="block"
                 style={{ transformOrigin: "50% 100%" }}
-                animate={kind && !reduced ? REACTIONS[kind] : undefined}
-              >
+                animate={kind && !reduced ? REACTIONS[kind] : undefined}>
                 <svg
                   width={WIDTH}
                   height={HEIGHT}
@@ -1100,37 +1073,19 @@ function Ag() {
                     !reduced && mode === "idle" && "ag-bob",
                     mood === "annoyed" && "ag-annoyed",
                   )}
-                  aria-hidden
-                >
+                  aria-hidden>
                   {BODY.flatMap((row, y) =>
                     [...row].map((ch, x) =>
                       COLORS[ch] ? (
-                        <rect
-                          key={`${x}-${y}`}
-                          x={x * PX}
-                          y={y * PX}
-                          width={PX}
-                          height={PX}
-                          fill={COLORS[ch]}
-                        />
+                        <rect key={`${x}-${y}`} x={x * PX} y={y * PX} width={PX} height={PX} fill={COLORS[ch]} />
                       ) : null,
                     ),
                   )}
                   {/* eyes: shut, happy, or open and looking */}
                   {asleep ? (
                     <g fill="#141414">
-                      <rect
-                        x={3 * PX}
-                        y={5 * PX}
-                        width={2 * PX}
-                        height={PX / 2}
-                      />
-                      <rect
-                        x={7 * PX}
-                        y={5 * PX}
-                        width={2 * PX}
-                        height={PX / 2}
-                      />
+                      <rect x={3 * PX} y={5 * PX} width={2 * PX} height={PX / 2} />
+                      <rect x={7 * PX} y={5 * PX} width={2 * PX} height={PX / 2} />
                     </g>
                   ) : mood === "annoyed" ? (
                     <g fill="#141414">
@@ -1138,89 +1093,30 @@ function Ag() {
                       <rect x={3 * PX} y={5 * PX} width={2 * PX} height={PX} />
                       <rect x={7 * PX} y={5 * PX} width={2 * PX} height={PX} />
                       <rect x={2 * PX} y={3 * PX} width={PX} height={PX} />
-                      <rect
-                        x={3 * PX}
-                        y={3.5 * PX}
-                        width={2 * PX}
-                        height={PX / 2}
-                      />
+                      <rect x={3 * PX} y={3.5 * PX} width={2 * PX} height={PX / 2} />
                       <rect x={9 * PX} y={3 * PX} width={PX} height={PX} />
-                      <rect
-                        x={7 * PX}
-                        y={3.5 * PX}
-                        width={2 * PX}
-                        height={PX / 2}
-                      />
+                      <rect x={7 * PX} y={3.5 * PX} width={2 * PX} height={PX / 2} />
                     </g>
                   ) : happy ? (
                     <g fill="#141414">
                       {[2, 3, 4, 7, 8, 9].map((ex, i) => (
-                        <rect
-                          key={ex}
-                          x={ex * PX}
-                          y={(i % 3 === 1 ? 4 : 5) * PX}
-                          width={PX}
-                          height={PX}
-                        />
+                        <rect key={ex} x={ex * PX} y={(i % 3 === 1 ? 4 : 5) * PX} width={PX} height={PX} />
                       ))}
                     </g>
                   ) : (
-                    <g
-                      className={reduced ? undefined : "ag-blink"}
-                      fill="#141414"
-                    >
-                      <rect
-                        x={(3 + eyeShift) * PX}
-                        y={(4 + eyeShiftY) * PX}
-                        width={2 * PX}
-                        height={2 * PX}
-                      />
-                      <rect
-                        x={(7 + eyeShift) * PX}
-                        y={(4 + eyeShiftY) * PX}
-                        width={2 * PX}
-                        height={2 * PX}
-                      />
+                    <g className={reduced ? undefined : "ag-blink"} fill="#141414">
+                      <rect x={(3 + eyeShift) * PX} y={(4 + eyeShiftY) * PX} width={2 * PX} height={2 * PX} />
+                      <rect x={(7 + eyeShift) * PX} y={(4 + eyeShiftY) * PX} width={2 * PX} height={2 * PX} />
                     </g>
                   )}
                   {/* sunglasses */}
                   {shades && (
                     <g>
-                      <rect
-                        x={2 * PX}
-                        y={4 * PX}
-                        width={3 * PX}
-                        height={2 * PX}
-                        fill="#141414"
-                      />
-                      <rect
-                        x={7 * PX}
-                        y={4 * PX}
-                        width={3 * PX}
-                        height={2 * PX}
-                        fill="#141414"
-                      />
-                      <rect
-                        x={5 * PX}
-                        y={4 * PX}
-                        width={2 * PX}
-                        height={PX / 2}
-                        fill="#141414"
-                      />
-                      <rect
-                        x={2 * PX}
-                        y={4 * PX}
-                        width={PX}
-                        height={PX / 2}
-                        fill="#ffffff"
-                      />
-                      <rect
-                        x={7 * PX}
-                        y={4 * PX}
-                        width={PX}
-                        height={PX / 2}
-                        fill="#ffffff"
-                      />
+                      <rect x={2 * PX} y={4 * PX} width={3 * PX} height={2 * PX} fill="#141414" />
+                      <rect x={7 * PX} y={4 * PX} width={3 * PX} height={2 * PX} fill="#141414" />
+                      <rect x={5 * PX} y={4 * PX} width={2 * PX} height={PX / 2} fill="#141414" />
+                      <rect x={2 * PX} y={4 * PX} width={PX} height={PX / 2} fill="#ffffff" />
+                      <rect x={7 * PX} y={4 * PX} width={PX} height={PX / 2} fill="#ffffff" />
                     </g>
                   )}
                   {/* blush */}
@@ -1243,25 +1139,10 @@ function Ag() {
                   {FEET.map((row, frame) => (
                     <g
                       key={frame}
-                      className={
-                        walking
-                          ? `ag-step-${frame}`
-                          : frame === 1
-                            ? "hidden"
-                            : undefined
-                      }
-                      fill="#5f646c"
-                    >
+                      className={walking ? `ag-step-${frame}` : frame === 1 ? "hidden" : undefined}
+                      fill="#5f646c">
                       {[...row].map((ch, x) =>
-                        ch === "X" ? (
-                          <rect
-                            key={x}
-                            x={x * PX}
-                            y={10 * PX}
-                            width={PX}
-                            height={PX}
-                          />
-                        ) : null,
+                        ch === "X" ? <rect key={x} x={x * PX} y={10 * PX} width={PX} height={PX} /> : null,
                       )}
                     </g>
                   ))}
@@ -1288,8 +1169,7 @@ function Effects({ kind, seed }: { kind: Reaction; seed: number }) {
             className="absolute"
             initial={{ x: dx - 10, y: 0, opacity: 0, scale: 0.6 }}
             animate={{ y: -50 - i * 6, opacity: [0, 1, 1, 0], scale: 1 }}
-            transition={{ ...fade, delay: i * 0.12 }}
-          >
+            transition={{ ...fade, delay: i * 0.12 }}>
             <PixelHeart />
           </motion.span>
         ))}
@@ -1300,11 +1180,7 @@ function Effects({ kind, seed }: { kind: Reaction; seed: number }) {
     const food = FOODS[seed % FOODS.length];
     const crumb = Object.values(food.colors)[0];
     return (
-      <span
-        aria-hidden
-        className="pointer-events-none absolute left-1/2"
-        style={{ top: 7 * PX }}
-      >
+      <span aria-hidden className="pointer-events-none absolute left-1/2" style={{ top: 7 * PX }}>
         {/* the snack drops into the mouth */}
         <motion.span
           className="absolute -ml-3 block"
@@ -1314,8 +1190,7 @@ function Effects({ kind, seed }: { kind: Reaction; seed: number }) {
             duration: 0.4,
             ease: "easeIn",
             opacity: { duration: 0.45, times: [0, 0.85, 1] },
-          }}
-        >
+          }}>
           <PixelSprite rows={food.rows} colors={food.colors} />
         </motion.span>
         {/* crumbs */}
@@ -1343,11 +1218,7 @@ function Effects({ kind, seed }: { kind: Reaction; seed: number }) {
 
   if (kind === "refuse")
     return (
-      <span
-        aria-hidden
-        className="pointer-events-none absolute left-1/2"
-        style={{ top: 0 }}
-      >
+      <span aria-hidden className="pointer-events-none absolute left-1/2" style={{ top: 0 }}>
         {/* the offered snack bonks off its head */}
         <motion.span
           className="absolute -ml-3 block"
@@ -1362,8 +1233,7 @@ function Effects({ kind, seed }: { kind: Reaction; seed: number }) {
             duration: 0.8,
             times: [0, 0.35, 1],
             ease: ["easeIn", "easeOut"],
-          }}
-        >
+          }}>
           <PixelSprite rows={FOODS[0].rows} colors={FOODS[0].colors} />
         </motion.span>
       </span>
@@ -1404,8 +1274,7 @@ function Effects({ kind, seed }: { kind: Reaction; seed: number }) {
           scale: 1,
           rotate: kind === "unmute" ? [0, -10, 10, 0] : 0,
         }}
-        transition={{ duration: 1.2, ease: "easeOut" }}
-      >
+        transition={{ duration: 1.2, ease: "easeOut" }}>
         <Icon className="size-3.5" />
       </motion.span>
     );
@@ -1429,33 +1298,41 @@ function Effects({ kind, seed }: { kind: Reaction; seed: number }) {
   return null;
 }
 
-function PixelSprite({
-  rows,
-  colors,
-  px = 3,
-}: {
-  rows: string[];
-  colors: Record<string, string>;
-  px?: number;
-}) {
+function PixelSprite({ rows, colors, px = 3 }: { rows: string[]; colors: Record<string, string>; px?: number }) {
   return (
-    <svg
-      width={rows[0].length * px}
-      height={rows.length * px}
-      shapeRendering="crispEdges"
-    >
+    <svg width={rows[0].length * px} height={rows.length * px} shapeRendering="crispEdges">
       {rows.flatMap((row, y) =>
         [...row].map((ch, x) =>
-          colors[ch] ? (
+          colors[ch] ? <rect key={`${x}-${y}`} x={x * px} y={y * px} width={px} height={px} fill={colors[ch]} /> : null,
+        ),
+      )}
+    </svg>
+  );
+}
+
+/** The bubble's tail, stepped down to a point; it covers the bubble's bottom edge where they meet. */
+function BubbleTail() {
+  const p = 3;
+  const rows = ["XFFFX", ".XFX.", "..X.."];
+  return (
+    <svg
+      aria-hidden
+      width={5 * p}
+      height={3 * p}
+      shapeRendering="crispEdges"
+      className="absolute top-full left-1/2 -ml-[7.5px]">
+      {rows.flatMap((row, y) =>
+        [...row].map((ch, x) =>
+          ch === "." ? null : (
             <rect
               key={`${x}-${y}`}
-              x={x * px}
-              y={y * px}
-              width={px}
-              height={px}
-              fill={colors[ch]}
+              x={x * p}
+              y={y * p}
+              width={p}
+              height={p}
+              fill={ch === "X" ? "#2a2d33" : "#f4f5f7"}
             />
-          ) : null,
+          ),
         ),
       )}
     </svg>
@@ -1468,36 +1345,20 @@ function PixelHeart() {
     <svg width={7 * p} height={6 * p} shapeRendering="crispEdges">
       {HEART.flatMap((row, y) =>
         [...row].map((ch, x) =>
-          ch === "X" ? (
-            <rect
-              key={`${x}-${y}`}
-              x={x * p}
-              y={y * p}
-              width={p}
-              height={p}
-              fill="#f28ba8"
-            />
-          ) : null,
+          ch === "X" ? <rect key={`${x}-${y}`} x={x * p} y={y * p} width={p} height={p} fill="#f28ba8" /> : null,
         ),
       )}
     </svg>
   );
 }
 
-function MenuButton({
-  onClick,
-  children,
-}: {
-  onClick: () => void;
-  children: React.ReactNode;
-}) {
+function MenuButton({ onClick, children }: { onClick: () => void; children: React.ReactNode }) {
   return (
     <button
       type="button"
       role="menuitem"
       onClick={onClick}
-      className="h-8 cursor-pointer rounded-full px-3 text-body-sm whitespace-nowrap text-foreground transition-transform hover:bg-foreground/8 active:scale-95"
-    >
+      className="ag-item h-8 cursor-pointer pr-2.5 pl-4 whitespace-nowrap">
       {children}
     </button>
   );
