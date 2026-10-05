@@ -10,6 +10,7 @@ import {
   useSpring,
   useTransform,
   type AnimationPlaybackControls,
+  type MotionValue,
   type TargetAndTransition,
 } from "motion/react";
 import { useTheme } from "next-themes";
@@ -264,7 +265,9 @@ export function AgPet() {
 
 /** A note left behind when Ag is sent away: how to call it back. */
 function ComebackHint({ onClose }: { onClose: () => void }) {
-  const mac = typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform);
+  const mac = /Mac|iPhone|iPad/.test(navigator.platform);
+  // Shortcuts mean nothing on a touch screen: there, the button is the way back.
+  const keyboard = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
   return (
     <motion.div
       role="status"
@@ -272,13 +275,17 @@ function ComebackHint({ onClose }: { onClose: () => void }) {
       animate={{ opacity: 1, y: 0, transition: { delay: 0.7, duration: 0.15, ease: stepped } }}
       exit={{ opacity: 0, y: 9, transition: { duration: 0.12, ease: stepped } }}
       className={cn(
-        "ag-box fixed bottom-6 left-1/2 z-[70] flex w-max max-w-[calc(100vw-32px)] -translate-x-1/2 items-center gap-3 py-1.5 pr-1.5 pl-3",
+        "ag-box fixed bottom-6 left-1/2 max-[1199px]:bottom-24 z-[70] flex w-max max-w-[calc(100vw-32px)] -translate-x-1/2 items-center gap-3 py-1.5 pr-1.5 pl-3",
         pixelify.className,
       )}>
-      <p>
-        Ag went home. <kbd className="ag-kbd">{mac ? "⌘" : "Ctrl"}</kbd>
-        <kbd className="ag-kbd">.</kbd> or <kbd className="ag-kbd">/pet</kbd> brings it back.
-      </p>
+      {keyboard ? (
+        <p>
+          Ag went home. <kbd className="ag-kbd">{mac ? "⌘" : "Ctrl"}</kbd>
+          <kbd className="ag-kbd">.</kbd> or <kbd className="ag-kbd">/pet</kbd> brings it back.
+        </p>
+      ) : (
+        <p>Ag went home.</p>
+      )}
       <button
         type="button"
         onClick={() => {
@@ -521,6 +528,33 @@ function Ag() {
       clearTimeout(quiet);
     };
   }, [reduced, ride]);
+
+  // Keep the bubble and menu on screen when Ag is near an edge (they're wider
+  // than Ag, and on phones wider than the space beside it); the tail still
+  // points at Ag.
+  const popRef = useRef<HTMLDivElement>(null);
+  const shift = useMotionValue(0);
+  const tailX = useTransform(shift, (v) => -v);
+  useEffect(() => {
+    const el = popRef.current;
+    if (!el) return;
+    const update = () => {
+      const half = el.offsetWidth / 2;
+      const centre = x.get() + WIDTH / 2;
+      const room = { min: 8 - (centre - half), max: window.innerWidth - 8 - (centre + half) };
+      shift.set(Math.round(clamp(0, room.min, Math.max(room.min, room.max))));
+    };
+    update();
+    const off = x.on("change", update);
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    window.addEventListener("resize", update);
+    return () => {
+      off();
+      ro.disconnect();
+      window.removeEventListener("resize", update);
+    };
+  }, [x, shift]);
 
   // Speech bubbles clear themselves.
   useEffect(() => {
@@ -979,7 +1013,9 @@ function Ag() {
         )}
 
         {/* speech bubble, with the menu under it when open */}
-        <div
+        <motion.div
+          ref={popRef}
+          style={{ x: shift }}
           className={cn(
             "absolute bottom-full left-1/2 mb-3 flex -translate-x-1/2 flex-col items-center gap-3",
             pixelify.className,
@@ -995,7 +1031,7 @@ function Ag() {
                 transition={{ duration: 0.15, ease: stepped }}
                 className="ag-box relative w-max max-w-52 px-2.5 py-1.5 text-center">
                 {bubble}
-                {!menu && <BubbleTail />}
+                {!menu && <BubbleTail x={tailX} />}
               </motion.p>
             )}
           </AnimatePresence>
@@ -1016,7 +1052,7 @@ function Ag() {
               </motion.div>
             )}
           </AnimatePresence>
-        </div>
+        </motion.div>
 
         {/* zzz */}
         {asleep && (
@@ -1311,12 +1347,13 @@ function PixelSprite({ rows, colors, px = 3 }: { rows: string[]; colors: Record<
 }
 
 /** The bubble's tail, stepped down to a point; it covers the bubble's bottom edge where they meet. */
-function BubbleTail() {
+function BubbleTail({ x }: { x: MotionValue<number> }) {
   const p = 3;
   const rows = ["XFFFX", ".XFX.", "..X.."];
   return (
-    <svg
+    <motion.svg
       aria-hidden
+      style={{ x }}
       width={5 * p}
       height={3 * p}
       shapeRendering="crispEdges"
@@ -1335,7 +1372,7 @@ function BubbleTail() {
           ),
         ),
       )}
-    </svg>
+    </motion.svg>
   );
 }
 
