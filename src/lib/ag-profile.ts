@@ -26,6 +26,10 @@ const section = (title: string, lines: string[]) => `${title}:\n${lines.join("\n
 export const AG_PROFILE = [
   `Name: ${DATA.name}. Based in ${DATA.location}. Website: ${DATA.url}.`,
   `Summary: ${plain(DATA.summary).replace(/\n+/g, " ")}`,
+  `Contact: email ${DATA.contact.email}; ${Object.values(DATA.contact.social)
+    .filter((s) => s.navbar)
+    .map((s) => `${s.name} ${s.url}`)
+    .join("; ")}; a free 15-minute call can be booked on the site's /schedule page.`,
 
   section(
     "Work experience",

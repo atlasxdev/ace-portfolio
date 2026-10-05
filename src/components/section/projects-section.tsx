@@ -92,10 +92,12 @@ export function ProjectsSection({ limit }: { limit?: number }) {
 
         return (
           <Reveal key={project.title} delay={Math.min(i * 0.05, 0.2)}>
+            {/* data-project: where the chat's "Show me" sends Ag. */}
             {!primary ? (
-              <div className={rowClass}>{body}</div>
+              <div data-project={project.title} className={rowClass}>{body}</div>
             ) : primary.href.startsWith("http") ? (
               <a
+                data-project={project.title}
                 href={primary.href}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -104,7 +106,7 @@ export function ProjectsSection({ limit }: { limit?: number }) {
                 {body}
               </a>
             ) : (
-              <Link href={primary.href} className={rowClass}>
+              <Link data-project={project.title} href={primary.href} className={rowClass}>
                 {body}
               </Link>
             )}

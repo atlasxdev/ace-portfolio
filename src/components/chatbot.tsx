@@ -4,17 +4,23 @@ import * as DialogPrimitive from "@radix-ui/react-dialog";
 import {
   ArrowUp,
   ArrowUpRight,
+  Briefcase,
+  CalendarDays,
   CircleCheck,
   Code,
   CornerDownLeft,
   FileText,
+  Footprints,
   Layers,
+  Lightbulb,
+  Mountain,
   Mail,
   Square,
   X,
   type LucideIcon,
 } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import type { ChatEvent } from "@/app/api/chat/route";
@@ -22,7 +28,9 @@ import { useContactDialog } from "@/components/contact-dialog";
 import { AgFace } from "@/components/ag-face";
 import { PaletteSnake } from "@/components/palette-snake";
 import { PaletteSource } from "@/components/palette-source";
-import { OPEN_CHAT_EVENT, sendChatState, type ChatState } from "@/lib/chat-events";
+import { DATA } from "@/data/resume";
+import { TECH_BAND } from "@/data/stacks";
+import { OPEN_CHAT_EVENT, sendChatState, showOnPage, type ChatState } from "@/lib/chat-events";
 import { findChatProject } from "@/lib/chat-projects";
 import { keepOpenForPet, togglePet } from "@/lib/pet-store";
 import { CARD_STATE, EASE } from "@/lib/motion";
@@ -43,21 +51,59 @@ type Message = {
   stopped?: boolean;
   /** The model judged the visitor wants to reach Ace: offer the contact form. */
   showContact?: boolean;
+  /** The visitor wants a call: offer the booking page. */
+  showSchedule?: boolean;
   /** Titles of the projects the reply is about, shown as cards. */
   projects?: string[];
   /** Questions the visitor might ask next. */
   followUps?: string[];
 };
 
-type Starter = { icon: LucideIcon; text: string; contact?: boolean };
+type Starter = { icon: LucideIcon; text: string; contact?: boolean; brief?: boolean };
+
+const RECRUITER: Starter = { icon: Briefcase, text: "I'm a recruiter. Give me the TL;DR", brief: true };
+const MESSAGE: Starter = { icon: Mail, text: "Send Ace a message", contact: true };
 
 const STARTERS: Starter[] = [
   { icon: Layers, text: "What has Ace built recently?" },
   { icon: Code, text: "Which tools does Ace work with?" },
   { icon: FileText, text: "Walk me through the admissions portal" },
   { icon: CircleCheck, text: "Is Ace open to new work?" },
-  { icon: Mail, text: "Send Ace a message", contact: true },
+  RECRUITER,
+  MESSAGE,
 ];
+
+/** On a blog post, the chat opens on questions about that post (the route is
+ *  told which one the visitor is reading). */
+const POST_STARTERS: Starter[] = [
+  { icon: FileText, text: "Give me the short version of this post" },
+  { icon: Mountain, text: "What was the hardest part here?" },
+  { icon: Lightbulb, text: "Why did Ace build it this way?" },
+  RECRUITER,
+  MESSAGE,
+];
+
+const isPost = (path: string) => /^\/blog\/[\w-]+\/?$/.test(path);
+
+/**
+ * The recruiter's TL;DR, put together from the site's own data rather than
+ * asked of the model: it's the same every time, it's instant, and it still
+ * works when the model's daily quota has run out.
+ */
+function recruiterBrief() {
+  const [job] = DATA.work;
+  return {
+    content: [
+      `${DATA.name} is a full-stack and automation engineer, currently ${job.title} at ${job.company} (since ${job.start}). He builds web apps, internal tools and automations, and lately focuses on AI-augmented development.`,
+      `Core stack: ${TECH_BAND.slice(0, 8)
+        .map((t) => t.name)
+        .join(", ")}.`,
+      "Two projects worth a look are below. To talk, message him or book a 15-minute call.",
+    ].join("\n\n"),
+    projects: DATA.projects.slice(0, 2).map((p) => p.title),
+    followUps: ["What has Ace built recently?", "Is Ace open to new work?"],
+  };
+}
 
 /** Hidden commands: typing "/" in the palette lists them instead of asking the assistant. */
 const COMMANDS = [
@@ -77,7 +123,11 @@ const COMMANDS = [
 /** What a command opens inside the palette, in place of the conversation. */
 type Screen = "play" | "source";
 
-const matchCommands = (text: string) => COMMANDS.filter((c) => c.cmd.startsWith(text.trim().toLowerCase()));
+/** Ag only lives on desktop pages (see DeferredExtras), so /pet is desktop-only too. */
+const hasPet = () => window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+
+const matchCommands = (text: string) =>
+  COMMANDS.filter((c) => c.cmd.startsWith(text.trim().toLowerCase()) && (c.cmd !== "/pet" || hasPet()));
 
 /** Reads the route's newline-delimited JSON events as they arrive. */
 async function readEvents(body: ReadableStream<Uint8Array>, onEvent: (event: ChatEvent) => void) {
@@ -134,6 +184,9 @@ export default function Chatbot({ openOnMount = false }: { openOnMount?: boolean
   const [active, setActive] = useState(0);
   const openContact = useContactDialog();
   const reduced = useReducedMotion();
+  const pathname = usePathname();
+  const router = useRouter();
+  const starters = isPost(pathname) ? POST_STARTERS : STARTERS;
 
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -249,6 +302,7 @@ export default function Chatbot({ openOnMount = false }: { openOnMount?: boolean
         body: JSON.stringify({
           // The latest exchanges are enough context (an odd count, so it opens on a question); the route caps the length.
           messages: history.slice(-19).map(({ role, content }) => ({ role, content })),
+          page: pathname,
         }),
         signal: controller.signal,
       });
@@ -262,10 +316,11 @@ export default function Chatbot({ openOnMount = false }: { openOnMount?: boolean
       await readEvents(response.body, (event) => {
         if (event.type === "delta") patch((m) => ({ ...m, content: m.content + event.text }));
         else if (event.type === "done") {
-          if (event.showContact) outcome = "contact";
+          if (event.showContact || event.showSchedule) outcome = "contact";
           patch((m) => ({
             ...m,
             showContact: event.showContact,
+            showSchedule: event.showSchedule,
             projects: event.projects,
             followUps: event.followUps,
           }));
@@ -296,7 +351,58 @@ export default function Chatbot({ openOnMount = false }: { openOnMount?: boolean
     openContact();
   };
 
-  const pickStarter = (starter: Starter) => (starter.contact ? handOffToContact() : ask(starter.text));
+  const brief = () => {
+    if (busy) return;
+    setScreen(null);
+    const user: Message = { id: nextId.current++, role: "user", content: RECRUITER.text };
+    const reply: Message = {
+      id: nextId.current++,
+      role: "assistant",
+      streaming: true,
+      showContact: true,
+      showSchedule: true,
+      ...recruiterBrief(),
+    };
+    setMessages((prev) => [...prev, user, reply]);
+    setInput("");
+    inputRef.current?.focus();
+    // Mounted as streaming so it types out like any other reply.
+    setTimeout(() => setMessages((prev) => prev.map((m) => (m.id === reply.id ? { ...m, streaming: false } : m))), 50);
+    sendChatState("contact");
+  };
+
+  const schedule = () => {
+    handingOff.current = true;
+    setIsOpen(false);
+    router.push("/schedule");
+  };
+
+  /** Closes the chat, takes the visitor to the project's row (on this page if
+   *  it's here, else on /projects), and has Ag hop onto it. */
+  const showProject = (title: string) => {
+    handingOff.current = true;
+    setIsOpen(false);
+    const find = () =>
+      [...document.querySelectorAll<HTMLElement>("[data-project]")].find((el) => el.dataset.project === title);
+    const go = (row: HTMLElement) => {
+      row.scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "center" });
+      showOnPage(row.querySelector("h3") ?? row);
+    };
+    const here = find();
+    if (here) return go(here);
+    router.push("/projects");
+    let tries = 0;
+    const t = setInterval(() => {
+      const row = find();
+      if (!row && ++tries < 40) return;
+      clearInterval(t);
+      // A beat for the new page to finish its own scroll to the top.
+      if (row) setTimeout(() => go(row), 250);
+    }, 100);
+  };
+
+  const pickStarter = (starter: Starter) =>
+    starter.contact ? handOffToContact() : starter.brief ? brief() : ask(starter.text);
 
   const newChat = () => {
     stop();
@@ -310,10 +416,10 @@ export default function Chatbot({ openOnMount = false }: { openOnMount?: boolean
     if (e.key === "ArrowDown" || e.key === "ArrowUp") {
       e.preventDefault();
       const step = e.key === "ArrowDown" ? 1 : -1;
-      setActive((i) => (i + step + STARTERS.length) % STARTERS.length);
+      setActive((i) => (i + step + starters.length) % starters.length);
     } else if (e.key === "Enter") {
       e.preventDefault();
-      pickStarter(STARTERS[active]);
+      pickStarter(starters[active]);
     }
   };
 
@@ -496,7 +602,13 @@ export default function Chatbot({ openOnMount = false }: { openOnMount?: boolean
                       ) : screen === "source" ? (
                         <PaletteSource />
                       ) : empty ? (
-                        <Welcome active={active} onHover={setActive} onPick={pickStarter} />
+                        <Welcome
+                          starters={starters}
+                          onPost={isPost(pathname)}
+                          active={active}
+                          onHover={setActive}
+                          onPick={pickStarter}
+                        />
                       ) : (
                         <div role="log" aria-label="Conversation" className="flex flex-col gap-5">
                           {messages.map((m) =>
@@ -513,6 +625,8 @@ export default function Chatbot({ openOnMount = false }: { openOnMount?: boolean
                                 isLast={m === last}
                                 onAsk={ask}
                                 onContact={handOffToContact}
+                                onSchedule={schedule}
+                                onShow={showProject}
                               />
                             ),
                           )}
@@ -642,10 +756,14 @@ function CommandList({ matches, onRun }: { matches: typeof COMMANDS; onRun: (cmd
 }
 
 function Welcome({
+  starters,
+  onPost,
   active,
   onHover,
   onPick,
 }: {
+  starters: Starter[];
+  onPost: boolean;
   active: number;
   onHover: (i: number) => void;
   onPick: (starter: Starter) => void;
@@ -654,15 +772,17 @@ function Welcome({
     <div className="mt-auto flex flex-col gap-5 px-4 py-5 lg:mt-0 lg:gap-0 lg:p-2">
       <div className="lg:hidden">
         <h2 className="text-[26px] leading-[30px] font-semibold tracking-[-0.025em]">
-          Hi, I&apos;m Ag. Ask me about Ace&apos;s work.
+          {onPost ? "Hi, I'm Ag. Ask me about this post." : "Hi, I'm Ag. Ask me about Ace's work."}
         </h2>
         <p className="mt-2 text-[15px] leading-[22px] text-muted-foreground">
           I know his projects, the tools he builds with, and how to reach him.
         </p>
       </div>
-      <p className="hidden px-2.5 pt-2 pb-1.5 text-xs text-ink-faint lg:block">Try asking</p>
+      <p className="hidden px-2.5 pt-2 pb-1.5 text-xs text-ink-faint lg:block">
+        {onPost ? "About this post" : "Try asking"}
+      </p>
       <ul className="overflow-hidden rounded-[14px] border border-rule lg:rounded-none lg:border-0">
-        {STARTERS.map((starter, i) => {
+        {starters.map((starter, i) => {
           const Icon = starter.icon;
           const on = i === active;
           return (
@@ -701,11 +821,15 @@ function AssistantMessage({
   isLast,
   onAsk,
   onContact,
+  onSchedule,
+  onShow,
 }: {
   message: Message;
   isLast: boolean;
   onAsk: (text: string) => void;
   onContact: () => void;
+  onSchedule: () => void;
+  onShow: (title: string) => void;
 }) {
   const typed = useTypedText(message.content, !!message.streaming);
   const typing = typed.length < message.content.length;
@@ -740,7 +864,7 @@ function AssistantMessage({
         </p>
       )}
 
-      {settled && (projects.length > 0 || message.showContact || message.failed) && (
+      {settled && (projects.length > 0 || message.showContact || message.showSchedule || message.failed) && (
         <motion.div
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
@@ -749,18 +873,31 @@ function AssistantMessage({
           {projects.length > 0 && (
             <div className="-mx-4 flex snap-x scroll-px-4 gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 md:pb-0">
               {projects.map((p) => (
-                <ProjectCard key={p.title} {...p} />
+                <ProjectCard key={p.title} {...p} onShow={onShow} />
               ))}
             </div>
           )}
-          {(message.showContact || message.failed) && (
-            <button
-              type="button"
-              onClick={onContact}
-              className="flex h-9 w-fit cursor-pointer items-center gap-2 rounded-full bg-foreground px-4 text-body-sm font-medium text-background">
-              <Mail className="size-3.5" aria-hidden />
-              Message Ace
-            </button>
+          {(message.showContact || message.showSchedule || message.failed) && (
+            <div className="flex flex-wrap gap-2">
+              {(message.showContact || message.failed) && (
+                <button
+                  type="button"
+                  onClick={onContact}
+                  className="flex h-9 w-fit cursor-pointer items-center gap-2 rounded-full bg-foreground px-4 text-body-sm font-medium text-background">
+                  <Mail className="size-3.5" aria-hidden />
+                  Message Ace
+                </button>
+              )}
+              {message.showSchedule && (
+                <button
+                  type="button"
+                  onClick={onSchedule}
+                  className="flex h-9 w-fit cursor-pointer items-center gap-2 rounded-full border border-foreground/12 px-4 text-body-sm font-medium text-foreground hover:bg-foreground/5">
+                  <CalendarDays className="size-3.5" aria-hidden />
+                  Book a call
+                </button>
+              )}
+            </div>
           )}
         </motion.div>
       )}
@@ -787,32 +924,49 @@ function AssistantMessage({
   );
 }
 
-function ProjectCard({ title, href, tag, summary }: NonNullable<ReturnType<typeof findChatProject>>) {
+function ProjectCard({
+  title,
+  href,
+  tag,
+  summary,
+  onShow,
+}: NonNullable<ReturnType<typeof findChatProject>> & { onShow: (title: string) => void }) {
   const external = !!href && /^https?:/.test(href);
-  const body = (
-    <>
+  return (
+    <div
+      className={cn(
+        "relative flex w-[78%] shrink-0 snap-start flex-col rounded-xl border border-foreground/12 bg-foreground/4 px-3.5 py-3 md:w-auto",
+        href && "transition-colors hover:border-foreground/30",
+      )}>
       <span className="flex items-center gap-2">
-        <span className="text-body font-semibold">{title}</span>
+        {href ? (
+          // The link covers the card; "Show me" sits above it.
+          <a
+            href={href}
+            {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+            className="text-body font-semibold after:absolute after:inset-0 after:rounded-xl">
+            {title}
+          </a>
+        ) : (
+          <span className="text-body font-semibold">{title}</span>
+        )}
         {href && <ArrowUpRight className="ml-auto size-3.5 shrink-0 text-ink-faint" aria-hidden />}
       </span>
       <span className="mt-1 line-clamp-2 text-body-sm text-muted-foreground">{summary}</span>
-      {tag && (
-        <span className="mt-2.5 w-fit rounded-full border border-rule px-2 text-[10.5px] leading-[18px] text-muted-foreground">
-          {tag}
-        </span>
-      )}
-    </>
-  );
-  const className =
-    "flex w-[78%] shrink-0 snap-start flex-col rounded-xl border border-foreground/12 bg-foreground/4 px-3.5 py-3 md:w-auto";
-  return href ? (
-    <a
-      href={href}
-      {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-      className={cn(className, "transition-colors hover:border-foreground/30")}>
-      {body}
-    </a>
-  ) : (
-    <div className={className}>{body}</div>
+      <span className="mt-2.5 flex items-center gap-2">
+        {tag && (
+          <span className="w-fit rounded-full border border-rule px-2 text-[10.5px] leading-[18px] text-muted-foreground">
+            {tag}
+          </span>
+        )}
+        <button
+          type="button"
+          onClick={() => onShow(title)}
+          className="relative z-10 -my-1 -mr-1.5 ml-auto flex h-7 cursor-pointer items-center gap-1.5 rounded-full px-2.5 text-[12px] text-muted-foreground hover:bg-foreground/6 hover:text-foreground">
+          <Footprints className="size-3.5" aria-hidden />
+          Show me
+        </button>
+      </span>
+    </div>
   );
 }

@@ -11,3 +11,8 @@ export type ChatState = "thinking" | "answered" | "contact" | "failed" | "limite
 
 export const sendChatState = (state: ChatState) =>
   window.dispatchEvent(new CustomEvent<ChatState>(CHAT_STATE_EVENT, { detail: state }));
+
+/** Dispatched by the chat's "Show me" with the element to show: Ag hops onto it. */
+export const SHOW_EVENT = "ag:show";
+
+export const showOnPage = (el: Element) => window.dispatchEvent(new CustomEvent<Element>(SHOW_EVENT, { detail: el }));

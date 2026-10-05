@@ -18,9 +18,9 @@ import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 
 import { BODY, COLORS, FEET } from "@/lib/ag-art";
-import { CHAT_STATE_EVENT, OPEN_CHAT_EVENT, type ChatState } from "@/lib/chat-events";
+import { CHAT_STATE_EVENT, OPEN_CHAT_EVENT, SHOW_EVENT, type ChatState } from "@/lib/chat-events";
 import { pixelify } from "@/lib/pet-font";
-import { petSounds } from "@/lib/pet-sounds";
+import { petSounds, type PetSound } from "@/lib/pet-sounds";
 import {
   CONTACT_SENT_EVENT,
   hasMetPet,
@@ -110,6 +110,22 @@ const PET_LINES = ["Purr.", "Ag approves.", "Again!", "Shiny and happy."];
 type Mode = "idle" | "walk" | "jump" | "sleep";
 type Reaction =
   "pet" | "feed" | "mute" | "unmute" | "bye" | "wave" | "land" | "huff" | "refuse" | "hic" | "startle" | "yawn" | "nod" | "shake";
+const REACTION_SOUNDS: Record<Reaction, PetSound | null> = {
+  pet: "pet",
+  feed: "feed",
+  mute: null, // played before muting, see toggleMute
+  unmute: "pet",
+  bye: "wave",
+  wave: "wave",
+  land: "land",
+  huff: "huff",
+  refuse: "refuse",
+  hic: "hic",
+  startle: "startle",
+  yawn: "yawn",
+  nod: "nod",
+  shake: "oops",
+};
 /** Too much of a good thing: grumpy after a petting spree, round after a feast. */
 type Mood = "content" | "annoyed" | "full";
 type Perch = { el: Element; dx: number };
@@ -333,7 +349,17 @@ function Ag() {
   const [reaction, setReaction] = useState<{
     kind: Reaction;
     id: number;
+    /** A sound in place of the reaction's own (null for none). */
+    sound?: PetSound | null;
   } | null>(null);
+  const react = (kind: Reaction, sound?: PetSound | null) =>
+    setReaction((r) => ({ kind, id: (r?.id ?? 0) + 1, sound }));
+  /** When Ag last made a sound, so a remark that comes with one doesn't also chirp. */
+  const lastSound = useRef(0);
+  const play = (sound: PetSound) => {
+    lastSound.current = performance.now();
+    if (!isPetMuted()) petSounds[sound]();
+  };
   const [happy, setHappy] = useState(false);
   const [chewing, setChewing] = useState(false);
   const [mood, setMood] = useState<Mood>("content");
@@ -344,6 +370,8 @@ function Ag() {
   const [flee, setFlee] = useState(0);
   /** An open dialog Ag should hop onto next. */
   const visit = useRef<Element | null>(null);
+  /** Something the chat asked Ag to show the visitor, until it lands on it. */
+  const showing = useRef<Element | null>(null);
   const lastDialog = useRef<Element | null>(null);
   const [shades, setShades] = useState(false);
   const [yawning, setYawning] = useState(false);
@@ -370,17 +398,16 @@ function Ag() {
         setShades(false);
         setYawning(true);
         setBubble("Lights out. *yawn*");
-        setReaction((r) => ({ kind: "yawn", id: (r?.id ?? 0) + 1 }));
+        react("yawn");
       } else {
         setYawning(false);
         setShades(true);
         setBubble("Too bright!");
-        setReaction((r) => ({ kind: "startle", id: (r?.id ?? 0) + 1 }));
+        react("startle");
       }
     }
   }
 
-  const react = (kind: Reaction) => setReaction((r) => ({ kind, id: (r?.id ?? 0) + 1 }));
   const stopMoves = () => {
     moves.current.forEach((m) => m.stop());
     moves.current = [];
@@ -413,7 +440,7 @@ function Ag() {
         () => {
           setBubble(line);
           if (i > 0) return;
-          setReaction((r) => ({ kind: summoned ? "pet" : "wave", id: (r?.id ?? 0) + 1 }));
+          react(summoned ? "pet" : "wave");
           if (summoned || !met) setHappy(true);
         },
         land + i * 3_000,
@@ -449,7 +476,7 @@ function Ag() {
             ease: "easeIn",
             onComplete: () => {
               setMode("idle");
-              setReaction((rx) => ({ kind: "land", id: (rx?.id ?? 0) + 1 }));
+              react("land");
             },
           }),
         ];
@@ -617,13 +644,12 @@ function Ag() {
       const box = field.getBoundingClientRect();
       const me = petRef.current?.getBoundingClientRect();
       if (me) setLook(box.left + box.width / 2 < me.left ? -1 : box.left > me.right ? 1 : 0);
-      if (++keys % 12 === 0) setReaction((r) => ({ kind: "nod", id: (r?.id ?? 0) + 1 }));
+      if (++keys % 12 === 0) react("nod");
     };
     const onSent = () => {
       setBubble("Sent! Ace will get back to you.");
       setHappy(true);
-      setReaction((r) => ({ kind: "pet", id: (r?.id ?? 0) + 1 }));
-      if (!isPetMuted()) petSounds.pet();
+      react("pet");
     };
     window.addEventListener("keydown", onKey);
     window.addEventListener(CONTACT_SENT_EVENT, onSent);
@@ -634,6 +660,47 @@ function Ag() {
     };
   }, []);
 
+  // Showing the way: the chat scrolls a project into view, and once the page
+  // settles Ag hops onto it.
+  useEffect(() => {
+    let wait = 0;
+    const onShow = (e: Event) => {
+      const el = (e as CustomEvent<Element>).detail;
+      lastActive.current = Date.now();
+      if (modeRef.current === "sleep") setMode("idle");
+      clearInterval(wait);
+      if (reduced) {
+        setBubble("Here it is!");
+        react("wave", "tada");
+        return;
+      }
+      showing.current = el;
+      setBubble("Follow me!");
+      let lastTop = NaN;
+      let tries = 0;
+      wait = window.setInterval(() => {
+        const top = el.getBoundingClientRect().top;
+        const still = Math.abs(top - lastTop) < 1;
+        lastTop = top;
+        if (!still && ++tries < 30) return;
+        clearInterval(wait);
+        if (!el.isConnected || showing.current !== el) return;
+        visit.current = el;
+        if (modeRef.current === "walk") {
+          moves.current.forEach((m) => m.stop());
+          moves.current = [];
+          setMode("idle");
+        }
+        setFlee((f) => f + 1);
+      }, 100);
+    };
+    window.addEventListener(SHOW_EVENT, onShow);
+    return () => {
+      clearInterval(wait);
+      window.removeEventListener(SHOW_EVENT, onShow);
+    };
+  }, [reduced]);
+
   // Answering in the chat: eyes up while it thinks, a nod when the answer is
   // out, a wave at the "Message Ace" button, a head shake when it's lost, and
   // out of breath when it's asked too much too fast.
@@ -643,27 +710,22 @@ function Ag() {
       lastActive.current = Date.now();
       if (modeRef.current === "sleep") setMode("idle");
       setThinking(state === "thinking");
-      const sound = !isPetMuted();
       if (state === "thinking") {
         setBubble(pick(["Hmm, let me think.", "Let me check my notes.", "One sec."]));
-        if (sound) petSounds.think();
+        play("think");
       } else if (state === "answered") {
         setBubble(null);
         setHappy(true);
-        setReaction((r) => ({ kind: "nod", id: (r?.id ?? 0) + 1 }));
-        if (sound) petSounds.answer();
+        react("nod", "answer");
       } else if (state === "contact") {
         setBubble("Ace can take it from here.");
-        setReaction((r) => ({ kind: "wave", id: (r?.id ?? 0) + 1 }));
-        if (sound) petSounds.contact();
+        react("wave", "contact");
       } else if (state === "limited") {
         setBubble("Phew! I need a breather.");
-        setReaction((r) => ({ kind: "huff", id: (r?.id ?? 0) + 1 }));
-        if (sound) petSounds.huff();
+        react("huff");
       } else {
         setBubble("Oops. I lost my train of thought.");
-        setReaction((r) => ({ kind: "shake", id: (r?.id ?? 0) + 1 }));
-        if (sound) petSounds.oops();
+        react("shake");
       }
     };
     window.addEventListener(CHAT_STATE_EVENT, onChat);
@@ -802,7 +864,12 @@ function Ag() {
             onComplete: () => {
               perch.current = dest.el ? { el: dest.el, dx: dest.x - perchBox(dest.el).left } : null;
               setMode("idle");
-              react("land");
+              if (dest.el && dest.el === showing.current) {
+                showing.current = null;
+                setBubble("Here it is!");
+                setHappy(true);
+                react("wave", "tada");
+              } else react("land");
               // Whatever it lands on gives a little under its weight.
               dest.el?.animate(
                 [{ transform: "translateY(0)" }, { transform: "translateY(3px)" }, { transform: "translateY(0)" }],
@@ -824,7 +891,7 @@ function Ag() {
       if (!p || modeRef.current === "jump" || rootRef.current?.contains(e.target as Node)) return;
       if (!p.el.contains(e.target as Node)) return;
       setBubble("Whoa!");
-      setReaction((r) => ({ kind: "startle", id: (r?.id ?? 0) + 1 }));
+      react("startle");
       setFlee((f) => f + 1);
     };
     window.addEventListener("pointerdown", onDown, true);
@@ -890,6 +957,26 @@ function Ag() {
     return () => clearTimeout(t);
   }, [happy]);
 
+  // Every reaction, every move and every remark has a sound.
+  useEffect(() => {
+    if (!reaction) return;
+    const sound = reaction.sound === undefined ? REACTION_SOUNDS[reaction.kind] : reaction.sound;
+    if (sound) play(sound);
+  }, [reaction]);
+  const lastMode = useRef(mode);
+  useEffect(() => {
+    const was = lastMode.current;
+    lastMode.current = mode;
+    if (was === mode) return;
+    if (mode === "jump") play("hop");
+    else if (mode === "walk") play("steps");
+    else if (mode === "sleep") play("snore");
+    else if (was === "sleep") play("wake");
+  }, [mode]);
+  useEffect(() => {
+    if (bubble && performance.now() - lastSound.current > 150) play("chirp");
+  }, [bubble]);
+
   const wake = () => {
     lastActive.current = Date.now();
     if (mode === "sleep") setMode("idle");
@@ -915,7 +1002,6 @@ function Ag() {
       setHappy(false);
       react("huff");
       setBubble("Okay, okay! Personal space.");
-      if (!muted) petSounds.huff();
       // Storm off somewhere else.
       setMenu(false);
       setTimeout(() => setFlee((f) => f + 1), 700);
@@ -924,7 +1010,6 @@ function Ag() {
     react("pet");
     setHappy(true);
     setBubble(PET_LINES[Math.floor(Math.random() * PET_LINES.length)]);
-    if (!muted) petSounds.pet();
   };
 
   const feed = () => {
@@ -936,7 +1021,6 @@ function Ag() {
     }
     react("feed");
     setChewing(true);
-    if (!muted) petSounds.feed();
     if (tally(feedTimes, FEAST)) {
       feedTimes.current = [];
       setMood("full");
@@ -945,7 +1029,6 @@ function Ag() {
       setTimeout(() => {
         react("hic");
         setBubble("*hic*");
-        if (!isPetMuted()) petSounds.hic();
       }, 1800);
       return;
     }
@@ -954,8 +1037,9 @@ function Ag() {
 
   const toggleMute = () => {
     wake();
+    // The click as it goes quiet is the last thing it plays.
+    if (!muted) petSounds.mute();
     react(muted ? "unmute" : "mute");
-    if (muted) petSounds.pet();
     setPetMuted(!muted);
   };
 

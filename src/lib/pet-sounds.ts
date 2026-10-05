@@ -1,14 +1,15 @@
 /**
  * Ag's sounds, synthesised with Web Audio rather than shipped as files: each
  * is a couple of short pitch sweeps, a few hundred bytes of code in total.
- * They only ever play from a click or key press, which is also what browsers
- * require before audio may start.
+ * Browsers won't start audio before the visitor has clicked or pressed a key,
+ * so until then Ag stays silent rather than queueing up a burst for later.
  */
 
 let ctx: AudioContext | null = null;
 
 function audio() {
   if (typeof window === "undefined" || !("AudioContext" in window)) return null;
+  if (navigator.userActivation && !navigator.userActivation.hasBeenActive) return null;
   ctx ??= new AudioContext();
   if (ctx.state === "suspended") void ctx.resume();
   return ctx;
@@ -86,4 +87,64 @@ export const petSounds = {
   feed() {
     for (const delay of [0, 0.16, 0.32]) sweep(260, 170, delay, 0.09, "triangle", 0.07);
   },
+  /** A quick yelp, up and back down. */
+  startle() {
+    sweep(600, 1400, 0, 0.07, "square", 0.02);
+    sweep(1300, 700, 0.07, 0.1, "square", 0.015);
+  },
+  /** A slow, sagging yawn. */
+  yawn() {
+    sweep(300, 420, 0, 0.25, "triangle", 0.05);
+    sweep(420, 220, 0.25, 0.45, "triangle", 0.04);
+  },
+  /** A curt "nuh-uh". */
+  refuse() {
+    sweep(300, 280, 0, 0.08, "square", 0.02);
+    sweep(260, 220, 0.11, 0.1, "square", 0.02);
+  },
+  /** One small blip: "mm-hm". */
+  nod() {
+    sweep(520, 620, 0, 0.06, "triangle", 0.04);
+  },
+  /** A cheery "hi!". */
+  wave() {
+    sweep(660, 990, 0, 0.08, "square", 0.018);
+    sweep(990, 1320, 0.09, 0.09, "square", 0.015);
+  },
+  /** A soft thud underfoot. */
+  land() {
+    sweep(180, 90, 0, 0.08, "triangle", 0.06);
+  },
+  /** A springy boing as it takes off. */
+  hop() {
+    sweep(300, 700, 0, 0.12, "triangle", 0.035);
+  },
+  /** A few light footsteps. */
+  steps() {
+    for (const delay of [0, 0.14, 0.28, 0.42]) sweep(1500, 1100, delay, 0.025, "square", 0.008);
+  },
+  /** Drifting off: a low "zzz". */
+  snore() {
+    sweep(160, 140, 0, 0.5, "sawtooth", 0.01);
+    sweep(150, 120, 0.6, 0.6, "sawtooth", 0.008);
+  },
+  /** Waking with a start, then a chirp. */
+  wake() {
+    sweep(400, 800, 0, 0.08, "triangle", 0.05);
+    sweep(800, 1000, 0.1, 0.08, "triangle", 0.04);
+  },
+  /** A short chirp when it has something to say. */
+  chirp() {
+    sweep(900, 1100, 0, 0.06, "sine", 0.04);
+  },
+  /** A falling click as the sound goes off. */
+  mute() {
+    sweep(700, 300, 0, 0.1, "square", 0.015);
+  },
+  /** A little fanfare: there it is. */
+  tada() {
+    for (const [i, f] of [523, 659, 784, 1047].entries()) sweep(f, f, i * 0.07, i === 3 ? 0.22 : 0.08, "square", 0.016);
+  },
 };
+
+export type PetSound = keyof typeof petSounds;

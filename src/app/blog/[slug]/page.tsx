@@ -1,3 +1,4 @@
+import { AskAgButton } from "@/components/ask-ag-button";
 import { CaseStudy } from "@/components/case-study";
 import { Reveal } from "@/components/motion/reveal";
 import { PostCover } from "@/components/post-cover";
@@ -170,7 +171,10 @@ export default async function Blog({
           <h1 className="font-display text-[clamp(1.4rem,3.5vw,1.9rem)] leading-[1.08] font-semibold tracking-[-0.02em] text-balance">
             {post.title}
           </h1>
-          <p className="label mt-5 text-ink-faint">{formatDate(post.publishedAt)}</p>
+          <div className="mt-5 flex flex-wrap items-center justify-between gap-3">
+            <p className="label text-ink-faint">{formatDate(post.publishedAt)}</p>
+            <AskAgButton />
+          </div>
 
           {/* Above the prose on the pieces that have a before-and-after: the
               four beats someone deciding whether to read this needs. */}

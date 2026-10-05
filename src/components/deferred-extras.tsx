@@ -16,18 +16,19 @@ const PageWipe = dynamic(() => import("@/components/motion/page-wipe").then((m) 
  * one early (the sidebar button, ⌘K, "/", ⌘.) loads it straight away and the
  * request is replayed once it's mounted.
  *
- * The wipe is skipped on touch screens, where it only delays each tap.
+ * The wipe and Ag are desktop-only: on touch screens the wipe only delays
+ * each tap, and a pet roaming a phone-sized page just gets in the way.
  */
 export function DeferredExtras() {
   const [ready, setReady] = useState(false);
   const [pendingChat, setPendingChat] = useState(false);
-  const [wipe, setWipe] = useState(false);
+  const [desktop, setDesktop] = useState(false);
 
   useEffect(() => {
     if (ready) return;
 
     const load = () => {
-      setWipe(window.matchMedia("(hover: hover) and (pointer: fine)").matches);
+      setDesktop(window.matchMedia("(hover: hover) and (pointer: fine)").matches);
       setReady(true);
     };
     const openChat = () => {
@@ -74,9 +75,9 @@ export function DeferredExtras() {
   if (!ready) return null;
   return (
     <>
-      {wipe && <PageWipe />}
+      {desktop && <PageWipe />}
       <Chatbot openOnMount={pendingChat} />
-      <AgPet />
+      {desktop && <AgPet />}
     </>
   );
 }
