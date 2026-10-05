@@ -26,6 +26,9 @@ Ace Guevarra's Profile:
 - Awards (both from VizServe Private Limited, June 2026):
   - Founders' Choice Award — for exceptional dedication and delivery of high-impact solutions that embody the vision and values of the founders.
   - The Code Builder Award — for technical excellence and dedication to developing reliable, efficient, and high-quality systems.
+- Certifications (shown in the Certifications section of the site, with the certificates linked):
+  - Frontend Developer Training Program — Codebility, July to December 2024. Covered modern web frameworks, Next.js, Git and responsive, accessible interfaces; he shipped two projects on it (a responsive Deadpool and Wolverine site and an e-commerce storefront). It bridged graduating and being hired at VizServe.
+  - Responsive Web Design — freeCodeCamp, August 2024.
 - Skills:
   - Languages: TypeScript, JavaScript, SQL, basic shell scripting.
   - Frontend: React, Next.js, Vite, Tailwind CSS, shadcn/ui, Zustand, TanStack Query, React Hook Form, Zod.
