@@ -1,4 +1,4 @@
-import { GoogleGenAI, Type } from "@google/genai";
+import { ApiError, GoogleGenAI, ThinkingLevel, Type } from "@google/genai";
 import { NextResponse } from "next/server";
 
 import { CHAT_PROJECTS } from "@/lib/chat-projects";
@@ -87,6 +87,42 @@ function limited(ip: string) {
   return over;
 }
 
+/* The free tier gives each model its own small daily quota (gemini-2.5-flash
+   is 20 requests a day), so the route works down this list when a model is
+   out of quota or overloaded. No hidden reasoning pass for a portfolio Q&A. */
+const MODELS = [
+  { model: "gemini-flash-lite-latest", thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL } },
+  { model: "gemini-3-flash-preview", thinkingConfig: { thinkingLevel: ThinkingLevel.MINIMAL } },
+  { model: "gemini-2.5-flash", thinkingConfig: { thinkingBudget: 0 } },
+];
+
+async function openStream(contents: { role: string; parts: { text: string }[] }[]) {
+  let lastError: unknown;
+  for (const { model, thinkingConfig } of MODELS) {
+    try {
+      return await client.models.generateContentStream({
+        model,
+        contents,
+        config: {
+          systemInstruction: SYSTEM_PROMPT,
+          responseMimeType: "application/json",
+          responseSchema: RESPONSE_SCHEMA,
+          thinkingConfig,
+          // A ceiling well above a three-sentence reply in case the prompt slips.
+          maxOutputTokens: 500,
+        },
+      });
+    } catch (error) {
+      lastError = error;
+      const status = error instanceof ApiError ? error.status : 0;
+      // Out of quota or overloaded: the next model has its own allowance.
+      if (status !== 429 && status !== 503) throw error;
+      console.warn(`Chat API: ${model} unavailable (${status}), trying the next model`);
+    }
+  }
+  throw lastError;
+}
+
 export type ChatEvent =
   | { type: "delta"; text: string }
   | { type: "done"; showContact: boolean; projects: string[]; followUps: string[] }
@@ -125,19 +161,7 @@ export async function POST(req: Request) {
       parts: [{ text: msg.content }],
     }));
 
-    const stream = await client.models.generateContentStream({
-      model: "gemini-2.5-flash",
-      contents: contents,
-      config: {
-        systemInstruction: SYSTEM_PROMPT,
-        responseMimeType: "application/json",
-        responseSchema: RESPONSE_SCHEMA,
-        // Free-tier quota: no hidden reasoning pass for a portfolio Q&A, and a
-        // ceiling well above a three-sentence reply in case the prompt slips.
-        thinkingConfig: { thinkingBudget: 0 },
-        maxOutputTokens: 500,
-      },
-    });
+    const stream = await openStream(contents);
 
     // Newline-delimited JSON events: "delta" carries the next slice of the
     // reply text as it's written, "done" the fields that come after it.
