@@ -99,7 +99,10 @@ export async function POST(req: Request) {
     req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
     "unknown";
   if (limited(ip)) {
-    return NextResponse.json({ error: "Too many questions. Try again in a few minutes." }, { status: 429 });
+    return NextResponse.json(
+      { error: "Too many questions. Try again in a few minutes." },
+      { status: 429, headers: { "Retry-After": String(WINDOW_MS / 1000) } },
+    );
   }
 
   try {

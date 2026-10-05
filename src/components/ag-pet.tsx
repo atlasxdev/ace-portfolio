@@ -635,7 +635,8 @@ function Ag() {
   }, []);
 
   // Answering in the chat: eyes up while it thinks, a nod when the answer is
-  // out, a wave at the "Message Ace" button, a head shake when it's lost.
+  // out, a wave at the "Message Ace" button, a head shake when it's lost, and
+  // out of breath when it's asked too much too fast.
   useEffect(() => {
     const onChat = (e: Event) => {
       const state = (e as CustomEvent<ChatState>).detail;
@@ -650,6 +651,10 @@ function Ag() {
       } else if (state === "contact") {
         setBubble("Ace can take it from here.");
         setReaction((r) => ({ kind: "wave", id: (r?.id ?? 0) + 1 }));
+      } else if (state === "limited") {
+        setBubble("Phew! I need a breather.");
+        setReaction((r) => ({ kind: "huff", id: (r?.id ?? 0) + 1 }));
+        if (!isPetMuted()) petSounds.huff();
       } else {
         setBubble("Oops. I lost my train of thought.");
         setReaction((r) => ({ kind: "shake", id: (r?.id ?? 0) + 1 }));

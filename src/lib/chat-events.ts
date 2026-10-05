@@ -6,8 +6,8 @@ export const OPEN_CHAT_EVENT = "ag:open-chat";
 export const CHAT_STATE_EVENT = "ag:chat-state";
 
 /** Where the latest reply is: being thought up, answered, answered with a
- *  nudge to message Ace, or lost. */
-export type ChatState = "thinking" | "answered" | "contact" | "failed";
+ *  nudge to message Ace, lost, or refused for asking too fast. */
+export type ChatState = "thinking" | "answered" | "contact" | "failed" | "limited";
 
 export const sendChatState = (state: ChatState) =>
   window.dispatchEvent(new CustomEvent<ChatState>(CHAT_STATE_EVENT, { detail: state }));

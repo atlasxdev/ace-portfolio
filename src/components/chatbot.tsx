@@ -22,7 +22,7 @@ import { useContactDialog } from "@/components/contact-dialog";
 import { AgFace } from "@/components/ag-face";
 import { PaletteSnake } from "@/components/palette-snake";
 import { PaletteSource } from "@/components/palette-source";
-import { OPEN_CHAT_EVENT, sendChatState } from "@/lib/chat-events";
+import { OPEN_CHAT_EVENT, sendChatState, type ChatState } from "@/lib/chat-events";
 import { findChatProject } from "@/lib/chat-projects";
 import { keepOpenForPet, togglePet } from "@/lib/pet-store";
 import { CARD_STATE, EASE } from "@/lib/motion";
@@ -37,6 +37,8 @@ type Message = {
   streaming?: boolean;
   /** The request failed or the stream broke before any text arrived. */
   failed?: boolean;
+  /** It failed because the visitor asked too much too fast (a 429). */
+  limited?: boolean;
   /** The visitor stopped the reply. */
   stopped?: boolean;
   /** The model judged the visitor wants to reach Ace: offer the contact form. */
@@ -239,7 +241,7 @@ export default function Chatbot({ openOnMount = false }: { openOnMount?: boolean
     const controller = new AbortController();
     abortRef.current = controller;
     // What Ag acts out once the reply is in.
-    let outcome: "answered" | "contact" | "failed" = "answered";
+    let outcome: Exclude<ChatState, "thinking"> = "answered";
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
@@ -250,6 +252,12 @@ export default function Chatbot({ openOnMount = false }: { openOnMount?: boolean
         }),
         signal: controller.signal,
       });
+      // Rate limited, by Cloudflare's rule on this route or the route's own.
+      if (response.status === 429) {
+        outcome = "limited";
+        patch((m) => ({ ...m, failed: true, limited: true }));
+        return;
+      }
       if (!response.ok || !response.body) throw new Error(`Chat request failed (${response.status})`);
       await readEvents(response.body, (event) => {
         if (event.type === "delta") patch((m) => ({ ...m, content: m.content + event.text }));
@@ -719,7 +727,9 @@ function AssistantMessage({
     <div className="flex flex-col gap-3">
       {message.failed ? (
         <p className="text-[15px] leading-6 text-muted-foreground lg:text-body-lg">
-          Ag couldn&apos;t answer that. Try again in a moment, or message Ace directly.
+          {message.limited
+            ? "That's a lot of questions at once. Give Ag a few seconds, then ask again."
+            : "Ag couldn't answer that. Try again in a moment, or message Ace directly."}
         </p>
       ) : message.stopped && !message.content ? (
         <p className="text-body-sm text-ink-faint">Stopped.</p>
