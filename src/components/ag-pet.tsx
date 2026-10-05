@@ -643,21 +643,27 @@ function Ag() {
       lastActive.current = Date.now();
       if (modeRef.current === "sleep") setMode("idle");
       setThinking(state === "thinking");
-      if (state === "thinking") setBubble(pick(["Hmm, let me think.", "Let me check my notes.", "One sec."]));
-      else if (state === "answered") {
+      const sound = !isPetMuted();
+      if (state === "thinking") {
+        setBubble(pick(["Hmm, let me think.", "Let me check my notes.", "One sec."]));
+        if (sound) petSounds.think();
+      } else if (state === "answered") {
         setBubble(null);
         setHappy(true);
         setReaction((r) => ({ kind: "nod", id: (r?.id ?? 0) + 1 }));
+        if (sound) petSounds.answer();
       } else if (state === "contact") {
         setBubble("Ace can take it from here.");
         setReaction((r) => ({ kind: "wave", id: (r?.id ?? 0) + 1 }));
+        if (sound) petSounds.contact();
       } else if (state === "limited") {
         setBubble("Phew! I need a breather.");
         setReaction((r) => ({ kind: "huff", id: (r?.id ?? 0) + 1 }));
-        if (!isPetMuted()) petSounds.huff();
+        if (sound) petSounds.huff();
       } else {
         setBubble("Oops. I lost my train of thought.");
         setReaction((r) => ({ kind: "shake", id: (r?.id ?? 0) + 1 }));
+        if (sound) petSounds.oops();
       }
     };
     window.addEventListener(CHAT_STATE_EVENT, onChat);

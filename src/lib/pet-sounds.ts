@@ -63,6 +63,25 @@ export const petSounds = {
   hic() {
     sweep(500, 900, 0, 0.07, "square", 0.02);
   },
+  /** A soft, wavering "hmm" while it thinks. */
+  think() {
+    sweep(330, 370, 0, 0.14, "triangle", 0.05);
+    sweep(370, 310, 0.14, 0.18, "triangle", 0.045);
+  },
+  /** A bright two-note ding: the answer's in. */
+  answer() {
+    sweep(880, 880, 0, 0.08, "square", 0.018);
+    sweep(1320, 1320, 0.08, 0.16, "square", 0.018);
+  },
+  /** A three-note rise, waving at the "Message Ace" button. */
+  contact() {
+    for (const [i, f] of [660, 880, 1100].entries()) sweep(f, f * 1.05, i * 0.08, 0.1, "square", 0.018);
+  },
+  /** A falling "uh-oh". */
+  oops() {
+    sweep(520, 500, 0, 0.1, "triangle", 0.06);
+    sweep(400, 300, 0.13, 0.2, "triangle", 0.06);
+  },
   /** Three low nibbles. */
   feed() {
     for (const delay of [0, 0.16, 0.32]) sweep(260, 170, delay, 0.09, "triangle", 0.07);
