@@ -179,7 +179,7 @@ function SidebarContent({
             onClick={onOpenChat}
             className={ROW}>
             <Sparkles className={ROW_ICON} aria-hidden />
-            Ask my AI assistant
+            Ask Ag, my AI assistant
             <kbd className="ml-auto hidden rounded border border-rule px-1.5 font-sans text-[11px] leading-5 text-ink-faint transition-colors group-hover:text-foreground md:inline">
               Ctrl K
             </kbd>

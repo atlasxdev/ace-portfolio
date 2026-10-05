@@ -19,10 +19,10 @@ import { useEffect, useLayoutEffect, useRef, useState } from "react";
 
 import type { ChatEvent } from "@/app/api/chat/route";
 import { useContactDialog } from "@/components/contact-dialog";
-import { Monogram } from "@/components/monogram";
+import { AgFace } from "@/components/ag-face";
 import { PaletteSnake } from "@/components/palette-snake";
 import { PaletteSource } from "@/components/palette-source";
-import { OPEN_CHAT_EVENT } from "@/lib/chat-events";
+import { OPEN_CHAT_EVENT, sendChatState } from "@/lib/chat-events";
 import { findChatProject } from "@/lib/chat-projects";
 import { keepOpenForPet, togglePet } from "@/lib/pet-store";
 import { CARD_STATE, EASE } from "@/lib/motion";
@@ -231,43 +231,53 @@ export default function Chatbot({ openOnMount = false }: { openOnMount?: boolean
     setInput("");
     setBusy(true);
     inputRef.current?.focus();
+    sendChatState("thinking");
 
     const patch = (fn: (m: Message) => Message) =>
       setMessages((prev) => prev.map((m) => (m.id === reply.id ? fn(m) : m)));
 
     const controller = new AbortController();
     abortRef.current = controller;
+    // What Ag acts out once the reply is in.
+    let outcome: "answered" | "contact" | "failed" = "answered";
     try {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: history.map(({ role, content }) => ({ role, content })),
+          // The latest exchanges are enough context (an odd count, so it opens on a question); the route caps the length.
+          messages: history.slice(-19).map(({ role, content }) => ({ role, content })),
         }),
         signal: controller.signal,
       });
       if (!response.ok || !response.body) throw new Error(`Chat request failed (${response.status})`);
       await readEvents(response.body, (event) => {
         if (event.type === "delta") patch((m) => ({ ...m, content: m.content + event.text }));
-        else if (event.type === "done")
+        else if (event.type === "done") {
+          if (event.showContact) outcome = "contact";
           patch((m) => ({
             ...m,
             showContact: event.showContact,
             projects: event.projects,
             followUps: event.followUps,
           }));
-        else patch((m) => ({ ...m, failed: !m.content }));
+        } else {
+          outcome = "failed";
+          patch((m) => ({ ...m, failed: !m.content }));
+        }
       });
     } catch (error) {
       if (controller.signal.aborted) patch((m) => ({ ...m, stopped: true }));
       else {
         console.error("Error sending message:", error);
+        outcome = "failed";
         patch((m) => ({ ...m, failed: !m.content }));
       }
     } finally {
       patch((m) => ({ ...m, streaming: false }));
       abortRef.current = null;
       setBusy(false);
+      sendChatState(outcome);
     }
   };
 
@@ -365,15 +375,15 @@ export default function Chatbot({ openOnMount = false }: { openOnMount?: boolean
                     // Desktop: a command palette.
                     "lg:inset-0 lg:m-auto lg:h-fit lg:max-h-[min(80vh,720px)] lg:w-[min(92vw,760px)] lg:overflow-hidden lg:rounded-2xl lg:border lg:border-foreground/12 lg:shadow-[inset_0_1px_0_var(--glass-hi),0_40px_90px_-24px_rgb(0_0_0/0.65)]",
                   )}>
-                  <DialogPrimitive.Title className="sr-only">Ask about Ace</DialogPrimitive.Title>
+                  <DialogPrimitive.Title className="sr-only">Ask Ag about Ace</DialogPrimitive.Title>
 
                   {/* header: touch layouts only; the palette's field is its header */}
                   <div className="order-1 flex items-center justify-between gap-snug border-b border-rule py-2 pr-2 pl-4 lg:hidden">
                     <div className="flex items-center gap-2.5">
-                      <Monogram className="size-5" />
+                      <AgFace thinking={busy} />
                       <div className="leading-tight">
-                        <p className="text-body font-semibold">Ask about Ace</p>
-                        <p className="text-xs text-ink-faint">AI assistant</p>
+                        <p className="text-body font-semibold">Ag</p>
+                        <p className="text-xs text-ink-faint">{busy ? "Thinking" : "AI assistant, knows Ace's work"}</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-1">
@@ -408,11 +418,12 @@ export default function Chatbot({ openOnMount = false }: { openOnMount?: boolean
                       e.preventDefault();
                       ask(input);
                     }}
+                    data-ag-floor=""
                     className="order-3 border-t border-rule px-3 pt-2.5 pb-[max(1rem,env(safe-area-inset-bottom))] lg:order-1 lg:border-t-0 lg:border-b lg:p-0">
                     <div className="flex items-center gap-2 rounded-full border border-foreground/12 bg-foreground/4 py-1 pr-1 pl-4 md:mx-auto md:max-w-2xl lg:mx-0 lg:h-15 lg:max-w-none lg:rounded-none lg:border-0 lg:bg-transparent lg:px-4">
-                      <Monogram className="hidden size-5 shrink-0 lg:block" />
+                      <AgFace thinking={busy} className="hidden lg:block" />
                       <label htmlFor="chat-question" className="sr-only">
-                        {empty ? "Ask about Ace's work" : "Ask a follow-up"}
+                        {empty ? "Ask Ag about Ace's work" : "Ask a follow-up"}
                       </label>
                       <input
                         id="chat-question"
@@ -422,12 +433,13 @@ export default function Chatbot({ openOnMount = false }: { openOnMount?: boolean
                         onKeyDown={onInputKey}
                         placeholder={
                           screen
-                            ? "Ask about Ace, or type / for commands"
+                            ? "Ask Ag about Ace, or type / for commands"
                             : empty
-                              ? "Ask about Ace's work"
+                              ? "Ask Ag about Ace's work"
                               : "Ask a follow-up"
                         }
                         autoComplete="off"
+                        maxLength={1000}
                         className="h-10 min-w-0 flex-1 bg-transparent text-[16px] text-foreground outline-none placeholder:text-ink-faint lg:text-[17px]"
                       />
                       {busy ? (
@@ -505,7 +517,7 @@ export default function Chatbot({ openOnMount = false }: { openOnMount?: boolean
                   <div className="order-4 hidden items-center justify-between border-t border-rule px-4 py-2.5 text-xs text-ink-faint lg:flex">
                     <span className="flex items-center gap-2">
                       <span className="size-1.5 rounded-full bg-available" aria-hidden />
-                      AI assistant
+                      Ag, AI assistant
                       {!empty && (
                         <button
                           type="button"
@@ -570,8 +582,8 @@ export default function Chatbot({ openOnMount = false }: { openOnMount?: boolean
             exit={{ opacity: 0, y: reduced ? 0 : 12 }}
             transition={{ duration: 0.25, ease: EASE }}
             className="fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex h-12 cursor-pointer items-center gap-2.5 rounded-full border border-foreground/12 bg-card/90 pr-5 pl-3.5 text-body text-foreground shadow-[0_16px_40px_-16px_rgb(0_0_0/0.6)] backdrop-blur-xl lg:hidden">
-            <Monogram className="size-5" />
-            Ask about Ace
+            <AgFace />
+            Ask Ag
           </motion.button>
         )}
       </AnimatePresence>
@@ -634,10 +646,10 @@ function Welcome({
     <div className="mt-auto flex flex-col gap-5 px-4 py-5 lg:mt-0 lg:gap-0 lg:p-2">
       <div className="lg:hidden">
         <h2 className="text-[26px] leading-[30px] font-semibold tracking-[-0.025em]">
-          Hi, I can tell you about Ace&apos;s work.
+          Hi, I&apos;m Ag. Ask me about Ace&apos;s work.
         </h2>
         <p className="mt-2 text-[15px] leading-[22px] text-muted-foreground">
-          Ask about projects, the tools Ace builds with, or how to get in touch.
+          I know his projects, the tools he builds with, and how to reach him.
         </p>
       </div>
       <p className="hidden px-2.5 pt-2 pb-1.5 text-xs text-ink-faint lg:block">Try asking</p>
@@ -698,7 +710,7 @@ function AssistantMessage({
         <span className="chat-dot" aria-hidden />
         <span className="chat-dot" aria-hidden />
         <span className="chat-dot" aria-hidden />
-        <span className="ml-2">Looking through Ace&apos;s projects</span>
+        <span className="ml-2">Ag is looking through Ace&apos;s projects</span>
       </div>
     );
   }
@@ -707,7 +719,7 @@ function AssistantMessage({
     <div className="flex flex-col gap-3">
       {message.failed ? (
         <p className="text-[15px] leading-6 text-muted-foreground lg:text-body-lg">
-          The assistant couldn&apos;t be reached. Try again in a moment, or message Ace directly.
+          Ag couldn&apos;t answer that. Try again in a moment, or message Ace directly.
         </p>
       ) : message.stopped && !message.content ? (
         <p className="text-body-sm text-ink-faint">Stopped.</p>

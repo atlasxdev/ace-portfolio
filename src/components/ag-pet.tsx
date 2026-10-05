@@ -17,6 +17,8 @@ import { useTheme } from "next-themes";
 import { usePathname } from "next/navigation";
 import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 
+import { BODY, COLORS, FEET } from "@/lib/ag-art";
+import { CHAT_STATE_EVENT, OPEN_CHAT_EVENT, type ChatState } from "@/lib/chat-events";
 import { pixelify } from "@/lib/pet-font";
 import { petSounds } from "@/lib/pet-sounds";
 import {
@@ -46,30 +48,13 @@ import { cn } from "@/lib/utils";
  * the page scrolls and drops to the bottom of the screen when its perch
  * leaves view. Scrolling is a ride: it stretches on the way down, squashes on
  * the way up, and has opinions about going fast. It watches the pointer, dozes when the visitor goes idle and
- * has something to say about a few pages. Clicking it opens Pet, Feed, Mute
- * and Send away, each with its own reaction. With reduced motion it stays at
+ * has something to say about a few pages. It's also the face of the chat:
+ * it thinks, nods and shakes its head as replies come in. Clicking it opens
+ * Ask me, Pet, Feed, Mute and Send away, each with its own reaction. With reduced motion it stays at
  * the bottom of the screen and fades in and out.
  */
 
 const PX = 5; // screen pixels per art pixel
-const BODY = [
-  "....XXXX....",
-  "..XXSSSSXX..",
-  ".XSSHHSSSSX.",
-  ".XSHSSSSSSX.",
-  "XSSSSSSSSSSX",
-  "XSSSSSSSSSSX",
-  "XSSSSSSSSSSX",
-  "XSSSSSSSSSSX",
-  ".XSSSSSSSSX.",
-  "..XXXXXXXX..",
-];
-const FEET = ["..X.X..X.X..", ".X.X....X.X."];
-const COLORS: Record<string, string> = {
-  X: "#5f646c",
-  S: "#cfd3d8",
-  H: "#ffffff",
-};
 const HEART = [".XX.XX.", "XXXXXXX", "XXXXXXX", ".XXXXX.", "..XXX..", "...X..."];
 const WIDTH = 12 * PX;
 const HEIGHT = 11 * PX;
@@ -124,7 +109,7 @@ const PET_LINES = ["Purr.", "Ag approves.", "Again!", "Shiny and happy."];
 
 type Mode = "idle" | "walk" | "jump" | "sleep";
 type Reaction =
-  "pet" | "feed" | "mute" | "unmute" | "bye" | "wave" | "land" | "huff" | "refuse" | "hic" | "startle" | "yawn" | "nod";
+  "pet" | "feed" | "mute" | "unmute" | "bye" | "wave" | "land" | "huff" | "refuse" | "hic" | "startle" | "yawn" | "nod" | "shake";
 /** Too much of a good thing: grumpy after a petting spree, round after a feast. */
 type Mood = "content" | "annoyed" | "full";
 type Perch = { el: Element; dx: number };
@@ -171,6 +156,7 @@ const REACTIONS: Record<Reaction, TargetAndTransition> = {
     transition: { duration: 0.35 },
   },
   nod: { y: [0, 4, 0], transition: { duration: 0.25 } },
+  shake: { rotate: [0, -8, 8, -6, 6, 0], transition: { duration: 0.5 } },
   yawn: {
     scaleY: [1, 1.14, 1.14, 1],
     scaleX: [1, 0.94, 0.94, 1],
@@ -204,7 +190,15 @@ const FOODS: { rows: string[]; colors: Record<string, string> }[] = [
 const clamp = (n: number, min: number, max: number) => Math.min(Math.max(n, min), max);
 const between = (min: number, max: number) => min + Math.random() * (max - min);
 
-const floorY = () => window.innerHeight - HEIGHT - FLOOR_GAP;
+/** The bottom of the screen, or, while the full-screen chat is open on a
+ *  phone or tablet, the top of its question field, so Ag never covers it. */
+function floorY() {
+  const field = document.querySelector("[data-ag-floor]");
+  if (field && !window.matchMedia("(min-width: 1024px)").matches) {
+    return field.getBoundingClientRect().top - HEIGHT;
+  }
+  return window.innerHeight - HEIGHT - FLOOR_GAP;
+}
 function floorRange() {
   // Below the desktop breakpoint, keep clear of the chat launcher on the right.
   const reserve = window.innerWidth < 1200 ? 200 : 24;
@@ -353,6 +347,8 @@ function Ag() {
   const lastDialog = useRef<Element | null>(null);
   const [shades, setShades] = useState(false);
   const [yawning, setYawning] = useState(false);
+  /** Working out an answer in the chat. */
+  const [thinking, setThinking] = useState(false);
   const { resolvedTheme } = useTheme();
   const themeRef = useRef(resolvedTheme);
   /** Bumped when Ag decides to stay put, so the wander timer re-arms. */
@@ -602,7 +598,7 @@ function Ag() {
       const name =
         open.getAttribute("aria-label") ?? open.querySelector("h2, [data-slot$='-title']")?.textContent ?? "";
       if (/working on|message/i.test(name)) setBubble("A message for Ace? I'll keep quiet.");
-      else if (/ask about ace/i.test(name)) setBubble("Ask away. I'm listening.");
+      else if (/ask ag/i.test(name)) setBubble("Ask away. I'm listening.");
       else return; // menus and other sheets: no visit
       lastActive.current = Date.now();
       visit.current = open;
@@ -636,6 +632,31 @@ function Ag() {
       window.removeEventListener("keydown", onKey);
       window.removeEventListener(CONTACT_SENT_EVENT, onSent);
     };
+  }, []);
+
+  // Answering in the chat: eyes up while it thinks, a nod when the answer is
+  // out, a wave at the "Message Ace" button, a head shake when it's lost.
+  useEffect(() => {
+    const onChat = (e: Event) => {
+      const state = (e as CustomEvent<ChatState>).detail;
+      lastActive.current = Date.now();
+      if (modeRef.current === "sleep") setMode("idle");
+      setThinking(state === "thinking");
+      if (state === "thinking") setBubble(pick(["Hmm, let me think.", "Let me check my notes.", "One sec."]));
+      else if (state === "answered") {
+        setBubble(null);
+        setHappy(true);
+        setReaction((r) => ({ kind: "nod", id: (r?.id ?? 0) + 1 }));
+      } else if (state === "contact") {
+        setBubble("Ace can take it from here.");
+        setReaction((r) => ({ kind: "wave", id: (r?.id ?? 0) + 1 }));
+      } else {
+        setBubble("Oops. I lost my train of thought.");
+        setReaction((r) => ({ kind: "shake", id: (r?.id ?? 0) + 1 }));
+      }
+    };
+    window.addEventListener(CHAT_STATE_EVENT, onChat);
+    return () => window.removeEventListener(CHAT_STATE_EVENT, onChat);
   }, []);
 
   // Eyes follow the pointer; any activity counts as company, and wakes it.
@@ -927,6 +948,12 @@ function Ag() {
     setPetMuted(!muted);
   };
 
+  const askMe = () => {
+    wake();
+    setMenu(false);
+    window.dispatchEvent(new Event(OPEN_CHAT_EVENT));
+  };
+
   const sendAway = () => {
     setMenu(false);
     react("bye");
@@ -937,8 +964,8 @@ function Ag() {
 
   const asleep = mode === "sleep";
   const walking = mode === "walk";
-  const eyeShift = asleep ? 0 : look;
-  const eyeShiftY = asleep ? 0 : lookY * 0.6;
+  const eyeShift = asleep ? 0 : thinking ? 1 : look;
+  const eyeShiftY = asleep ? 0 : thinking ? -1 : lookY * 0.6;
   const kind = reaction?.kind;
 
   return (
@@ -1064,6 +1091,7 @@ function Ag() {
                 exit={{ opacity: 0, y: 6 }}
                 transition={{ duration: 0.12, ease: stepped }}
                 className="ag-box pointer-events-auto flex items-center p-[3px]">
+                <MenuButton onClick={askMe}>Ask me</MenuButton>
                 <MenuButton onClick={pet}>Pet</MenuButton>
                 <MenuButton onClick={feed}>Feed</MenuButton>
                 <MenuButton onClick={toggleMute}>{muted ? "Sound on" : "Mute"}</MenuButton>
