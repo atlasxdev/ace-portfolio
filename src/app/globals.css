@@ -679,3 +679,19 @@ html[data-leaving] main {
 .ag-cta:hover, .ag-cta:focus-visible { background: #4a4f57; outline: none; }
 .ag-cta:focus-visible { box-shadow: 0 0 0 2px #f4f5f7, 0 0 0 4px #2a2d33; }
 .ag-cta:active { transform: translateY(1px); }
+/* air rushing past Ag while the page scrolls */
+.ag-air {
+  position: absolute;
+  top: 0;
+  width: 3px;
+  background: #cfd3d8;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.2);
+  opacity: 0;
+  animation-duration: 0.32s;
+  animation-timing-function: steps(4);
+  animation-iteration-count: infinite;
+}
+.ag-air-up { animation-name: ag-air-up; }
+.ag-air-down { animation-name: ag-air-down; }
+@keyframes ag-air-up { 0% { opacity: 0; transform: translateY(48px); } 25% { opacity: 0.9; } 100% { opacity: 0; transform: translateY(-36px); } }
+@keyframes ag-air-down { 0% { opacity: 0; transform: translateY(-36px); } 25% { opacity: 0.9; } 100% { opacity: 0; transform: translateY(48px); } }

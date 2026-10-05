@@ -85,6 +85,13 @@ const SCROLL_LINES = {
 };
 /** Pixel UI pops in frames, not glides. */
 const stepped = (t: number) => Math.ceil(t * 3) / 3;
+/** Streaks of air either side of Ag while scrolling: offset from its edges, length, stagger. */
+const AIR = [
+  { dx: -10, h: 12, delay: 0 },
+  { dx: -19, h: 18, delay: 0.14 },
+  { dx: 7, h: 15, delay: 0.07 },
+  { dx: 16, h: 9, delay: 0.2 },
+];
 const pick = (lines: string[]) => lines[Math.floor(Math.random() * lines.length)];
 const FLOOR_GAP = 12;
 /** Room above a perch for the speech bubble. */
@@ -321,6 +328,12 @@ function Ag() {
   const ride = useSpring(0, { stiffness: 260, damping: 18 });
   const rideY = useTransform(ride, (v) => 1 + clamp(v, -SCROLL_WILD, SCROLL_WILD) * 0.035);
   const rideX = useTransform(ride, (v) => 1 - clamp(v, -SCROLL_WILD, SCROLL_WILD) * 0.02);
+  /** Going down, Ag floats up off whatever it stands on; going up, it's pressed flat. */
+  const lift = useTransform(ride, (v) => -clamp(v, 0, SCROLL_WILD) * 5);
+  const liftShadow = useTransform(lift, (l) => 1 + l / 45);
+  const liftShadowOpacity = useTransform(lift, (l) => (l < -2 ? 1 : 0));
+  /** Air rushing past while the page moves: 1 rushes up (going down), -1 rushes down. */
+  const [air, setAir] = useState(0);
   const [bubble, setBubble] = useState<string | null>(null);
   const [menu, setMenu] = useState(false);
   const [reaction, setReaction] = useState<{
@@ -485,7 +498,12 @@ function Ag() {
     let quiet = 0;
     let lastRemark = 0;
     let wasFast = false;
+    let airNow = 0;
+    const blow = (a: number) => {
+      if (a !== airNow) setAir((airNow = a));
+    };
     const settle = () => {
+      blow(0);
       speed = 0;
       wasFast = false;
       ride.set(0);
@@ -502,6 +520,7 @@ function Ag() {
       lastActive.current = Date.now();
       ride.set(speed);
       setLookY(speed > 0.15 ? 1 : speed < -0.15 ? -1 : 0);
+      blow(Math.abs(speed) > 0.8 ? Math.sign(speed) : 0);
       clearTimeout(quiet);
       quiet = window.setTimeout(settle, 140);
 
@@ -1015,7 +1034,7 @@ function Ag() {
         {/* speech bubble, with the menu under it when open */}
         <motion.div
           ref={popRef}
-          style={{ x: shift }}
+          style={{ x: shift, y: lift }}
           className={cn(
             "absolute bottom-full left-1/2 mb-3 flex -translate-x-1/2 flex-col items-center gap-3",
             pixelify.className,
@@ -1061,6 +1080,26 @@ function Ag() {
           </span>
         )}
 
+        {/* air rushing past, and Ag's shadow left behind as it floats up */}
+        {air !== 0 && (
+          <span aria-hidden className="pointer-events-none absolute inset-0">
+            {AIR.map(({ dx, h, delay }) => (
+              <span
+                key={dx}
+                className={air > 0 ? "ag-air ag-air-up" : "ag-air ag-air-down"}
+                style={{ left: dx < 0 ? dx : WIDTH + dx, height: h, animationDelay: `${delay}s` }}
+              />
+            ))}
+          </span>
+        )}
+        {!reduced && (
+          <motion.span
+            aria-hidden
+            className="pointer-events-none absolute -bottom-0.5 left-1/2 -ml-5 block h-1 w-10 bg-black/25"
+            style={{ scaleX: liftShadow, opacity: liftShadowOpacity }}
+          />
+        )}
+
         {/* reaction effects */}
         {reaction && !reduced && <Effects key={reaction.id} kind={reaction.kind} seed={reaction.id} />}
 
@@ -1088,6 +1127,7 @@ function Ag() {
               transformOrigin: "50% 100%",
               scaleX: rideX,
               scaleY: rideY,
+              y: lift,
             }}>
             <motion.span
               className="block"
