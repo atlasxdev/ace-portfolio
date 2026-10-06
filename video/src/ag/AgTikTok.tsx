@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { AbsoluteFill, Html5Audio, Img, interpolate, Sequence, staticFile, useCurrentFrame } from "remotion";
 import { loadFont } from "@remotion/google-fonts/PixelifySans";
-import { CLASH, GEIST, INK, INK_SOFT, PAPER, SHADOW, Soundtrack, useEnter, Words } from "../kit";
+import { CLASH, GEIST, INK, Soundtrack, useEnter, Words } from "../kit";
 import { AG_H, AG_W, type AgLook, AgSprite, PixelApple, PixelHeart } from "./AgSprite";
 import spots from "../../public/ag/bg/spots.json";
 
@@ -18,6 +18,9 @@ const FPS = 30;
 const SITE = "aceguevarra.xyz";
 const PX = 5; // CSS px per art pixel, as on the site
 const AW = AG_W * PX, AH = AG_H * PX;
+// Dark, so TikTok's white overlay text (tabs, caption, handle) stays readable.
+const NIGHT = "#121214";
+const FG = "#f5f5f4", FG_SOFT = "#a3a3a3";
 
 type Pt = { x: number; y: number };
 // Where Ag stands, in the backdrops' CSS px (feet centre).
@@ -329,7 +332,7 @@ function World({ s, f }: { s: State; f: number }) {
 }
 
 // The footage window, and how far it zooms (screen px per CSS px; the stills are 2x).
-const WIN = { x: 40, y: 470, w: 1000, h: 1100 };
+const WIN = { x: 40, y: 600, w: 1000, h: 1020 };
 const ZOOM = 2;
 
 function SceneView({ scene }: { scene: Scene }) {
@@ -351,12 +354,12 @@ function SceneView({ scene }: { scene: Scene }) {
   const caption = f >= switchAt ? scene.then![1] : scene.caption;
   return (
     <>
-      <div style={{ position: "absolute", left: 60, right: 60, top: 190 }}>
+      <div style={{ position: "absolute", left: 60, right: 60, top: 340 }}>
         <Sequence key={caption} from={f >= switchAt ? switchAt : 0} layout="none">
-          <Words text={caption} stagger={2} style={{ fontSize: 78, color: INK, lineHeight: 1.05 }} />
+          <Words text={caption} stagger={2} style={{ fontSize: 78, color: FG, lineHeight: 1.05 }} />
         </Sequence>
       </div>
-      <div style={{ position: "absolute", left: WIN.x, top: WIN.y, width: WIN.w, height: WIN.h, borderRadius: 40, overflow: "hidden", boxShadow: SHADOW, border: "1px solid #e4e4e2", background: "#fff", transform: `scale(${0.96 + 0.04 * pop})` }}>
+      <div style={{ position: "absolute", left: WIN.x, top: WIN.y, width: WIN.w, height: WIN.h, borderRadius: 40, overflow: "hidden", boxShadow: "0 40px 90px -30px rgba(0,0,0,.8)", border: "1px solid #2e2e33", background: "#fff", transform: `scale(${0.96 + 0.04 * pop})` }}>
         <div style={{ position: "absolute", left: 0, top: 0, transformOrigin: "0 0", transform: `scale(${ZOOM}) translate(${-(cx - vw / 2)}px, ${-(cy - vh / 2)}px)` }}>
           <World s={s} f={f} />
         </div>
@@ -373,8 +376,8 @@ function SceneView({ scene }: { scene: Scene }) {
 /** Pinned for the whole video: where to find Ag. */
 function SiteTag() {
   return (
-    <div style={{ position: "absolute", top: 80, left: 0, right: 0, display: "flex", justifyContent: "center" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 28px", borderRadius: 999, background: INK, color: "#fff", fontFamily: GEIST, fontWeight: 500, fontSize: 34 }}>
+    <div style={{ position: "absolute", top: 220, left: 0, right: 0, display: "flex", justifyContent: "center" }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 14, padding: "14px 28px", borderRadius: 999, background: "#26262b", color: FG, fontFamily: GEIST, fontWeight: 500, fontSize: 34 }}>
         <span style={{ width: 14, height: 14, borderRadius: 99, background: "#4ade80" }} />
         {SITE}
       </div>
@@ -390,8 +393,8 @@ function EndCard() {
   const w = pose(react("wave", (f - 8) % 40), bob(f));
   const big = 24;
   return (
-    <AbsoluteFill style={{ background: PAPER }}>
-      <div style={{ position: "absolute", left: 540, top: 1010, transform: `scale(${p})`, transformOrigin: "50% 100%" }}>
+    <AbsoluteFill style={{ background: NIGHT }}>
+      <div style={{ position: "absolute", left: 540, top: 1080, transform: `scale(${p})`, transformOrigin: "50% 100%" }}>
         <div style={{ position: "absolute", left: 0, bottom: AG_H * big + 40, transform: "translateX(-50%) scale(3)", transformOrigin: "50% 100%" }}>
           <Bubble text="Come say hi!" age={f - 10} />
         </div>
@@ -399,13 +402,13 @@ function EndCard() {
           <AgSprite px={big} eyes="happy" blush />
         </div>
       </div>
-      <div style={{ position: "absolute", left: 0, right: 0, top: 1110, textAlign: "center" }}>
-        <Words text="Meet Ag." style={{ fontSize: 120, color: INK, display: "inline-block" }} />
+      <div style={{ position: "absolute", left: 0, right: 0, top: 1180, textAlign: "center" }}>
+        <Words text="Meet Ag." style={{ fontSize: 120, color: FG, display: "inline-block" }} />
       </div>
-      <div style={{ position: "absolute", left: 0, right: 0, top: 1290, display: "flex", justifyContent: "center", transform: `scale(${0.8 + 0.2 * url})`, opacity: url }}>
-        <div style={{ padding: "22px 44px", borderRadius: 999, background: INK, color: "#fff", fontFamily: CLASH, fontWeight: 600, fontSize: 60 }}>{SITE}</div>
+      <div style={{ position: "absolute", left: 0, right: 0, top: 1360, display: "flex", justifyContent: "center", transform: `scale(${0.8 + 0.2 * url})`, opacity: url }}>
+        <div style={{ padding: "22px 44px", borderRadius: 999, background: FG, color: INK, fontFamily: CLASH, fontWeight: 600, fontSize: 60 }}>{SITE}</div>
       </div>
-      <div style={{ position: "absolute", left: 0, right: 0, top: 1430, textAlign: "center", fontFamily: GEIST, fontSize: 32, color: INK_SOFT, opacity: interpolate(f, [26, 42], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }) }}>
+      <div style={{ position: "absolute", left: 0, right: 0, top: 1500, textAlign: "center", fontFamily: GEIST, fontSize: 32, color: FG_SOFT, opacity: interpolate(f, [26, 42], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" }) }}>
         Ace Guevarra, full-stack and automation engineer
       </div>
     </AbsoluteFill>
@@ -414,7 +417,7 @@ function EndCard() {
 
 export function AgTikTok() {
   return (
-    <AbsoluteFill style={{ background: PAPER, fontFamily: CLASH }}>
+    <AbsoluteFill style={{ background: NIGHT, fontFamily: CLASH }}>
       {SCENES.map((s, i) => (
         <Sequence key={i} from={STARTS[i]} durationInFrames={s.len}>
           <SceneView scene={s} />
