@@ -5,7 +5,7 @@ import { ArrowUpRight } from "lucide-react";
 const STACK: [string, string][] = [
   ["Framework", "Next.js 16 and React 19, statically rendered where it can be"],
   ["Styling", "Tailwind CSS v4 on a small set of design tokens"],
-  ["Motion", "Motion for the page wipe, the reveals and this palette"],
+  ["Motion", "Motion for the chat panel, Ag and this palette"],
   ["Writing", "The blog is MDX, compiled with Content Collections"],
   ["This assistant", "Gemini 2.5 Flash, its structured reply streamed to the page as it's written"],
   ["Contact form", "Resend"],

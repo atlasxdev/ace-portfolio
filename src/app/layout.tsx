@@ -125,7 +125,7 @@ export default function RootLayout({
                 <main className="flex-1">{children}</main>
               </div>
 
-              {/* Chat, pet and page wipe, loaded after first paint. Inside
+              {/* Chat and pet, loaded after first paint. Inside
                   the provider: the chat offers the contact form mid-chat. */}
               <DeferredExtras />
             </ContactDialogProvider>

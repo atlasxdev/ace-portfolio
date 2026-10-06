@@ -8,16 +8,14 @@ import { togglePet } from "@/lib/pet-store";
 
 const Chatbot = dynamic(() => import("@/components/chatbot"), { ssr: false });
 const AgPet = dynamic(() => import("@/components/ag-pet").then((m) => m.AgPet), { ssr: false });
-const PageWipe = dynamic(() => import("@/components/motion/page-wipe").then((m) => m.PageWipe), { ssr: false });
 
 /**
- * The chat, the pet and the page wipe, loaded once the page is up instead of
+ * The chat and the pet, loaded once the page is up instead of
  * with it, so they don't hold back the first paint on slow phones. Asking for
  * one early (the sidebar button, ⌘K, "/", ⌘.) loads it straight away and the
  * request is replayed once it's mounted.
  *
- * The wipe and Ag are desktop-only: on touch screens the wipe only delays
- * each tap, and a pet roaming a phone-sized page just gets in the way.
+ * Ag is desktop-only: a pet roaming a phone-sized page just gets in the way.
  */
 export function DeferredExtras() {
   const [ready, setReady] = useState(false);
@@ -75,7 +73,6 @@ export function DeferredExtras() {
   if (!ready) return null;
   return (
     <>
-      {desktop && <PageWipe />}
       <Chatbot openOnMount={pendingChat} />
       {desktop && <AgPet />}
     </>
