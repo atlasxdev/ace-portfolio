@@ -67,7 +67,7 @@ const MESSAGE: Starter = { icon: Mail, text: "Send Ace a message", contact: true
 const STARTERS: Starter[] = [
   { icon: Layers, text: "What has Ace built recently?" },
   { icon: Code, text: "Which tools does Ace work with?" },
-  { icon: FileText, text: "Walk me through the admissions portal" },
+  { icon: FileText, text: "What's the hardest thing Ace has built?" },
   { icon: CircleCheck, text: "Is Ace open to new work?" },
   RECRUITER,
   MESSAGE,
@@ -104,7 +104,7 @@ function recruiterBrief() {
       "Two projects worth a look are below. To talk, message him or book a 15-minute call.",
     ].join("\n\n"),
     projects: FLAGSHIP.filter((t) => DATA.projects.some((p) => p.title === t)),
-    followUps: ["What has Ace built recently?", "Is Ace open to new work?"],
+    followUps: ["Walk me through the SIS", "Walk me through the admissions portal"],
   };
 }
 
