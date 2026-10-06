@@ -85,6 +85,9 @@ const POST_STARTERS: Starter[] = [
 
 const isPost = (path: string) => /^\/blog\/[\w-]+\/?$/.test(path);
 
+/** Ace's biggest builds, the two a recruiter should see first. */
+const FLAGSHIP = ["Online Admission System", "Student Information System"];
+
 /**
  * The recruiter's TL;DR, put together from the site's own data rather than
  * asked of the model: it's the same every time, it's instant, and it still
@@ -100,7 +103,7 @@ function recruiterBrief() {
         .join(", ")}.`,
       "Two projects worth a look are below. To talk, message him or book a 15-minute call.",
     ].join("\n\n"),
-    projects: DATA.projects.slice(0, 2).map((p) => p.title),
+    projects: FLAGSHIP.filter((t) => DATA.projects.some((p) => p.title === t)),
     followUps: ["What has Ace built recently?", "Is Ace open to new work?"],
   };
 }
