@@ -1,16 +1,18 @@
-import { Geist, Geist_Mono } from "next/font/google";
 import localFont from "next/font/local";
 
-export const geist = Geist({
-  subsets: ["latin"],
+// Geist and Geist Mono are self-hosted (latin variable woff2 in src/fonts):
+// next/font/google downloads them at build time, and a failed download there
+// fails the whole Vercel build.
+export const geist = localFont({
+  src: "../fonts/Geist-latin.woff2",
   variable: "--font-sans",
-  weight: ["400", "500", "600", "700"],
+  weight: "100 900",
   display: "swap",
 });
 
-export const geistMono = Geist_Mono({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+export const geistMono = localFont({
+  src: "../fonts/GeistMono-latin.woff2",
+  weight: "100 900",
   variable: "--font-mono",
   display: "swap",
   // Only small labels use it; don't let it compete with the hero photo.
