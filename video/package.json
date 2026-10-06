@@ -3,7 +3,8 @@
   "private": true,
   "scripts": {
     "studio": "remotion studio",
-    "render:admissions": "remotion render AdmissionsDemo ../public/projects/admissions-demo.mp4 --codec=h264 --crf=20 && remotion still AdmissionsDemo ../public/projects/admissions-demo.jpg --frame=150"
+    "render:admissions": "remotion render AdmissionsDemo ../public/projects/admissions-demo.mp4 --codec=h264 --crf=20 --audio-bitrate=160k && remotion still AdmissionsDemo ../public/projects/admissions-demo.jpg --frame=165 --image-format=jpeg",
+    "render:sis": "remotion render SisDemo ../public/projects/sis-demo.mp4 --codec=h264 --crf=20 --audio-bitrate=160k && remotion still SisDemo ../public/projects/sis-demo.jpg --frame=180 --image-format=jpeg"
   },
   "dependencies": {
     "@remotion/cli": "^4.0.533",
