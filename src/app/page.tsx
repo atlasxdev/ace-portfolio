@@ -10,9 +10,9 @@ import { PersonSchema } from "@/components/person-schema";
 import { ApproachSection } from "@/components/section/approach-section";
 import { CertificationsSection } from "@/components/section/certifications-section";
 import { EducationSection } from "@/components/section/education-section";
-import { ProjectsSection } from "@/components/section/projects-section";
+import { ProjectFilms } from "@/components/section/project-films";
 import { RecognitionSection } from "@/components/section/recognition-section";
-import { ItemList, ItemRow, SectionRow } from "@/components/section/section-row";
+import { ItemList, ItemRow, SectionLink, SectionRow } from "@/components/section/section-row";
 import { ExperienceSection } from "@/components/section/work-section";
 import { TechGrid } from "@/components/tech-tile";
 import { Button } from "@/components/ui/button";
@@ -79,34 +79,48 @@ export default function Page() {
         </div>
       </section>
 
+      {/* ── Blog ─────────────────────────────────────────────────────── */}
+      {/* Last: once the work is made, the writing is where to keep reading. */}
+      {posts.length > 0 && (
+        <SectionRow label={section("blog").label} action={<SectionLink href="/blog">All posts</SectionLink>} id="blog">
+          <Reveal>
+            <ItemList>
+              {posts.map((post) => (
+                <ItemRow
+                  key={post._meta.path}
+                  title={post.title}
+                  meta={new Date(post.publishedAt).toLocaleDateString("en-US", {
+                    month: "short",
+                    year: "numeric",
+                  })}
+                  href={`/blog/${post._meta.path}`}>
+                  {post.summary}
+                </ItemRow>
+              ))}
+            </ItemList>
+          </Reveal>
+        </SectionRow>
+      )}
+
       {/* ── Projects ─────────────────────────────────────────────────── */}
       {/* First after the hero, so its divider closes the opening screen and
-          lands last in the load cascade instead of reappearing on scroll. */}
+          lands last in the load cascade instead of reappearing on scroll.
+          The films stand in for the list here; every project is on /projects. */}
       <SectionRow
         label={section("projects").label}
+        action={<SectionLink href="/projects">View all projects</SectionLink>}
         id="projects"
         ruleOnLoad
         className="pt-entry">
-        <ProjectsSection limit={3} />
-        <Reveal kind="fade" delay={0.12}>
-          <Link
-            href="/projects"
-            className="label mt-6 group inline-flex items-center gap-2 transition-colors hover:text-foreground">
-            All projects <ArrowRight className="size-3 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
-          </Link>
-        </Reveal>
+        <ProjectFilms />
       </SectionRow>
 
       {/* ── Experience ───────────────────────────────────────────────── */}
-      <SectionRow label={section("experience").label} id="experience">
+      <SectionRow
+        label={section("experience").label}
+        action={<SectionLink href="/journey">Full history</SectionLink>}
+        id="experience">
         <ExperienceSection />
-        <Reveal kind="fade" delay={0.12}>
-          <Link
-            href="/journey"
-            className="label mt-6 group inline-flex items-center gap-2 transition-colors hover:text-foreground">
-            Full history <ArrowRight className="size-3 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
-          </Link>
-        </Reveal>
       </SectionRow>
 
       {/* ── Recognition ──────────────────────────────────────────────── */}
@@ -116,19 +130,18 @@ export default function Page() {
 
       {/* ── Approach ─────────────────────────────────────────────────── */}
       {/* After the proof: the work and the jobs first, then how it's done. */}
-      <SectionRow label={section("approach").label} id="approach" wide>
+      <SectionRow
+        label={section("approach").label}
+        action={<SectionLink href="/blog/sdlc-in-claude-code">Read the full write-up</SectionLink>}
+        id="approach">
         <ApproachSection />
-        <Reveal kind="fade" delay={0.2}>
-          <Link
-            href="/blog/sdlc-in-claude-code"
-            className="label mt-8 group inline-flex items-center gap-2 transition-colors hover:text-foreground">
-            Read the full write-up <ArrowRight className="size-3 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
-          </Link>
-        </Reveal>
       </SectionRow>
 
       {/* ── Capabilities ─────────────────────────────────────────────── */}
-      <SectionRow label={section("capabilities").label} id="capabilities">
+      <SectionRow
+        label={section("capabilities").label}
+        action={<SectionLink href="/tech-stacks">View all tech stacks</SectionLink>}
+        id="capabilities">
         <Reveal className="glass p-group">
           <h2 className="label mb-4 text-ink-faint">Tools I work with</h2>
           <TechGrid items={TECH_BAND} />
@@ -146,14 +159,6 @@ export default function Page() {
             </Reveal>
           ))}
         </div>
-
-        <Reveal kind="fade" delay={0.2}>
-          <Link
-            href="/tech-stacks"
-            className="label mt-8 group inline-flex items-center gap-2 transition-colors hover:text-foreground">
-            View all tech stacks <ArrowRight className="size-3 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
-          </Link>
-        </Reveal>
       </SectionRow>
 
       {/* ── Certifications ───────────────────────────────────────────── */}
@@ -165,36 +170,6 @@ export default function Page() {
       <SectionRow label={section("education").label} id="education">
         <EducationSection />
       </SectionRow>
-
-      {/* ── Blog ─────────────────────────────────────────────────────── */}
-      {/* Last: once the work is made, the writing is where to keep reading. */}
-      {posts.length > 0 && (
-        <SectionRow label={section("blog").label} id="blog">
-          <Reveal>
-            <ItemList>
-              {posts.map((post) => (
-                <ItemRow
-                  key={post._meta.path}
-                  title={post.title}
-                  meta={new Date(post.publishedAt).toLocaleDateString("en-US", {
-                    month: "short",
-                    year: "numeric",
-                  })}
-                  href={`/blog/${post._meta.path}`}>
-                  {post.summary}
-                </ItemRow>
-              ))}
-            </ItemList>
-          </Reveal>
-          <Reveal kind="fade" delay={0.12}>
-            <Link
-              href="/blog"
-              className="label mt-6 group inline-flex items-center gap-2 transition-colors hover:text-foreground">
-              All posts <ArrowRight className="size-3 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
-            </Link>
-          </Reveal>
-        </SectionRow>
-      )}
 
       {/* ── Contact ──────────────────────────────────────────────────── */}
       {/* The page's closing ask. The sidebar carries the same links, but on a

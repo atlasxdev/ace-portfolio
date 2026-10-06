@@ -1,10 +1,12 @@
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Reveal, Rule } from "@/components/motion/reveal";
 
 /**
- * The spine of the whole page: a small-caps label in a left gutter against a
- * wide content column, separated by hairline rules. Collapses to a single
- * stacked column below 768px.
+ * The spine of the whole page: a header line (the section's small-caps label,
+ * plus an optional link at the far end) stacked above its content, every
+ * section at the same width, separated by hairline rules.
  */
 export function SectionRow({
   label,
@@ -12,7 +14,7 @@ export function SectionRow({
   rule = true,
   ruleDelay = 0,
   ruleOnLoad = false,
-  wide = false,
+  action,
   className,
   children,
 }: {
@@ -24,43 +26,41 @@ export function SectionRow({
   ruleDelay?: number;
   /** Play the divider on load rather than on scroll. */
   ruleOnLoad?: boolean;
-  /**
-   * Break out of the 720px reading module on desktop: the shell widens and the
-   * label moves above the content instead of sitting in the gutter. No effect
-   * below 1200px. Used by Approach, whose steps run horizontally there.
-   */
-  wide?: boolean;
+  /** A link on the header line, pushed to the far end ("View all projects"). */
+  action?: React.ReactNode;
   className?: string;
   children: React.ReactNode;
 }) {
   return (
     <>
       {rule && (
-        <div className={cn("shell", wide && "shell-wide")}>
+        <div className="shell">
           <Rule delay={ruleDelay} onLoad={ruleOnLoad} />
         </div>
       )}
-      <section
-        id={id}
-        className={cn(
-          "shell py-section",
-          wide && "shell-wide",
-          className
-        )}
-      >
-        <div className={cn("row", wide && "row-wide")}>
-          {/* The label is the section heading, so it's an <h2>. As a styled
-              div the document went h1 -> h3 with nothing in between, which
-              costs a crawler the page's outline. Tailwind's reset drops
-              heading font-size and weight to inherit, so it takes the .label
-              treatment from the wrapper and looks identical. */}
-          <Reveal kind="fade" className="label">
-            <h2>{label}</h2>
-          </Reveal>
-          <div>{children}</div>
-        </div>
+      <section id={id} className={cn("shell py-section", className)}>
+        {/* The label is the section heading, so it's an <h2>. As a styled
+            div the document went h1 -> h3 with nothing in between, which
+            costs a crawler the page's outline. Tailwind's reset drops
+            heading font-size and weight to inherit, so it takes the .label
+            treatment from the wrapper and looks identical. */}
+        <Reveal kind="fade" className="label mb-group flex items-baseline justify-between gap-group">
+          <h2 className="text-[12px] leading-4 text-foreground">{label}</h2>
+          {action}
+        </Reveal>
+        <div>{children}</div>
       </section>
     </>
+  );
+}
+
+/** The link that goes in a `<SectionRow action>`: label type, arrow nudges on hover. */
+export function SectionLink({ href, children }: { href: string; children: React.ReactNode }) {
+  return (
+    <Link href={href} className="group inline-flex shrink-0 items-center gap-2 text-[11px] leading-4 transition-colors hover:text-foreground">
+      {children}
+      <ArrowRight className="size-3 transition-transform duration-200 group-hover:translate-x-1" aria-hidden />
+    </Link>
   );
 }
 

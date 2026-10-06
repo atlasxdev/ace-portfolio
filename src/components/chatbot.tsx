@@ -35,6 +35,7 @@ import { findChatProject } from "@/lib/chat-projects";
 import { keepOpenForPet, togglePet } from "@/lib/pet-store";
 import { CARD_STATE, EASE } from "@/lib/motion";
 import { cn } from "@/lib/utils";
+import { SHOW_FILM, SWING_MS } from "@/components/film-fan";
 
 
 type Message = {
@@ -381,7 +382,8 @@ export default function Chatbot({ openOnMount = false }: { openOnMount?: boolean
   };
 
   /** Closes the chat, takes the visitor to the project's row (on this page if
-   *  it's here, else on /projects), and has Ag hop onto it. */
+   *  it's here, else on /projects), and has Ag hop onto it. On the homepage a
+   *  project with a film is found in the Projects fan instead. */
   const showProject = (title: string) => {
     handingOff.current = true;
     setIsOpen(false);
@@ -392,6 +394,11 @@ export default function Chatbot({ openOnMount = false }: { openOnMount?: boolean
       showOnPage(row.querySelector("h3") ?? row);
     };
     const here = find();
+    // A film in the homepage fan: swing it to the front first, then land on it.
+    if (here?.hasAttribute("data-film")) {
+      window.dispatchEvent(new CustomEvent(SHOW_FILM, { detail: title }));
+      return setTimeout(() => go(here), reduced ? 0 : SWING_MS + 50);
+    }
     if (here) return go(here);
     router.push("/projects");
     let tries = 0;

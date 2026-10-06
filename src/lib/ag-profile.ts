@@ -53,7 +53,8 @@ export const AG_PROFILE = [
     "Projects",
     DATA.projects.map((p) => {
       const links = p.links.map((l) => `${l.type}: ${l.href}`).join("; ");
-      return `  - ${p.title} (${p.dates}). ${plain(p.description)} Tech: ${p.technologies.join(", ")}.${links ? ` Links: ${links}.` : ""}`;
+      const film = p.video ? ` It has a short launch film in the homepage's Projects section, showing ${p.video.shows}` : "";
+      return `  - ${p.title} (${p.dates}). ${plain(p.description)} Tech: ${p.technologies.join(", ")}.${links ? ` Links: ${links}.` : ""}${film}`;
     }),
   ),
 

@@ -10,7 +10,26 @@ import { DATA } from "@/data/resume";
  */
 export default function sitemap(): MetadataRoute.Sitemap {
   const routes: MetadataRoute.Sitemap = [
-    { url: DATA.url, changeFrequency: "monthly", priority: 1 },
+    {
+      url: DATA.url,
+      changeFrequency: "monthly",
+      priority: 1,
+      // The launch films in the homepage's Projects section.
+      videos: DATA.projects.flatMap((p) =>
+        p.video
+          ? [
+              {
+                title: `${p.title}: launch film`,
+                description: p.video.blurb,
+                thumbnail_loc: `${DATA.url}${p.video.poster}`,
+                content_loc: `${DATA.url}${p.video.src}`,
+                duration: p.video.duration,
+                publication_date: p.video.uploadDate,
+              },
+            ]
+          : [],
+      ),
+    },
     { url: `${DATA.url}/blog`, changeFrequency: "weekly", priority: 0.8 },
     { url: `${DATA.url}/projects`, changeFrequency: "monthly", priority: 0.8 },
     { url: `${DATA.url}/journey`, changeFrequency: "monthly", priority: 0.6 },

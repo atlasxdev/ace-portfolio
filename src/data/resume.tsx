@@ -119,6 +119,14 @@ export const DATA = {
         "Tailwind CSS",
       ],
       image: "/online-admission-login.png",
+      video: {
+        src: "/projects/admissions-demo.mp4",
+        poster: "/projects/admissions-demo.jpg",
+        duration: 21,
+        uploadDate: "2026-10-06",
+        shows: "enrolment that used to mean chasing paperwork; documents checked (missing and expired passes flagged) before they're sent; the parent dashboard showing exactly what's missing; drafts that save themselves; and a live clip of a parent resuming a draft.",
+        blurb: "Self-service enrolment for parents: drafts that save themselves, and documents checked before they're sent.",
+      },
       links: [
         { type: "Case study", href: "/blog/admissions-portal-rebuild" },
         { type: "Website", href: "https://enrol.hfse.edu.sg/" },
@@ -133,6 +141,14 @@ export const DATA = {
         "Consolidated a school's spreadsheet-based operations into one platform — admissions, student records, grades, attendance and parent access all working off a single student record. Teachers enter raw scores and the system computes grades and renders the printable report card, collapsing a multi-day per-term process to minutes.",
       technologies: ["Next.js", "TypeScript", "PostgreSQL", "Supabase", "Zod"],
       image: "",
+      video: {
+        src: "/projects/sis-demo.mp4",
+        poster: "/projects/sis-demo.jpg",
+        duration: 22,
+        uploadDate: "2026-10-06",
+        shows: "school records that used to live in spreadsheets; a grading sheet where teachers enter raw scores and the system computes the totals and grades; a report card that builds itself; one student record behind every module; and a live clip from a class list to a report card.",
+        blurb: "One student record behind grades, attendance and report cards. Teachers enter raw scores; the system does the maths.",
+      },
       links: [],
     },
     {
@@ -177,6 +193,14 @@ export const DATA = {
         "An LLM app that analyzes free-text meal descriptions and returns portion guidance and healthier swaps, with Supabase-backed caching to cut repeat model calls. Handles Filipino and international meals.",
       technologies: ["Next.js", "TypeScript", "Google Gemini", "Supabase", "Zod", "TanStack Query"],
       image: "/diabetes-meal-assistant.png",
+      video: {
+        src: "/projects/dma-demo.mp4",
+        poster: "/projects/dma-demo.jpg",
+        duration: 22,
+        uploadDate: "2026-10-06",
+        shows: "a meal typed in plain words (sinigang na baboy with rice) on the live site; how each part affects blood sugar; the healthier swaps it suggested; and the portion tip drawn as a plate (half vegetables, a quarter protein, a quarter carbs).",
+        blurb: "Describe a meal in your own words and get how it affects blood sugar, healthier swaps and portion tips. Filipino dishes included.",
+      },
       links: [
         { type: "Website", href: "https://diabetes-meal-assistant.vercel.app/" },
         { type: "Source", href: "https://github.com/atlasxdev/diabetes-meal-assistant" },
