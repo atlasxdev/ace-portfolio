@@ -75,6 +75,8 @@ export function PageWipe() {
       const url = new URL(anchor.href, window.location.href);
       if (url.origin !== window.location.origin) return;
       if (url.pathname === window.location.pathname) return;
+      // Posts open straight, without the wipe.
+      if (url.pathname.startsWith("/blog/")) return;
 
       event.preventDefault();
       navigating.current = true;
