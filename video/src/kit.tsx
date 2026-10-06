@@ -145,14 +145,25 @@ export type Cue = [frame: number, sfx: string, volume: number];
  * synthesised by scripts/make-sfx.mjs and sit on the frame each motion lands.
  */
 const MUSIC_DROP = 12.13;
-export function Soundtrack({ dropAt, duration, cues }: { dropAt: number; duration: number; cues: Cue[] }) {
+export function Soundtrack({
+  dropAt,
+  duration,
+  cues,
+  musicVolume = 0.55,
+}: {
+  dropAt: number;
+  duration: number;
+  cues: Cue[];
+  /** Lower it when something else (Ag's own sounds) carries the audio. */
+  musicVolume?: number;
+}) {
   return (
     <>
       <Html5Audio
         src={staticFile("music/motivating-mornings.mp3")}
         trimBefore={Math.round((MUSIC_DROP - dropAt / 30) * 30)}
         volume={(f) =>
-          interpolate(f, [0, 12, duration - 40, duration], [0, 0.55, 0.55, 0], {
+          interpolate(f, [0, 12, duration - 40, duration], [0, musicVolume, musicVolume, 0], {
             extrapolateLeft: "clamp",
             extrapolateRight: "clamp",
           })

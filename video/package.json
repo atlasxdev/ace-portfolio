@@ -4,7 +4,9 @@
   "scripts": {
     "studio": "remotion studio",
     "render:admissions": "remotion render AdmissionsDemo ../public/projects/admissions-demo.mp4 --codec=h264 --crf=20 --audio-bitrate=160k && remotion still AdmissionsDemo ../public/projects/admissions-demo.jpg --frame=165 --image-format=jpeg",
-    "render:sis": "remotion render SisDemo ../public/projects/sis-demo.mp4 --codec=h264 --crf=20 --audio-bitrate=160k && remotion still SisDemo ../public/projects/sis-demo.jpg --frame=180 --image-format=jpeg"
+    "render:sis": "remotion render SisDemo ../public/projects/sis-demo.mp4 --codec=h264 --crf=20 --audio-bitrate=160k && remotion still SisDemo ../public/projects/sis-demo.jpg --frame=180 --image-format=jpeg",
+    "render:dma": "remotion render DmaDemo ../public/projects/dma-demo.mp4 --codec=h264 --crf=20 --audio-bitrate=160k && remotion still DmaDemo ../public/projects/dma-demo.jpg --frame=400 --image-format=jpeg",
+    "render:ag-tiktok": "remotion render AgTikTok out/ag-tiktok.mp4 --codec=h264 --crf=18 --audio-bitrate=192k"
   },
   "dependencies": {
     "@remotion/cli": "^4.0.533",
