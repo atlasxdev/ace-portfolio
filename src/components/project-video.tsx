@@ -13,6 +13,15 @@ function subscribeReduced(onChange: () => void) {
   return () => mq.removeEventListener("change", onChange);
 }
 
+/*
+ * Phones get a 540p copy (`<name>-540p.mp4`, made by the /video render
+ * scripts): the 1080p master is full-range yuvj420p, which many phone decoders
+ * hand to software, and it's far more pixels than the card shows. The
+ * full-size dialog always plays the master.
+ */
+const PHONE = "(max-width: 767px)";
+const mobileSrc = (src: string) => src.replace(/\.mp4$/, "-540p.mp4");
+
 const CONTROL =
   "grid size-9 place-items-center rounded-full bg-background/85 text-foreground shadow-sm backdrop-blur transition-colors hover:bg-background focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground";
 
@@ -78,7 +87,6 @@ export function ProjectVideo({ src, poster, title }: { src: string; poster: stri
     <div className="relative overflow-hidden rounded-lg border border-rule bg-muted">
       <video
         ref={ref}
-        src={src}
         poster={poster}
         muted={muted}
         loop
@@ -86,7 +94,10 @@ export function ProjectVideo({ src, poster, title }: { src: string; poster: stri
         preload="none"
         aria-label={`${title}: launch film`}
         className="block aspect-video w-full"
-      />
+      >
+        <source src={mobileSrc(src)} type="video/mp4" media={PHONE} />
+        <source src={src} type="video/mp4" />
+      </video>
       {still && (
         <button
           type="button"
