@@ -3,6 +3,7 @@ import { AdmissionsDemo, ADMISSIONS_DURATION } from "./admissions/AdmissionsDemo
 import { AgTikTok, AG_TIKTOK_DURATION } from "./ag/AgTikTok";
 import { DmaDemo, DMA_DURATION } from "./dma/DmaDemo";
 import { MarginaliaDemo, MARGINALIA_DURATION } from "./marginalia/MarginaliaDemo";
+import { MarginaliaTikTok, MARGINALIA_TIKTOK_DURATION } from "./marginalia/MarginaliaTikTok";
 import { SisDemo, SIS_DURATION } from "./sis/SisDemo";
 
 const film = { fps: 30, width: 1920, height: 1080 } as const;
@@ -14,6 +15,7 @@ export const Root = () => (
     <Composition id="DmaDemo" component={DmaDemo} durationInFrames={DMA_DURATION} {...film} />
     <Composition id="MarginaliaDemo" component={MarginaliaDemo} durationInFrames={MARGINALIA_DURATION} {...film} />
     {/* Vertical, for TikTok. */}
+    <Composition id="MarginaliaTikTok" component={MarginaliaTikTok} durationInFrames={MARGINALIA_TIKTOK_DURATION} fps={30} width={1080} height={1920} />
     <Composition id="AgTikTok" component={AgTikTok} durationInFrames={AG_TIKTOK_DURATION} fps={30} width={1080} height={1920} />
   </>
 );

@@ -4,10 +4,10 @@ import { loadFont as loadCaveat } from "@remotion/google-fonts/Caveat";
 import { BrowserFrame, type Cue, GEIST, INK, INK_SOFT, SHADOW, Soundtrack, Stage, TitleCard, useEnter, Words } from "../kit";
 
 /** Marginalia's own blue, and the soft grey its glass sits on. */
-const BLUE = "#007aff";
-const BACKDROP = "#f2f3f7";
-const { fontFamily: BODONI } = loadBodoni("normal", { weights: ["600"], subsets: ["latin"] });
-const { fontFamily: CAVEAT } = loadCaveat("normal", { weights: ["500"], subsets: ["latin"] });
+export const BLUE = "#007aff";
+export const BACKDROP = "#f2f3f7";
+export const { fontFamily: BODONI } = loadBodoni("normal", { weights: ["600"], subsets: ["latin"] });
+export const { fontFamily: CAVEAT } = loadCaveat("normal", { weights: ["500"], subsets: ["latin"] });
 const headline = { fontSize: 88, color: INK } as const;
 
 /** The app's background: a pale wash of blue and lilac, like its glass shows through. */
@@ -16,7 +16,7 @@ const WASH = `radial-gradient(60% 70% at 0% 0%, rgba(0,122,255,.16), transparent
 // The hand-drawn bracket from Marginalia's logo
 const BRACKET =
   "M16 3c-5 .5-9 0-11.5.8C3.4 20 4.6 50 3.6 70c-.3 9 .6 18 .2 26 3.6.8 8 .2 12.2.6l.4-5c-2.6-.4-5.2 0-7.6-.4.5-8-.3-17 .1-25 .6-19-.3-42 .4-58 2.4-.4 5 .1 7.2-.3z";
-function Bracket({ height, color, flip, style }: { height: number; color: string; flip?: boolean; style?: React.CSSProperties }) {
+export function Bracket({ height, color, flip, style }: { height: number; color: string; flip?: boolean; style?: React.CSSProperties }) {
   return (
     <svg viewBox="0 0 20 100" style={{ height, width: height * 0.2, transform: flip ? "scaleX(-1)" : undefined, ...style }}>
       <path d={BRACKET} fill={color} />
@@ -29,7 +29,7 @@ function Bracket({ height, color, flip, style }: { height: number; color: string
  * glass card. `crop` is [x, y, w, h] in screenshot pixels.
  */
 const SHOT_W = 2880;
-function Shot({ file, crop, width, style, children }: { file: string; crop: [number, number, number, number]; width: number; style?: React.CSSProperties; children?: React.ReactNode }) {
+export function Shot({ file, crop, width, style, children }: { file: string; crop: [number, number, number, number]; width: number; style?: React.CSSProperties; children?: React.ReactNode }) {
   const [x, y, w, h] = crop;
   const k = width / w;
   return (
