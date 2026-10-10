@@ -9,7 +9,7 @@
 
    Density knobs, in the order you should reach for them if a variant ever
    spills onto a second page:
-     1. --gap-section 2.1mm -> 1.8mm  (cheapest, 5 sections x 2 edges)
+     1. --gap-section 2.1mm -> 1.8mm  (cheapest, 5 sections x 2 edges; applied Oct 2026)
      2. --lh          1.21 -> 1.17
      3. --fs-base     9.0pt -> 8.8pt (floor: 8.7pt, below that it reads cramped)
      4. --fs-name     30pt -> 26pt   (last resort, it's the whole first impression)
@@ -36,7 +36,7 @@
   --pad-x: 10mm;
   --pad-y: 7mm;
 
-  --gap-section: 2.1mm;
+  --gap-section: 1.8mm;
   --gap-entry: 2.4mm;
 }
 
