@@ -257,6 +257,15 @@ export const DATA = {
   ],
   certifications: [
     {
+      title: "Building RAG Apps Using MongoDB",
+      issuer: "MongoDB",
+      issuerUrl: "https://learn.mongodb.com/",
+      date: "October 2026",
+      // MongoDB's full-colour logo with the wordmark recoloured white for the dark plate
+      logoUrl: "/certs/mongodb.svg",
+      credentialUrl: "https://www.credly.com/badges/54d4d044-949e-4247-8f36-08574e1839cb",
+    },
+    {
       title: "Frontend Developer Training Program",
       issuer: "Codebility",
       issuerUrl: "https://www.codebility.tech/",
