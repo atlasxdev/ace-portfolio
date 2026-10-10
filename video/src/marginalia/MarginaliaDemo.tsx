@@ -66,7 +66,7 @@ function Ask() {
         <Words text="Ask your documents anything." style={{ ...headline, width: 560, fontSize: 84 }} />
       </div>
       <div style={{ position: "absolute", inset: 0, perspective: 2400 }}>
-        <BrowserFrame label="Marginalia" style={{ left: 780, top: 180, width: 1080, transform: `translateX(${(1 - enter) * 900}px) rotateY(${turn}deg)` }}>
+        <BrowserFrame label="marginalia.aceguevarra.xyz" style={{ left: 780, top: 180, width: 1080, transform: `translateX(${(1 - enter) * 900}px) rotateY(${turn}deg)` }}>
           <OffthreadVideo src={staticFile("marginalia/footage/ask.webm")} trimBefore={60} playbackRate={1.9} muted style={{ width: "100%", display: "block" }} />
         </BrowserFrame>
       </div>
@@ -159,7 +159,7 @@ function Outro() {
       </div>
       <div style={{ position: "absolute", left: 160, top: 640, opacity: sub, transform: `translateY(${(1 - sub) * 20}px)`, fontFamily: GEIST }}>
         <div style={{ fontSize: 40, color: "rgba(255,255,255,.88)" }}>Ask your documents. Every answer cites its source.</div>
-        <div style={{ fontSize: 34, color: "#fff", fontWeight: 500, marginTop: 14 }}>github.com/atlasxdev/marginalia</div>
+        <div style={{ fontSize: 34, color: "#fff", fontWeight: 500, marginTop: 14 }}>marginalia.aceguevarra.xyz</div>
       </div>
       <div style={{ position: "absolute", left: 160, bottom: 90, fontSize: 26, color: "rgba(255,255,255,.65)", opacity: credit, fontFamily: GEIST }}>
         Designed and built by Ace Guevarra

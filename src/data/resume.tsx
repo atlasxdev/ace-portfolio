@@ -186,7 +186,7 @@ export const DATA = {
     },
     {
       title: "Marginalia",
-      href: "https://github.com/atlasxdev/marginalia",
+      href: "https://marginalia.aceguevarra.xyz/",
       dates: "2026",
       active: true,
       description:
@@ -201,7 +201,10 @@ export const DATA = {
         shows: "a question asked in plain words on the live app, with the answer streaming in and its source opening beside it; the citation pointing to the exact passage in an employee handbook; a note written in the side-by-side Markdown editor; and the app saying plainly when the documents don't hold the answer.",
         blurb: "Ask your own documents in plain words. Every answer cites the passage it came from, and it says so when the answer isn't there.",
       },
-      links: [{ type: "Source", href: "https://github.com/atlasxdev/marginalia" }],
+      links: [
+        { type: "Website", href: "https://marginalia.aceguevarra.xyz/" },
+        { type: "Source", href: "https://github.com/atlasxdev/marginalia" },
+      ],
     },
     {
       title: "Diabetes Meal Assistant",

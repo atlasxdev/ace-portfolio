@@ -24,8 +24,15 @@ const FRONT = { left: 50, z: 30 };
 const SIDE = (n: number) => {
   const dir = n % 2 ? 1 : -1; // 1st other card right, 2nd left, ...
   const ring = Math.ceil(n / 2);
-  return { left: 50 + dir * 17 * ring, rotate: dir * 8 * ring, z: 20 - ring };
+  return { left: 50 + dir * 17 * ring, rotate: dir * 8 * ring, z: 20 - ring, lift: 0 };
 };
+/*
+ * With an even number of films, one card is left over after pairing the sides.
+ * Rather than tip the fan to one side, it sits straight behind the front card,
+ * raised so its top peeks out above it, like the next card in a deck.
+ */
+const BACK = { left: 50, rotate: 0, z: 10, lift: 55 };
+const place = (n: number, others: number) => (others % 2 === 1 && n === others ? BACK : SIDE(n));
 
 /** Sent by Ag's "Show me" (detail: a project title) to bring that film forward. */
 export const SHOW_FILM = "ag:show-film";
@@ -52,7 +59,7 @@ export function FilmFan({ films }: { films: Film[] }) {
       <div className="relative aspect-[100/46] w-full overflow-x-clip md:aspect-[100/28]">
         {films.map((f, i) => {
           const n = (i - active + films.length) % films.length; // 0 = front
-          const side = SIDE(n);
+          const side = place(n, films.length - 1);
           const front = n === 0;
           return (
             <div
@@ -66,7 +73,7 @@ export function FilmFan({ films }: { films: Film[] }) {
               style={{
                 left: `${front ? FRONT.left : side.left}%`,
                 zIndex: front ? FRONT.z : side.z,
-                transform: `translate(-50%, -50%) rotate(${front ? 0 : side.rotate}deg)`,
+                transform: `translate(-50%, ${front ? -50 : -50 - side.lift}%) rotate(${front ? 0 : side.rotate}deg)`,
               }}
             >
               {front ? (
