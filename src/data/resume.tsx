@@ -185,6 +185,25 @@ export const DATA = {
       links: [{ type: "Case study", href: "/blog/recruitment-automation" }],
     },
     {
+      title: "Marginalia",
+      href: "https://github.com/atlasxdev/marginalia",
+      dates: "2026",
+      active: true,
+      description:
+        "A retrieval-augmented app for asking questions about your own documents. Markdown, PDF and Word files are split along their headings and indexed in Postgres with pgvector, and each question runs a hybrid search that blends semantic and keyword matches. Answers stream in with numbered citations back to the exact passage, and when the documents don't hold the answer it says so instead of guessing. Notes can be written and edited in the app, and re-index on save.",
+      technologies: ["Next.js", "TypeScript", "Supabase", "pgvector", "Google Gemini", "TanStack Query", "Zod"],
+      image: "",
+      video: {
+        src: "/projects/marginalia-demo.mp4",
+        poster: "/projects/marginalia-demo.jpg",
+        duration: 24,
+        uploadDate: "2026-10-10",
+        shows: "a question asked in plain words on the live app, with the answer streaming in and its source opening beside it; the citation pointing to the exact passage in an employee handbook; a note written in the side-by-side Markdown editor; and the app saying plainly when the documents don't hold the answer.",
+        blurb: "Ask your own documents in plain words. Every answer cites the passage it came from, and it says so when the answer isn't there.",
+      },
+      links: [{ type: "Source", href: "https://github.com/atlasxdev/marginalia" }],
+    },
+    {
       title: "Diabetes Meal Assistant",
       href: "https://diabetes-meal-assistant.vercel.app/",
       dates: "2025",
