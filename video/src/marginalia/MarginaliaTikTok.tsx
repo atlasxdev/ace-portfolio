@@ -11,8 +11,8 @@ import { BLUE, BODONI, Bracket, CAVEAT } from "./MarginaliaDemo";
  * get a cited answer), what they could use it for, the doc builder, that it
  * won't make things up, and how to start. Everything is drawn here in
  * Marginalia's own type and colours so it reads on a phone.
- * 9:16, white, with TikTok-style caption boxes; nothing important in the top
- * 220px or the bottom ~300px, where TikTok's UI sits.
+ * White with caption boxes in Marginalia's button style; 4:5 on TikTok (it adds black
+ * bars for its own UI), 16:9 for Facebook.
  */
 
 const { fontFamily: INTER } = loadInter("normal", { weights: ["400", "500", "600", "700"], subsets: ["latin"] });
@@ -33,7 +33,9 @@ const RAISED: CSSProperties = {
 };
 
 // The phone-sized "screen" the story plays in.
-const CARD = { x: 60, y: 560, w: 960, h: 1060 } as const;
+// 4:5 for TikTok, so its own white UI sits on the black bars it adds above and below.
+// The screen is drawn at 960x1060 and scaled down to fit under the captions.
+const CARD = { x: 98, y: 330, w: 960, h: 1060, scale: 0.92 } as const;
 
 /* Film timeline, in frames at 30fps. */
 const T = {
@@ -54,7 +56,7 @@ export const MARGINALIA_TIKTOK_DURATION = 1590;
 function Caption({ lines, wide }: { lines: [delay: number, text: string][]; wide: boolean }) {
   const frame = useCurrentFrame();
   return (
-    <div style={wide ? { position: "absolute", left: 100, width: 880, top: 0, bottom: 0, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "flex-start", gap: 8 } : { position: "absolute", left: 0, right: 0, top: 250, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+    <div style={wide ? { position: "absolute", left: 100, width: 880, top: 0, bottom: 0, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "flex-start", gap: 8 } : { position: "absolute", left: 0, right: 0, top: 40, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
       {lines.map(([delay, text]) => {
         const p = interpolate(frame - delay, [0, 4, 7], [0, 1.06, 1], clamp);
         return (
@@ -417,11 +419,11 @@ function Steps({ wide }: { wide: boolean }) {
   const p = [useEnter(14, { damping: 16, stiffness: 140 }), useEnter(28, { damping: 16, stiffness: 140 }), useEnter(42, { damping: 16, stiffness: 140 })];
   return (
     <AbsoluteFill style={{ background: "#fff", fontFamily: INTER, color: INK }}>
-      <div style={{ position: "absolute", left: 0, right: 0, top: wide ? 190 : 420, textAlign: "center", fontSize: 70, fontWeight: 700, letterSpacing: "-0.02em", opacity: head, transform: `translateY(${(1 - head) * 30}px)` }}>
+      <div style={{ position: "absolute", left: 0, right: 0, top: wide ? 190 : 200, textAlign: "center", fontSize: 70, fontWeight: 700, letterSpacing: "-0.02em", opacity: head, transform: `translateY(${(1 - head) * 30}px)` }}>
         Start in under a minute.
       </div>
       {STEPS.map(([title, sub], i) => (
-        <div key={title} style={{ position: "absolute", left: wide ? 600 : 130, right: 100, top: (wide ? 370 : 640) + i * (wide ? 180 : 200), display: "flex", alignItems: "center", gap: 36, opacity: p[i], transform: `translateX(${(1 - p[i]) * 160}px)` }}>
+        <div key={title} style={{ position: "absolute", left: wide ? 600 : 130, right: 100, top: (wide ? 370 : 420) + i * (wide ? 180 : 200), display: "flex", alignItems: "center", gap: 36, opacity: p[i], transform: `translateX(${(1 - p[i]) * 160}px)` }}>
           <div style={{ width: 104, height: 104, borderRadius: 99, background: BLUE, color: "#fff", display: "grid", placeItems: "center", fontSize: 50, fontWeight: 700, flexShrink: 0 }}>{i + 1}</div>
           <div>
             <div style={{ fontSize: 52, fontWeight: 700, letterSpacing: "-0.01em" }}>{title}</div>
@@ -442,21 +444,21 @@ function Cta({ wide }: { wide: boolean }) {
   const credit = useEnter(54);
   return (
     <AbsoluteFill style={{ background: "#fff" }}>
-      <div style={{ position: "absolute", left: 0, right: 0, top: wide ? 250 : 640, display: "flex", justifyContent: "center", alignItems: "center", gap: 14, opacity: mark, transform: `translateY(${(1 - mark) * 40}px)` }}>
+      <div style={{ position: "absolute", left: 0, right: 0, top: wide ? 250 : 400, display: "flex", justifyContent: "center", alignItems: "center", gap: 14, opacity: mark, transform: `translateY(${(1 - mark) * 40}px)` }}>
         <Bracket height={170} color={BLUE} />
         <span style={{ fontFamily: BODONI, fontWeight: 600, fontSize: 138, color: INK, lineHeight: 1, paddingBottom: 12 }}>marginalia</span>
         <Bracket height={170} color={BLUE} flip />
       </div>
-      <div style={{ position: "absolute", left: wide ? 900 : 470, top: wide ? 430 : 820, fontFamily: CAVEAT, fontSize: 60, color: BLUE, transform: "rotate(-3deg)", clipPath: `inset(0 ${(1 - note) * 100}% 0 0)` }}>
+      <div style={{ position: "absolute", left: wide ? 900 : 470, top: wide ? 430 : 580, fontFamily: CAVEAT, fontSize: 60, color: BLUE, transform: "rotate(-3deg)", clipPath: `inset(0 ${(1 - note) * 100}% 0 0)` }}>
         notes in the margin
       </div>
-      <div style={{ position: "absolute", left: 0, right: 0, top: wide ? 600 : 1010, textAlign: "center", fontFamily: INTER, fontSize: 50, fontWeight: 700, letterSpacing: "-0.01em", color: INK, opacity: line, transform: `translateY(${(1 - line) * 20}px)` }}>
+      <div style={{ position: "absolute", left: 0, right: 0, top: wide ? 600 : 770, textAlign: "center", fontFamily: INTER, fontSize: 50, fontWeight: 700, letterSpacing: "-0.01em", color: INK, opacity: line, transform: `translateY(${(1 - line) * 20}px)` }}>
         Try it with your own documents.
       </div>
-      <div style={{ position: "absolute", left: 0, right: 0, top: wide ? 700 : 1110, display: "flex", justifyContent: "center", opacity: url, transform: `scale(${0.8 + 0.2 * url})` }}>
+      <div style={{ position: "absolute", left: 0, right: 0, top: wide ? 700 : 870, display: "flex", justifyContent: "center", opacity: url, transform: `scale(${0.8 + 0.2 * url})` }}>
         <div style={{ padding: "24px 46px", borderRadius: 999, ...RAISED, fontFamily: INTER, fontWeight: 600, fontSize: 46 }}>{SITE}</div>
       </div>
-      <div style={{ position: "absolute", left: 0, right: 0, top: wide ? 860 : 1260, textAlign: "center", fontFamily: INTER, fontSize: 30, color: MUTED, opacity: credit }}>
+      <div style={{ position: "absolute", left: 0, right: 0, top: wide ? 860 : 1020, textAlign: "center", fontFamily: INTER, fontSize: 30, color: MUTED, opacity: credit }}>
         Designed and built by Ace Guevarra
       </div>
     </AbsoluteFill>
@@ -478,7 +480,7 @@ function Intro({ wide }: { wide: boolean }) {
   const lift = interpolate(f, [INTRO_LEN - 8, INTRO_LEN + 6], [0, -40], clamp);
   return (
     <AbsoluteFill style={{ background: "#fff", opacity: fade }}>
-      <div style={{ position: "absolute", left: wide ? 1010 : 0, width: wide ? 850 : "100%", top: wide ? 270 : 640, transform: `translateY(${lift}px)` }}>
+      <div style={{ position: "absolute", left: wide ? 1010 : 0, width: wide ? 850 : "100%", top: wide ? 270 : 400, transform: `translateY(${lift}px)` }}>
         <div style={{ textAlign: "center", marginBottom: 18, fontFamily: INTER, fontWeight: 600, fontSize: size * 0.42, letterSpacing: "-0.01em", color: INK, opacity: meet, transform: `translateY(${(1 - meet) * 24}px)` }}>Meet</div>
         <div style={{ position: "relative", height: size * 1.25, display: "flex", justifyContent: "center", alignItems: "center" }}>
           <span style={{ fontFamily: BODONI, fontWeight: 600, fontSize: size, color: INK, lineHeight: 1, paddingBottom: size * 0.09, clipPath: `inset(0 ${(1 - open) * 50}% 0 ${(1 - open) * 50}%)` }}>marginalia</span>
@@ -519,7 +521,7 @@ function Screen({ wide }: { wide: boolean }) {
   // Away while Marginalia is introduced, then back with the chat.
   const away = interpolate(f, [T.intro, T.intro + 10, T.ask - 4, T.ask + 14], [0, 1, 1, 0], { ...clamp, easing: Easing.inOut(Easing.cubic) });
   return (
-    <div style={{ position: "absolute", left: wide ? 1010 : CARD.x, top: wide ? 70 : CARD.y, scale: wide ? 0.885 : 1, transformOrigin: "0 0", width: CARD.w, height: CARD.h, borderRadius: 48, overflow: "hidden", border: "1px solid #e3e3e8", background: "#fff", boxShadow: "0 40px 90px -40px rgba(20,20,40,.45)", transform: `translateY(${(1 - enter) * 200 + out * 120 + away * 160}px) scale(${0.96 + 0.04 * enter - 0.06 * away})`, opacity: (1 - out) * (1 - away) * Math.min(1, enter * 2) }}>
+    <div style={{ position: "absolute", left: wide ? 1010 : CARD.x, top: wide ? 70 : CARD.y, scale: wide ? 0.885 : CARD.scale, transformOrigin: "0 0", width: CARD.w, height: CARD.h, borderRadius: 48, overflow: "hidden", border: "1px solid #e3e3e8", background: "#fff", boxShadow: "0 40px 90px -40px rgba(20,20,40,.45)", transform: `translateY(${(1 - enter) * 200 + out * 120 + away * 160}px) scale(${0.96 + 0.04 * enter - 0.06 * away})`, opacity: (1 - out) * (1 - away) * Math.min(1, enter * 2) }}>
       {SLIDES.map(([from, el], i) => {
         const next = SLIDES[i + 1]?.[0] ?? T.steps;
         const to = next === T.ask ? T.intro + 10 : next; // the handbook leaves with the screen

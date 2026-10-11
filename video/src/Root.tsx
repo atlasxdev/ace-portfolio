@@ -15,7 +15,8 @@ export const Root = () => (
     <Composition id="DmaDemo" component={DmaDemo} durationInFrames={DMA_DURATION} {...film} />
     <Composition id="MarginaliaDemo" component={MarginaliaDemo} durationInFrames={MARGINALIA_DURATION} {...film} />
     {/* Vertical, for TikTok. */}
-    <Composition id="MarginaliaTikTok" component={MarginaliaTikTok} durationInFrames={MARGINALIA_TIKTOK_DURATION} fps={30} width={1080} height={1920} />
+    {/* 4:5: TikTok letterboxes it, so its own UI sits on black, not over the film. */}
+    <Composition id="MarginaliaTikTok" component={MarginaliaTikTok} durationInFrames={MARGINALIA_TIKTOK_DURATION} fps={30} width={1080} height={1350} />
     {/* The same story at 16:9, for Facebook. */}
     <Composition id="MarginaliaWide" component={MarginaliaTikTok} defaultProps={{ wide: true }} durationInFrames={MARGINALIA_TIKTOK_DURATION} {...film} />
     <Composition id="AgTikTok" component={AgTikTok} durationInFrames={AG_TIKTOK_DURATION} fps={30} width={1080} height={1920} />
