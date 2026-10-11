@@ -25,34 +25,42 @@ const clamp = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
 const ease = { ...clamp, easing: Easing.inOut(Easing.cubic) };
 const glassBox: CSSProperties = { background: "rgba(255,255,255,.82)", border: "1px solid rgba(255,255,255,.95)", boxShadow: "0 8px 24px -12px rgba(20,20,40,.25)" };
 
+/** Marginalia's primary button (globals.css .raised on bg-primary), at video scale. */
+const RAISED: CSSProperties = {
+  background: `linear-gradient(to bottom, rgba(255,255,255,.2), rgba(255,255,255,0) 55%), ${BLUE}`,
+  color: "#fff",
+  boxShadow: "inset 0 2px 0 0 rgba(255,255,255,.3), inset 0 -2px 0 0 rgba(0,0,0,.12), 0 2px 4px 0 rgba(0,0,0,.14), 0 14px 30px -10px rgba(0,122,255,.75)",
+};
+
 // The phone-sized "screen" the story plays in.
 const CARD = { x: 60, y: 560, w: 960, h: 1060 } as const;
 
 /* Film timeline, in frames at 30fps. */
 const T = {
   find: 150, // Ctrl+F
-  ask: 270, // over to Marginalia
-  uses: 660, // three things to use it for, 85 frames each
-  build: 915, // the doc builder
-  honest: 1125,
-  steps: 1245, // how to start
-  cta: 1375,
+  intro: 270, // Marginalia, introduced
+  ask: 360, // asking it
+  uses: 750, // three things to use it for, 85 frames each
+  build: 1005, // the doc builder
+  honest: 1215,
+  steps: 1335, // how to start
+  cta: 1465,
 } as const;
 const USE_LEN = 85;
-export const MARGINALIA_TIKTOK_DURATION = 1500;
+export const MARGINALIA_TIKTOK_DURATION = 1590;
 
 /* ---------- captions: TikTok's own boxed text ---------- */
 
 function Caption({ lines, wide }: { lines: [delay: number, text: string][]; wide: boolean }) {
   const frame = useCurrentFrame();
   return (
-    <div style={wide ? { position: "absolute", left: 100, width: 880, top: 0, bottom: 0, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "flex-start", gap: 8 } : { position: "absolute", left: 0, right: 0, top: 290, display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+    <div style={wide ? { position: "absolute", left: 100, width: 880, top: 0, bottom: 0, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "flex-start", gap: 8 } : { position: "absolute", left: 0, right: 0, top: 250, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
       {lines.map(([delay, text]) => {
         const p = interpolate(frame - delay, [0, 4, 7], [0, 1.06, 1], clamp);
         return (
           <div
             key={text}
-            style={{ fontFamily: INTER, fontWeight: 700, fontSize: wide ? 48 : 54, whiteSpace: "nowrap", letterSpacing: "-0.01em", lineHeight: 1.15, color: "#fff", background: INK, padding: "10px 24px", borderRadius: 18, opacity: p > 0 ? 1 : 0, transform: `scale(${p})`, transformOrigin: wide ? "left center" : "center" }}
+            style={{ fontFamily: INTER, fontWeight: 700, fontSize: wide ? 48 : 54, whiteSpace: "nowrap", letterSpacing: "-0.01em", lineHeight: 1.15, ...RAISED, padding: "12px 28px", borderRadius: 20, opacity: p > 0 ? 1 : 0, transform: `scale(${p})`, transformOrigin: wide ? "left center" : "center" }}
           >
             {text}
           </div>
@@ -245,7 +253,7 @@ function Chat({ q, a, typeAt, sendAt, streamAt, perTok, source, activeAt = Infin
           {!sent && typed ? typed : "Ask about your documents"}
           {!sent && typed && <span style={{ display: "inline-block", width: 3, height: 34, marginLeft: 2, verticalAlign: -5, background: BLUE }} />}
         </span>
-        <div style={{ width: 66, height: 66, borderRadius: 99, background: BLUE, display: "grid", placeItems: "center", transform: `scale(${f >= sendAt - 3 && f < sendAt + 3 ? 0.88 : 1})` }}>
+        <div style={{ width: 66, height: 66, borderRadius: 99, ...RAISED, display: "grid", placeItems: "center", transform: `scale(${f >= sendAt - 3 && f < sendAt + 3 ? 0.88 : 1})` }}>
           <svg width={30} height={30} viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5M5 12l7-7 7 7" /></svg>
         </div>
       </div>
@@ -363,7 +371,7 @@ function Builder() {
             {saving && <span style={{ width: 14, height: 14, borderRadius: 99, background: AMBER, opacity: 0.4 + 0.6 * Math.abs(Math.sin(f / 5)) }} />}
             {ready ? "✓ Ready to ask" : saving ? "Indexing…" : typed ? "Unsaved changes" : ""}
           </span>
-          <span style={{ padding: "12px 30px", borderRadius: 999, background: BLUE, color: "#fff", fontWeight: 600, transform: `scale(${pressed(BUILD.save - 4) ? 0.9 : 1})` }}>Save</span>
+          <span style={{ padding: "12px 30px", borderRadius: 999, ...RAISED, fontWeight: 600, transform: `scale(${pressed(BUILD.save - 4) ? 0.9 : 1})` }}>Save</span>
         </div>
       </div>
       <div style={{ position: "absolute", left: 40, top: 118, fontSize: 48, fontWeight: 700, letterSpacing: "-0.02em" }}>Team offsite</div>
@@ -446,10 +454,45 @@ function Cta({ wide }: { wide: boolean }) {
         Try it with your own documents.
       </div>
       <div style={{ position: "absolute", left: 0, right: 0, top: wide ? 700 : 1110, display: "flex", justifyContent: "center", opacity: url, transform: `scale(${0.8 + 0.2 * url})` }}>
-        <div style={{ padding: "24px 46px", borderRadius: 999, background: BLUE, color: "#fff", fontFamily: INTER, fontWeight: 600, fontSize: 46, boxShadow: "0 20px 40px -16px rgba(0,122,255,.6)" }}>{SITE}</div>
+        <div style={{ padding: "24px 46px", borderRadius: 999, ...RAISED, fontFamily: INTER, fontWeight: 600, fontSize: 46 }}>{SITE}</div>
       </div>
       <div style={{ position: "absolute", left: 0, right: 0, top: wide ? 860 : 1260, textAlign: "center", fontFamily: INTER, fontSize: 30, color: MUTED, opacity: credit }}>
         Designed and built by Ace Guevarra
+      </div>
+    </AbsoluteFill>
+  );
+}
+
+/* ---------- Marginalia, introduced: the brackets open and reveal the name ---------- */
+
+const INTRO_LEN = T.ask - T.intro;
+function Intro({ wide }: { wide: boolean }) {
+  const f = useCurrentFrame();
+  const fade = interpolate(f, [0, 8, INTRO_LEN - 6, INTRO_LEN + 6], [0, 1, 1, 0], clamp);
+  const open = useEnter(10, { damping: 15, stiffness: 110 });
+  const note = interpolate(f, [34, 50], [0, 1], clamp);
+  const sub = useEnter(48);
+  const meet = useEnter(2, { damping: 18, stiffness: 160 });
+  const size = wide ? 116 : 138;
+  const half = size * 2.45; // half the wordmark's width
+  const lift = interpolate(f, [INTRO_LEN - 8, INTRO_LEN + 6], [0, -40], clamp);
+  return (
+    <AbsoluteFill style={{ background: "#fff", opacity: fade }}>
+      <div style={{ position: "absolute", left: wide ? 1010 : 0, width: wide ? 850 : "100%", top: wide ? 270 : 640, transform: `translateY(${lift}px)` }}>
+        <div style={{ textAlign: "center", marginBottom: 18, fontFamily: INTER, fontWeight: 600, fontSize: size * 0.42, letterSpacing: "-0.01em", color: INK, opacity: meet, transform: `translateY(${(1 - meet) * 24}px)` }}>Meet</div>
+        <div style={{ position: "relative", height: size * 1.25, display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <span style={{ fontFamily: BODONI, fontWeight: 600, fontSize: size, color: INK, lineHeight: 1, paddingBottom: size * 0.09, clipPath: `inset(0 ${(1 - open) * 50}% 0 ${(1 - open) * 50}%)` }}>marginalia</span>
+          <div style={{ position: "absolute", left: "50%", transform: `translateX(${-12 - (half + 30) * open - size * 0.25}px)` }}><Bracket height={size * 1.23} color={BLUE} /></div>
+          <div style={{ position: "absolute", left: "50%", transform: `translateX(${12 + (half + 30) * open}px)` }}><Bracket height={size * 1.23} color={BLUE} flip /></div>
+        </div>
+        <div style={{ position: "relative", height: 90 }}>
+          <div style={{ position: "absolute", left: "50%", marginLeft: -size * 0.3, top: 6, fontFamily: CAVEAT, fontSize: size * 0.44, color: BLUE, transform: "rotate(-3deg)", whiteSpace: "nowrap", clipPath: `inset(0 ${(1 - note) * 100}% 0 0)` }}>
+            notes in the margin
+          </div>
+        </div>
+        <div style={{ textAlign: "center", marginTop: 50, fontFamily: INTER, fontSize: wide ? 36 : 42, color: MUTED, opacity: sub, transform: `translateY(${(1 - sub) * 20}px)` }}>
+          Upload your files. Ask them anything.
+        </div>
       </div>
     </AbsoluteFill>
   );
@@ -473,11 +516,14 @@ function Screen({ wide }: { wide: boolean }) {
   const f = useCurrentFrame();
   const enter = useEnter(0, { damping: 18, stiffness: 120 });
   const out = interpolate(f, [T.steps - 12, T.steps + 2], [0, 1], { ...clamp, easing: Easing.in(Easing.cubic) });
+  // Away while Marginalia is introduced, then back with the chat.
+  const away = interpolate(f, [T.intro, T.intro + 10, T.ask - 4, T.ask + 14], [0, 1, 1, 0], { ...clamp, easing: Easing.inOut(Easing.cubic) });
   return (
-    <div style={{ position: "absolute", left: wide ? 1010 : CARD.x, top: wide ? 70 : CARD.y, scale: wide ? 0.885 : 1, transformOrigin: "0 0", width: CARD.w, height: CARD.h, borderRadius: 48, overflow: "hidden", border: "1px solid #e3e3e8", background: "#fff", boxShadow: "0 40px 90px -40px rgba(20,20,40,.45)", transform: `translateY(${(1 - enter) * 200 + out * 120}px) scale(${0.96 + 0.04 * enter})`, opacity: (1 - out) * Math.min(1, enter * 2) }}>
+    <div style={{ position: "absolute", left: wide ? 1010 : CARD.x, top: wide ? 70 : CARD.y, scale: wide ? 0.885 : 1, transformOrigin: "0 0", width: CARD.w, height: CARD.h, borderRadius: 48, overflow: "hidden", border: "1px solid #e3e3e8", background: "#fff", boxShadow: "0 40px 90px -40px rgba(20,20,40,.45)", transform: `translateY(${(1 - enter) * 200 + out * 120 + away * 160}px) scale(${0.96 + 0.04 * enter - 0.06 * away})`, opacity: (1 - out) * (1 - away) * Math.min(1, enter * 2) }}>
       {SLIDES.map(([from, el], i) => {
-        const to = SLIDES[i + 1]?.[0] ?? T.steps;
-        const x = interpolate(f, [from, from + SLIDE], [from ? 100 : 0, 0], ease) + interpolate(f, [to, to + SLIDE], [0, -100], ease);
+        const next = SLIDES[i + 1]?.[0] ?? T.steps;
+        const to = next === T.ask ? T.intro + 10 : next; // the handbook leaves with the screen
+        const x = interpolate(f, [from, from + SLIDE], [from && from !== T.ask ? 100 : 0, 0], ease) + interpolate(f, [to, to + SLIDE], [0, -100], ease);
         return (
           <Sequence key={from} from={from} durationInFrames={to - from + SLIDE} layout="none">
             <div style={{ position: "absolute", inset: 0, transform: `translateX(${x}%)` }}>{el()}</div>
@@ -490,7 +536,8 @@ function Screen({ wide }: { wide: boolean }) {
 
 const CAPTIONS: [from: number, to: number, lines: [number, string][]][] = [
   [0, T.find, [[6, "That one answer you need"], [14, "is buried in a 40-page PDF."]]],
-  [T.find, T.ask, [[14, "Ctrl+F “carry over”"], [FIND.fail - T.find, "0 results."], [FIND.fail - T.find + 26, "(the handbook says “roll over”)"]]],
+  [T.find, T.intro, [[14, "Ctrl+F “carry over”"], [FIND.fail - T.find, "0 results."], [FIND.fail - T.find + 26, "(the handbook says “roll over”)"]]],
+  [T.intro, T.ask, [[4, "So I built an app for that."]]],
   [T.ask, T.ask + 96, [[8, "Just ask it,"], [16, "like you'd ask a person."]]],
   [T.ask + 96, T.ask + ASK.tapAt, [[6, "Marginalia gets what you mean,"], [14, "not just the words you typed."]]],
   [T.ask + ASK.tapAt, T.uses, [[6, "And every answer shows"], [12, "exactly where it came from."]]],
@@ -510,7 +557,11 @@ const CUES: Cue[] = [
   [FIND.open, "pop", 0.4],
   ...ticks(FIND.type + 3, 10, 3),
   [FIND.fail, "alert", 0.55],
-  [T.ask, "whoosh", 0.5],
+  [T.intro, "whoosh", 0.5],
+  [T.intro + 12, "paper", 0.7],
+  [T.intro + 36, "tick2", 0.4],
+  [T.intro + 48, "pop", 0.35],
+  [T.ask - 4, "whoosh", 0.4],
   ...ticks(T.ask + ASK.typeAt, 10, 4.2),
   [T.ask + ASK.sendAt, "pop", 0.5],
   [T.ask + ASK.tapAt, "tick2", 0.5],
@@ -541,6 +592,7 @@ export function MarginaliaTikTok({ wide = false }: { wide?: boolean }) {
       <Sequence durationInFrames={T.steps + 2} layout="none">
         <Screen wide={wide} />
       </Sequence>
+      <Sequence from={T.intro} durationInFrames={INTRO_LEN + 8}><Intro wide={wide} /></Sequence>
       {CAPTIONS.map(([from, to, lines]) => (
         <Sequence key={from} from={from} durationInFrames={to - from} layout="none">
           <Caption lines={lines} wide={wide} />
@@ -548,8 +600,8 @@ export function MarginaliaTikTok({ wide = false }: { wide?: boolean }) {
       ))}
       <Sequence from={T.steps} durationInFrames={T.cta - T.steps}><Steps wide={wide} /></Sequence>
       <Sequence from={T.cta}><Cta wide={wide} /></Sequence>
-      {/* The drop lands as the question goes to Marginalia. */}
-      <Soundtrack dropAt={T.ask + ASK.sendAt} duration={MARGINALIA_TIKTOK_DURATION} cues={CUES} musicVolume={0.4} />
+      {/* The drop lands as the brackets open on Marginalia. */}
+      <Soundtrack dropAt={T.intro + 12} duration={MARGINALIA_TIKTOK_DURATION} cues={CUES} musicVolume={0.4} />
     </AbsoluteFill>
   );
 }
