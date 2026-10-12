@@ -584,7 +584,6 @@ function Cta({ h }: { h: number }) {
   const line = usePunch(w("cta", "try") - 2);
   const arrow = usePunch(w("cta", "link") - 2);
   const url = usePunch(w("cta", "link") + 6);
-  const credit = useEnter(w("cta", "link") + 22);
   const bob = Math.sin(Math.max(0, f - w("cta", "link")) / 4) * 10;
   const pulse = 1 + 0.03 * Math.max(0, Math.sin((f - w("cta", "link")) / 5));
   const top = h / 2 - 380;
@@ -604,9 +603,6 @@ function Cta({ h }: { h: number }) {
       </div>
       <div style={{ position: "absolute", left: 0, right: 0, top: top + 430, display: "flex", justifyContent: "center", opacity: Math.min(1, arrow), transform: `translateY(${bob + (1 - arrow) * -40}px)` }}>
         <svg width={70} height={70} viewBox="0 0 24 24" fill="none" stroke={PRIMARY} strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12l7 7 7-7" /></svg>
-      </div>
-      <div style={{ position: "absolute", left: 0, right: 0, top: top + 720, textAlign: "center", fontFamily: INTER, fontSize: 28, color: MUTED, opacity: credit }}>
-        Designed and built by Ace Guevarra
       </div>
       <Burst from={w("cta", "link") + 8} x={COL_W / 2} y={top + 590} size={560} />
     </AbsoluteFill>
