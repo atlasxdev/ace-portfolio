@@ -3,7 +3,7 @@ import { AdmissionsDemo, ADMISSIONS_DURATION } from "./admissions/AdmissionsDemo
 import { AgTikTok, AG_TIKTOK_DURATION } from "./ag/AgTikTok";
 import { DmaDemo, DMA_DURATION } from "./dma/DmaDemo";
 import { MarginaliaDemo, MARGINALIA_DURATION } from "./marginalia/MarginaliaDemo";
-import { MarginaliaTikTok, MARGINALIA_TIKTOK_DURATION } from "./marginalia/MarginaliaTikTok";
+import { MarginaliaNotes, MARGINALIA_NOTES_DURATION } from "./marginalia/MarginaliaNotes";
 import { SisDemo, SIS_DURATION } from "./sis/SisDemo";
 
 const film = { fps: 30, width: 1920, height: 1080 } as const;
@@ -16,9 +16,9 @@ export const Root = () => (
     <Composition id="MarginaliaDemo" component={MarginaliaDemo} durationInFrames={MARGINALIA_DURATION} {...film} />
     {/* Vertical, for TikTok. */}
     {/* 4:5: TikTok letterboxes it, so its own UI sits on black, not over the film. */}
-    <Composition id="MarginaliaTikTok" component={MarginaliaTikTok} durationInFrames={MARGINALIA_TIKTOK_DURATION} fps={30} width={1080} height={1350} />
+    <Composition id="MarginaliaTikTok" component={MarginaliaNotes} durationInFrames={MARGINALIA_NOTES_DURATION} fps={30} width={1080} height={1350} />
     {/* The same story at 16:9, for Facebook. */}
-    <Composition id="MarginaliaWide" component={MarginaliaTikTok} defaultProps={{ wide: true }} durationInFrames={MARGINALIA_TIKTOK_DURATION} {...film} />
+    <Composition id="MarginaliaWide" component={MarginaliaNotes} defaultProps={{ wide: true }} durationInFrames={MARGINALIA_NOTES_DURATION} {...film} />
     <Composition id="AgTikTok" component={AgTikTok} durationInFrames={AG_TIKTOK_DURATION} fps={30} width={1080} height={1920} />
   </>
 );
