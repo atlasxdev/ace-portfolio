@@ -10,9 +10,8 @@ import { DATA } from "@/data/resume";
 /**
  * Certifications as a fanned stack: the selected card stands upright in the
  * middle, the rest tilt out behind it. Clicking a card (or using the arrow
- * keys) brings it forward. Each card carries its own details; the credential
- * link sits under the fan, since a link can't live inside the card's button —
- * and a certification is a claim someone else can verify.
+ * keys) brings it forward. Each card carries its own details and Verify link —
+ * a certification is a claim someone else can verify.
  *
  * Cards are a dark plate in both themes: most issuer marks are white-only
  * wordmarks (Codebility, freeCodeCamp, MongoDB) that vanish on a light ground.
@@ -44,7 +43,6 @@ export function CertificationsSection() {
   const [active, setActive] = useState(0);
   const reduced = useReducedMotion();
   const offset = useIsDesktop() ? OFFSET_DESKTOP : OFFSET_MOBILE;
-  const cert = certs[active];
 
   const step = (dir: 1 | -1) =>
     setActive((i) => (i + dir + certs.length) % certs.length);
@@ -71,13 +69,8 @@ export function CertificationsSection() {
           const dist = Math.min(Math.abs(d), offset.length - 1);
           const sign = Math.sign(d);
           return (
-            <motion.button
+            <motion.div
               key={c.title}
-              type="button"
-              aria-label={`${c.title}, ${c.issuer}, ${c.date}`}
-              aria-pressed={d === 0}
-              tabIndex={d === 0 ? 0 : -1}
-              onClick={() => setActive(i)}
               initial={false}
               animate={{
                 x: `${sign * offset[dist]}%`,
@@ -90,10 +83,10 @@ export function CertificationsSection() {
                   : { type: "spring", stiffness: 260, damping: 28 }
               }
               style={{ zIndex: 10 - dist }}
-              className="absolute rounded-2xl text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
+              className="absolute rounded-2xl"
             >
               <div
-                className={`flex h-48 w-36 flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#141414] shadow-xl transition-[filter] duration-300 md:h-80 md:w-64 dark:shadow-black ${
+                className={`relative flex h-48 w-36 flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#141414] shadow-xl transition-[filter] duration-300 md:h-80 md:w-64 dark:shadow-black ${
                   d === 0 ? "" : "brightness-75 hover:brightness-100"
                 }`}
               >
@@ -121,32 +114,46 @@ export function CertificationsSection() {
                   <p className="mt-0.5 truncate text-[10px] text-white/55 md:mt-1 md:text-[13px]">
                     {c.issuer}, {c.date}
                   </p>
+                  {c.credentialUrl ? (
+                    <a
+                      href={c.credentialUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`Verify ${c.title}`}
+                      tabIndex={d === 0 ? 0 : -1}
+                      className={`group/verify relative z-10 mt-2 inline-flex items-center gap-1 rounded-full border border-white/15 px-2.5 py-1 font-mono text-[9px] tracking-wider text-white/75 uppercase transition-colors hover:border-white/40 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:mt-3 md:gap-1.5 md:px-3 md:py-1.5 md:text-[10.5px] ${
+                        d === 0 ? "" : "pointer-events-none"
+                      }`}
+                    >
+                      Verify
+                      <ArrowUpRight
+                        className="size-2.5 transition-transform group-hover/verify:-translate-y-px group-hover/verify:translate-x-px md:size-3"
+                        aria-hidden
+                      />
+                    </a>
+                  ) : (
+                    <p className="mt-2 font-mono text-[9px] tracking-wider text-white/40 uppercase md:mt-3 md:text-[10.5px]">
+                      On request
+                    </p>
+                  )}
                 </div>
+
+                {/* Selects the card. A sibling of the Verify link rather than a
+                    wrapper, since a link can't sit inside a button. */}
+                <button
+                  type="button"
+                  aria-label={`${c.title}, ${c.issuer}, ${c.date}`}
+                  aria-pressed={d === 0}
+                  tabIndex={d === 0 ? 0 : -1}
+                  onClick={() => setActive(i)}
+                  className="absolute inset-0 rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
+                />
               </div>
-            </motion.button>
+            </motion.div>
           );
         })}
       </div>
 
-      <div className="mt-6 min-h-10">
-        {cert.credentialUrl ? (
-          <a
-            href={cert.credentialUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label={`Verify ${cert.title}`}
-            className="label group inline-flex items-center gap-1.5 rounded-full border border-rule px-3.5 py-2 transition-colors hover:border-foreground/30 hover:text-foreground"
-          >
-            Verify credential
-            <ArrowUpRight
-              className="size-3 transition-transform group-hover:-translate-y-px group-hover:translate-x-px"
-              aria-hidden
-            />
-          </a>
-        ) : (
-          <p className="label text-ink-faint">Credential on request</p>
-        )}
-      </div>
     </div>
   );
 }
