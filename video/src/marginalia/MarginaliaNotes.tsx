@@ -582,8 +582,9 @@ function Cta({ h }: { h: number }) {
   const mark = usePunch(2);
   const note = interpolate(f, [16, 30], [0, 1], clamp);
   const line = usePunch(w("cta", "try") - 2);
-  const url = usePunch(w("cta", "link") - 2);
-  const credit = useEnter(w("cta", "link") + 16);
+  const arrow = usePunch(w("cta", "link") - 2);
+  const url = usePunch(w("cta", "link") + 6);
+  const credit = useEnter(w("cta", "link") + 22);
   const bob = Math.sin(Math.max(0, f - w("cta", "link")) / 4) * 10;
   const pulse = 1 + 0.03 * Math.max(0, Math.sin((f - w("cta", "link")) / 5));
   const top = h / 2 - 380;
@@ -598,16 +599,16 @@ function Cta({ h }: { h: number }) {
       <div style={{ position: "absolute", left: 0, right: 0, top: top + 320, textAlign: "center", fontFamily: INTER, fontSize: 64, fontWeight: 900, letterSpacing: "-0.04em", color: FG, opacity: Math.min(1, line), transform: `scale(${0.6 + 0.4 * line}) rotate(${(1 - line) * -6}deg)` }}>
         Try it with your own docs.
       </div>
-      <div style={{ position: "absolute", left: 0, right: 0, top: top + 440, display: "flex", justifyContent: "center", opacity: Math.min(1, url), transform: `scale(${(0.6 + 0.4 * url) * pulse})` }}>
+      <div style={{ position: "absolute", left: 0, right: 0, top: top + 540, display: "flex", justifyContent: "center", opacity: Math.min(1, url), transform: `scale(${(0.6 + 0.4 * url) * pulse})` }}>
         <div style={{ padding: "26px 46px", borderRadius: 18, background: PRIMARY, color: "#fff", fontFamily: INTER, fontWeight: 700, fontSize: 44, boxShadow: "inset 0 1px 0 rgba(255,255,255,.18), 0 20px 40px -16px rgba(1,82,203,.6)" }}>{SITE}</div>
       </div>
-      <div style={{ position: "absolute", left: 0, right: 0, top: top + 600, display: "flex", justifyContent: "center", opacity: Math.min(1, url), transform: `translateY(${bob}px)` }}>
+      <div style={{ position: "absolute", left: 0, right: 0, top: top + 430, display: "flex", justifyContent: "center", opacity: Math.min(1, arrow), transform: `translateY(${bob + (1 - arrow) * -40}px)` }}>
         <svg width={70} height={70} viewBox="0 0 24 24" fill="none" stroke={PRIMARY} strokeWidth={2.6} strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12l7 7 7-7" /></svg>
       </div>
       <div style={{ position: "absolute", left: 0, right: 0, top: top + 720, textAlign: "center", fontFamily: INTER, fontSize: 28, color: MUTED, opacity: credit }}>
         Designed and built by Ace Guevarra
       </div>
-      <Burst from={w("cta", "link")} x={COL_W / 2} y={top + 490} size={560} />
+      <Burst from={w("cta", "link") + 8} x={COL_W / 2} y={top + 590} size={560} />
     </AbsoluteFill>
   );
 }
