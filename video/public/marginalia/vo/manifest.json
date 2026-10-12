@@ -1,420 +1,440 @@
 {
   "pain": {
-    "text": "That one answer you need is somewhere in a forty-page handbook.",
+    "text": "That one answer you need? It's buried somewhere in a forty-page PDF.",
     "file": "marginalia/vo/pain.mp3",
-    "duration": 3.261,
+    "duration": 3.772,
     "words": [
       {
         "t": "That",
         "s": 0,
-        "e": 0.232
+        "e": 0.197
       },
       {
         "t": "one",
-        "s": 0.313,
-        "e": 0.476
+        "s": 0.255,
+        "e": 0.395
       },
       {
         "t": "answer",
-        "s": 0.511,
-        "e": 0.766
+        "s": 0.43,
+        "e": 0.627
       },
       {
         "t": "you",
-        "s": 0.836,
-        "e": 0.906
+        "s": 0.673,
+        "e": 0.743
       },
       {
-        "t": "need",
-        "s": 0.964,
-        "e": 1.138
+        "t": "need?",
+        "s": 0.801,
+        "e": 1.103
       },
       {
-        "t": "is",
-        "s": 1.184,
-        "e": 1.254
+        "t": "It's",
+        "s": 1.312,
+        "e": 1.474
+      },
+      {
+        "t": "buried",
+        "s": 1.509,
+        "e": 1.788
       },
       {
         "t": "somewhere",
-        "s": 1.3,
-        "e": 1.625
+        "s": 1.823,
+        "e": 2.113
       },
       {
         "t": "in",
-        "s": 1.649,
-        "e": 1.695
+        "s": 2.136,
+        "e": 2.183
       },
       {
         "t": "a",
-        "s": 1.718,
-        "e": 1.741
+        "s": 2.206,
+        "e": 2.229
       },
       {
         "t": "forty-page",
-        "s": 1.8,
-        "e": 2.299
+        "s": 2.276,
+        "e": 2.763
       },
       {
-        "t": "handbook.",
-        "s": 2.345,
-        "e": 3.111
+        "t": "PDF.",
+        "s": 2.798,
+        "e": 3.622
       }
     ]
   },
   "search": {
-    "text": "You search “carry over”. Nothing. Because it says “roll over”.",
+    "text": "Ctrl F, “carry over”... zero results. Because it says “roll over”. Ugh.",
     "file": "marginalia/vo/search.mp3",
-    "duration": 3.958,
+    "duration": 5.955,
     "words": [
       {
-        "t": "You",
+        "t": "Ctrl",
         "s": 0,
-        "e": 0.163
-      },
-      {
-        "t": "search",
-        "s": 0.221,
         "e": 0.464
       },
       {
+        "t": "F,",
+        "s": 0.534,
+        "e": 0.824
+      },
+      {
         "t": "“carry",
-        "s": 0.488,
-        "e": 0.813
+        "s": 0.94,
+        "e": 1.393
       },
       {
-        "t": "over”.",
-        "s": 0.882,
-        "e": 1.277
+        "t": "over”...",
+        "s": 1.463,
+        "e": 1.985
       },
       {
-        "t": "Nothing.",
-        "s": 1.602,
-        "e": 2.055
+        "t": "zero",
+        "s": 2.31,
+        "e": 2.647
+      },
+      {
+        "t": "results.",
+        "s": 2.728,
+        "e": 3.297
       },
       {
         "t": "Because",
-        "s": 2.264,
-        "e": 2.508
+        "s": 3.541,
+        "e": 3.831
       },
       {
         "t": "it",
-        "s": 2.543,
-        "e": 2.601
+        "s": 3.855,
+        "e": 3.913
       },
       {
         "t": "says",
-        "s": 2.635,
-        "e": 2.833
+        "s": 3.959,
+        "e": 4.18
       },
       {
         "t": "“roll",
-        "s": 2.891,
-        "e": 3.17
+        "s": 4.307,
+        "e": 4.656
       },
       {
         "t": "over”.",
-        "s": 3.228,
-        "e": 3.808
+        "s": 4.714,
+        "e": 5.108
+      },
+      {
+        "t": "Ugh.",
+        "s": 5.224,
+        "e": 5.805
       }
     ]
   },
   "meet": {
-    "text": "Meet Marginalia.",
+    "text": "So, meet Marginalia!",
     "file": "marginalia/vo/meet.mp3",
-    "duration": 1.45,
+    "duration": 1.822,
     "words": [
       {
-        "t": "Meet",
+        "t": "So,",
         "s": 0,
-        "e": 0.255
+        "e": 0.372
       },
       {
-        "t": "Marginalia.",
-        "s": 0.313,
-        "e": 1.3
+        "t": "meet",
+        "s": 0.418,
+        "e": 0.627
+      },
+      {
+        "t": "Marginalia!",
+        "s": 0.697,
+        "e": 1.672
       }
     ]
   },
   "ask": {
-    "text": "Upload your files and ask in plain words. The answer shows up in the margin, right next to where it came from.",
+    "text": "Drop in your files, ask like a normal person, and boom. The answer, right in the margin, with the exact line it came from.",
     "file": "marginalia/vo/ask.mp3",
-    "duration": 6.837,
+    "duration": 8.231,
     "words": [
       {
-        "t": "Upload",
+        "t": "Drop",
         "s": 0,
-        "e": 0.406
+        "e": 0.29
+      },
+      {
+        "t": "in",
+        "s": 0.337,
+        "e": 0.383
       },
       {
         "t": "your",
-        "s": 0.453,
-        "e": 0.569
+        "s": 0.43,
+        "e": 0.534
       },
       {
-        "t": "files",
-        "s": 0.627,
-        "e": 1.033
-      },
-      {
-        "t": "and",
-        "s": 1.08,
+        "t": "files,",
+        "s": 0.592,
         "e": 1.173
       },
       {
         "t": "ask",
-        "s": 1.242,
-        "e": 1.451
+        "s": 1.382,
+        "e": 1.66
       },
       {
-        "t": "in",
-        "s": 1.509,
-        "e": 1.579
+        "t": "like",
+        "s": 1.718,
+        "e": 1.858
       },
       {
-        "t": "plain",
-        "s": 1.649,
-        "e": 1.904
+        "t": "a",
+        "s": 1.892,
+        "e": 1.927
       },
       {
-        "t": "words.",
-        "s": 1.974,
-        "e": 2.508
+        "t": "normal",
+        "s": 2.02,
+        "e": 2.31
+      },
+      {
+        "t": "person,",
+        "s": 2.368,
+        "e": 2.728
+      },
+      {
+        "t": "and",
+        "s": 2.752,
+        "e": 2.844
+      },
+      {
+        "t": "boom.",
+        "s": 2.914,
+        "e": 3.309
       },
       {
         "t": "The",
-        "s": 2.949,
-        "e": 3.077
+        "s": 4.261,
+        "e": 4.412
       },
       {
-        "t": "answer",
-        "s": 3.146,
-        "e": 3.506
-      },
-      {
-        "t": "shows",
-        "s": 3.599,
-        "e": 3.901
-      },
-      {
-        "t": "up",
-        "s": 3.971,
-        "e": 4.052
-      },
-      {
-        "t": "in",
-        "s": 4.098,
-        "e": 4.156
-      },
-      {
-        "t": "the",
-        "s": 4.18,
-        "e": 4.249
-      },
-      {
-        "t": "margin,",
-        "s": 4.296,
-        "e": 4.83
+        "t": "answer,",
+        "s": 4.481,
+        "e": 4.969
       },
       {
         "t": "right",
-        "s": 5.004,
-        "e": 5.224
+        "s": 5.248,
+        "e": 5.468
       },
       {
-        "t": "next",
-        "s": 5.294,
-        "e": 5.515
+        "t": "in",
+        "s": 5.503,
+        "e": 5.561
       },
       {
-        "t": "to",
-        "s": 5.538,
-        "e": 5.584
+        "t": "the",
+        "s": 5.596,
+        "e": 5.666
       },
       {
-        "t": "where",
-        "s": 5.619,
-        "e": 5.77
+        "t": "margin,",
+        "s": 5.7,
+        "e": 6.06
+      },
+      {
+        "t": "with",
+        "s": 6.095,
+        "e": 6.246
+      },
+      {
+        "t": "the",
+        "s": 6.293,
+        "e": 6.385
+      },
+      {
+        "t": "exact",
+        "s": 6.467,
+        "e": 6.861
+      },
+      {
+        "t": "line",
+        "s": 6.931,
+        "e": 7.129
       },
       {
         "t": "it",
-        "s": 5.793,
-        "e": 5.851
+        "s": 7.152,
+        "e": 7.221
       },
       {
         "t": "came",
-        "s": 5.886,
-        "e": 6.095
+        "s": 7.256,
+        "e": 7.454
       },
       {
         "t": "from.",
-        "s": 6.13,
-        "e": 6.687
+        "s": 7.5,
+        "e": 8.081
       }
     ]
   },
   "uses": {
-    "text": "Lecture notes. Your lease. Your work docs.",
+    "text": "Lecture notes. Your lease. Work docs. Anything.",
     "file": "marginalia/vo/uses.mp3",
-    "duration": 2.704,
+    "duration": 3.958,
     "words": [
       {
         "t": "Lecture",
         "s": 0,
-        "e": 0.36
+        "e": 0.372
       },
       {
         "t": "notes.",
-        "s": 0.395,
-        "e": 0.673
+        "s": 0.406,
+        "e": 0.755
       },
       {
         "t": "Your",
-        "s": 0.708,
-        "e": 0.871
+        "s": 0.964,
+        "e": 1.138
       },
       {
         "t": "lease.",
-        "s": 0.917,
-        "e": 1.289
+        "s": 1.196,
+        "e": 1.602
       },
       {
-        "t": "Your",
-        "s": 1.463,
-        "e": 1.614
-      },
-      {
-        "t": "work",
-        "s": 1.66,
-        "e": 1.846
+        "t": "Work",
+        "s": 1.927,
+        "e": 2.148
       },
       {
         "t": "docs.",
-        "s": 1.904,
-        "e": 2.554
+        "s": 2.206,
+        "e": 2.705
+      },
+      {
+        "t": "Anything.",
+        "s": 3.03,
+        "e": 3.808
       }
     ]
   },
   "honest": {
-    "text": "And if it's not in your files, it tells you. No made-up answers.",
+    "text": "And if it's not in there? It tells you. No made-up answers.",
     "file": "marginalia/vo/honest.mp3",
-    "duration": 3.819,
+    "duration": 4.19,
     "words": [
       {
         "t": "And",
         "s": 0,
-        "e": 0.163
+        "e": 0.139
       },
       {
         "t": "if",
-        "s": 0.209,
-        "e": 0.279
+        "s": 0.174,
+        "e": 0.221
       },
       {
         "t": "it's",
-        "s": 0.325,
-        "e": 0.453
+        "s": 0.255,
+        "e": 0.372
       },
       {
         "t": "not",
-        "s": 0.534,
-        "e": 0.731
+        "s": 0.43,
+        "e": 0.604
       },
       {
         "t": "in",
-        "s": 0.778,
-        "e": 0.836
+        "s": 0.639,
+        "e": 0.708
       },
       {
-        "t": "your",
-        "s": 0.871,
-        "e": 0.987
+        "t": "there?",
+        "s": 0.755,
+        "e": 1.126
       },
       {
-        "t": "files,",
-        "s": 1.033,
-        "e": 1.451
-      },
-      {
-        "t": "it",
-        "s": 1.486,
-        "e": 1.567
+        "t": "It",
+        "s": 1.637,
+        "e": 1.8
       },
       {
         "t": "tells",
-        "s": 1.602,
-        "e": 1.869
+        "s": 1.823,
+        "e": 2.09
       },
       {
         "t": "you.",
-        "s": 1.916,
-        "e": 2.159
+        "s": 2.148,
+        "e": 2.415
       },
       {
         "t": "No",
-        "s": 2.334,
-        "e": 2.508
+        "s": 2.74,
+        "e": 2.902
       },
       {
         "t": "made-up",
-        "s": 2.577,
-        "e": 2.844
+        "s": 2.972,
+        "e": 3.228
       },
       {
         "t": "answers.",
-        "s": 2.914,
-        "e": 3.669
+        "s": 3.286,
+        "e": 4.04
       }
     ]
   },
   "cta": {
-    "text": "Try it with your own documents. The link's below.",
+    "text": "Try it with your own docs. Link's below!",
     "file": "marginalia/vo/cta.mp3",
-    "duration": 2.89,
+    "duration": 2.658,
     "words": [
       {
         "t": "Try",
         "s": 0,
-        "e": 0.325
+        "e": 0.244
       },
       {
         "t": "it",
-        "s": 0.372,
-        "e": 0.43
+        "s": 0.267,
+        "e": 0.313
       },
       {
         "t": "with",
-        "s": 0.453,
-        "e": 0.569
+        "s": 0.337,
+        "e": 0.43
       },
       {
         "t": "your",
-        "s": 0.615,
-        "e": 0.731
+        "s": 0.476,
+        "e": 0.592
       },
       {
         "t": "own",
-        "s": 0.789,
-        "e": 0.917
+        "s": 0.662,
+        "e": 0.813
       },
       {
-        "t": "documents.",
-        "s": 0.975,
-        "e": 1.614
+        "t": "docs.",
+        "s": 0.871,
+        "e": 1.37
       },
       {
-        "t": "The",
-        "s": 1.683,
-        "e": 1.811
+        "t": "Link's",
+        "s": 1.486,
+        "e": 1.753
       },
       {
-        "t": "link's",
-        "s": 1.858,
-        "e": 2.055
-      },
-      {
-        "t": "below.",
-        "s": 2.101,
-        "e": 2.74
+        "t": "below!",
+        "s": 1.8,
+        "e": 2.508
       }
     ]
   }

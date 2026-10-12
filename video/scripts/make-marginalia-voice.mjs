@@ -10,13 +10,13 @@
 import fs from "node:fs";
 
 const LINES = [
-  ["pain", "That one answer you need is somewhere in a forty-page handbook."],
-  ["search", "You search “carry over”. Nothing. Because it says “roll over”."],
-  ["meet", "Meet Marginalia."],
-  ["ask", "Upload your files and ask in plain words. The answer shows up in the margin, right next to where it came from."],
-  ["uses", "Lecture notes. Your lease. Your work docs."],
-  ["honest", "And if it's not in your files, it tells you. No made-up answers."],
-  ["cta", "Try it with your own documents. The link's below."],
+  ["pain", "That one answer you need? It's buried somewhere in a forty-page PDF."],
+  ["search", "Ctrl F, “carry over”... zero results. Because it says “roll over”. Ugh."],
+  ["meet", "So, meet Marginalia!"],
+  ["ask", "Drop in your files, ask like a normal person, and boom. The answer, right in the margin, with the exact line it came from."],
+  ["uses", "Lecture notes. Your lease. Work docs. Anything."],
+  ["honest", "And if it's not in there? It tells you. No made-up answers."],
+  ["cta", "Try it with your own docs. Link's below!"],
 ];
 
 const OUT = new URL("../public/marginalia/vo/", import.meta.url);
@@ -31,7 +31,7 @@ if (fs.existsSync(dotenv)) {
   }
 }
 const KEY = env.ELEVENLABS_API_KEY || env.ELEVEN_LABS_API_KEY;
-const VOICE = env.ELEVENLABS_VOICE_ID || "nPczCjzI2devNBz1zQrb"; // "Brian", a calm conversational voice
+const VOICE = env.ELEVENLABS_VOICE_ID || "TX3LPaxmHKxFdv7VOQHJ"; // "Liam", energetic, social-media style
 const placeholder = process.argv.includes("--placeholder");
 if (!placeholder && !KEY) {
   console.error("Set ELEVENLABS_API_KEY in video/.env, or run with --placeholder.");
@@ -79,7 +79,7 @@ for (const [id, text] of LINES) {
       body: JSON.stringify({
         text,
         model_id: "eleven_multilingual_v2",
-        voice_settings: { stability: 0.5, similarity_boost: 0.75, style: 0.15, use_speaker_boost: true },
+        voice_settings: { stability: 0.32, similarity_boost: 0.8, style: 0.6, use_speaker_boost: true },
       }),
     });
     if (!res.ok) {
