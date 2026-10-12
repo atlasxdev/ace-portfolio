@@ -288,6 +288,14 @@ export const DATA = {
       credentialUrl: "https://www.credly.com/badges/54d4d044-949e-4247-8f36-08574e1839cb",
     },
     {
+      title: "Introduction to Agent Skills",
+      issuer: "Anthropic",
+      issuerUrl: "https://anthropic.skilljar.com/",
+      date: "October 2026",
+      logoUrl: "/certs/anthropic.svg",
+      credentialUrl: "https://verify.skilljar.com/c/qs4mg86iepij",
+    },
+    {
       title: "JavaScript Essentials 1",
       issuer: "Cisco",
       issuerUrl: "https://www.netacad.com/",
