@@ -288,6 +288,14 @@ export const DATA = {
       credentialUrl: "https://www.credly.com/badges/54d4d044-949e-4247-8f36-08574e1839cb",
     },
     {
+      title: "JavaScript Essentials 1",
+      issuer: "Cisco",
+      issuerUrl: "https://www.netacad.com/",
+      date: "October 2026",
+      logoUrl: "/certs/cisco.svg",
+      credentialUrl: "https://www.credly.com/badges/cef4e0fa-c7db-4b05-ad2c-a4d14c6f2b84",
+    },
+    {
       title: "Frontend Developer Training Program",
       issuer: "Codebility",
       issuerUrl: "https://www.codebility.tech/",
