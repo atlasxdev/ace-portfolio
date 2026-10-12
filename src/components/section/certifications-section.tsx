@@ -1,34 +1,49 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { motion, useReducedMotion } from "motion/react";
 
 import { DATA } from "@/data/resume";
 
 /**
  * Certifications as a fanned stack: the selected card stands upright in the
  * middle, the rest tilt out behind it. Clicking a card (or using the arrow
- * keys) brings it forward, and its details — with the credential link, since
- * a certification is a claim someone else can verify — show underneath.
+ * keys) brings it forward. Each card carries its own details; the credential
+ * link sits under the fan, since a link can't live inside the card's button —
+ * and a certification is a claim someone else can verify.
  *
- * Card faces are the issuer's mark on a dark plate: most of them are white-only
- * wordmarks (Codebility, freeCodeCamp, MongoDB) that vanish on a light ground,
- * so the plate stays dark in both themes. Marks are contained in one box, so
- * square ones fill its height and wide wordmarks fill its width.
+ * Cards are a dark plate in both themes: most issuer marks are white-only
+ * wordmarks (Codebility, freeCodeCamp, MongoDB) that vanish on a light ground.
+ * Marks are contained in one box, so square ones fill its height and wide
+ * wordmarks fill its width.
  *
- * Offsets are percentages of the card's own width, so the fan keeps its shape
- * at both card sizes and the outer cards stay inside a phone's gutter.
+ * Offsets are percentages of the card's own width. Phones get a tighter fan so
+ * the outer cards stay inside the gutter.
  */
-const OFFSET = [0, 58, 100];
+const OFFSET_DESKTOP = [0, 58, 100];
+const OFFSET_MOBILE = [0, 40, 70];
 const ROTATE = 9;
 const SCALE_STEP = 0.12;
+
+function useIsDesktop() {
+  const [desktop, setDesktop] = useState(true);
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const update = () => setDesktop(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+  return desktop;
+}
 
 export function CertificationsSection() {
   const certs = DATA.certifications;
   const [active, setActive] = useState(0);
   const reduced = useReducedMotion();
+  const offset = useIsDesktop() ? OFFSET_DESKTOP : OFFSET_MOBILE;
   const cert = certs[active];
 
   const step = (dir: 1 | -1) =>
@@ -45,7 +60,7 @@ export function CertificationsSection() {
           else return;
           e.preventDefault();
         }}
-        className="relative flex h-44 w-full items-center justify-center md:h-80"
+        className="relative flex h-56 w-full items-center justify-center md:h-96"
       >
         {certs.map((c, i) => {
           // Wrap around so the fan stays balanced: with five cards, two always
@@ -53,19 +68,19 @@ export function CertificationsSection() {
           const n = certs.length;
           const half = Math.floor(n / 2);
           const d = ((i - active + n + half) % n) - half;
-          const dist = Math.min(Math.abs(d), OFFSET.length - 1);
+          const dist = Math.min(Math.abs(d), offset.length - 1);
           const sign = Math.sign(d);
           return (
             <motion.button
               key={c.title}
               type="button"
-              aria-label={`${c.title}, ${c.issuer}`}
+              aria-label={`${c.title}, ${c.issuer}, ${c.date}`}
               aria-pressed={d === 0}
               tabIndex={d === 0 ? 0 : -1}
               onClick={() => setActive(i)}
               initial={false}
               animate={{
-                x: `${sign * OFFSET[dist]}%`,
+                x: `${sign * offset[dist]}%`,
                 rotate: sign * dist * ROTATE,
                 scale: 1 - dist * SCALE_STEP,
               }}
@@ -75,67 +90,62 @@ export function CertificationsSection() {
                   : { type: "spring", stiffness: 260, damping: 28 }
               }
               style={{ zIndex: 10 - dist }}
-              className="absolute rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
+              className="absolute rounded-2xl text-left focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
             >
               <div
-                className={`relative grid size-28 place-items-center overflow-hidden rounded-2xl border border-white/10 bg-[#141414] shadow-xl transition-[filter] duration-300 md:size-64 dark:shadow-black ${
+                className={`flex h-48 w-36 flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#141414] shadow-xl transition-[filter] duration-300 md:h-80 md:w-64 dark:shadow-black ${
                   d === 0 ? "" : "brightness-75 hover:brightness-100"
                 }`}
               >
-                {c.logoUrl ? (
-                  <div className="relative h-1/5 w-3/5">
-                    <Image
-                      src={c.logoUrl}
-                      alt=""
-                      fill
-                      sizes="(min-width: 768px) 154px, 68px"
-                      className="object-contain"
-                    />
-                  </div>
-                ) : (
-                  <span className="font-display text-3xl font-semibold text-white/70">
-                    {c.issuer.charAt(0)}
-                  </span>
-                )}
+                <div className="grid flex-1 place-items-center">
+                  {c.logoUrl ? (
+                    <div className="relative h-9 w-3/5 md:h-14">
+                      <Image
+                        src={c.logoUrl}
+                        alt=""
+                        fill
+                        sizes="(min-width: 768px) 154px, 86px"
+                        className="object-contain"
+                      />
+                    </div>
+                  ) : (
+                    <span className="font-display text-3xl font-semibold text-white/70">
+                      {c.issuer.charAt(0)}
+                    </span>
+                  )}
+                </div>
+                <div className="border-t border-white/10 px-3 py-2.5 md:px-5 md:py-4">
+                  <p className="line-clamp-2 text-[11px] leading-snug font-semibold tracking-[-0.01em] text-white md:text-[15px]">
+                    {c.title}
+                  </p>
+                  <p className="mt-0.5 truncate text-[10px] text-white/55 md:mt-1 md:text-[13px]">
+                    {c.issuer}, {c.date}
+                  </p>
+                </div>
               </div>
             </motion.button>
           );
         })}
       </div>
 
-      <div aria-live="polite" className="mt-8 min-h-24 text-center">
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={cert.title}
-            initial={reduced ? false : { opacity: 0, y: 6 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={reduced ? undefined : { opacity: 0, y: -6 }}
-            transition={{ duration: 0.18 }}
+      <div className="mt-6 min-h-10">
+        {cert.credentialUrl ? (
+          <a
+            href={cert.credentialUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={`Verify ${cert.title}`}
+            className="label group inline-flex items-center gap-1.5 rounded-full border border-rule px-3.5 py-2 transition-colors hover:border-foreground/30 hover:text-foreground"
           >
-            <h3 className="text-base leading-snug font-semibold tracking-[-0.01em]">
-              {cert.title}
-            </h3>
-            <p className="mt-1 text-sm text-muted-foreground">
-              {cert.issuer}, {cert.date}
-            </p>
-            {cert.credentialUrl ? (
-              <a
-                href={cert.credentialUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="label group mt-4 inline-flex items-center gap-1.5 rounded-full border border-rule px-3.5 py-2 transition-colors hover:border-foreground/30 hover:text-foreground"
-              >
-                Verify
-                <ArrowUpRight
-                  className="size-3 transition-transform group-hover:-translate-y-px group-hover:translate-x-px"
-                  aria-hidden
-                />
-              </a>
-            ) : (
-              <p className="label mt-4 text-ink-faint">Credential on request</p>
-            )}
-          </motion.div>
-        </AnimatePresence>
+            Verify credential
+            <ArrowUpRight
+              className="size-3 transition-transform group-hover:-translate-y-px group-hover:translate-x-px"
+              aria-hidden
+            />
+          </a>
+        ) : (
+          <p className="label text-ink-faint">Credential on request</p>
+        )}
       </div>
     </div>
   );
