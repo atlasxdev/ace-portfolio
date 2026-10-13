@@ -190,16 +190,16 @@ export const DATA = {
       dates: "2026",
       active: true,
       description:
-        "A retrieval-augmented app for asking questions about your own documents. Markdown, PDF and Word files are split along their headings and indexed in Postgres with pgvector, and each question runs a hybrid search that blends semantic and keyword matches. Answers stream in with numbered citations back to the exact passage, and when the documents don't hold the answer it says so instead of guessing. Notes can be written and edited in the app, and re-index on save.",
+        "A study app that turns a student's own lecture notes into flashcards and studies them with them. Notes from PDF, Word and Markdown files are indexed in Postgres with pgvector, and Gemini writes flashcards from them, each linked to the line it came from. Study sessions mix cards, quizzes and typed answers that are checked against the notes, with spaced repetition bringing cards back before they're forgotten. Miss one and it explains the idea from the notes, then checks your own explanation; timed practice exams score every topic and point to the weak ones. A pixel study buddy sits on every card and levels up, and students can play their own study music.",
       technologies: ["Next.js", "TypeScript", "Supabase", "pgvector", "Google Gemini", "TanStack Query", "Zod"],
       image: "",
       video: {
         src: "/projects/marginalia-demo.mp4",
         poster: "/projects/marginalia-demo.jpg",
-        duration: 24,
-        uploadDate: "2026-10-10",
-        shows: "a question asked in plain words on the live app, with the answer streaming in and its source opening beside it; the citation pointing to the exact passage in an employee handbook; a note written in the side-by-side Markdown editor; and the app saying plainly when the documents don't hold the answer.",
-        blurb: "Ask your own documents in plain words. Every answer cites the passage it came from, and it says so when the answer isn't there.",
+        duration: 28,
+        uploadDate: "2026-10-13",
+        shows: "an exam three days away and the notes piling up; Mochi, the pixel study buddy, popping in; a PDF of lecture notes turning into flashcards; a study session where Mochi slumps at a wrong answer and the card flips to an explanation; and a practice exam score, the weak topics and a study playlist.",
+        blurb: "Your own notes become flashcards, and a pixel buddy studies them with you: it checks your answers, explains what you miss and runs practice exams.",
       },
       links: [
         { type: "Website", href: "https://marginalia.aceguevarra.xyz/" },
