@@ -1,4 +1,4 @@
-// Voice-over for the Marginalia "margin notes" film, from ElevenLabs.
+// Voice-over for the Marginalia study-buddy film, from ElevenLabs.
 // Writes one mp3 per line plus manifest.json (durations and word timings,
 // which drive the film's timeline and subtitles).
 //
@@ -10,13 +10,12 @@
 import fs from "node:fs";
 
 const LINES = [
-  ["pain", "That one answer you need? It's buried somewhere in a forty-page PDF."],
-  ["search", "Ctrl F, “carry over”... zero results. Because it says “roll over”. Ugh."],
-  ["meet", "So, meet Marginalia!"],
-  ["ask", "Drop in your files, ask like a normal person, and boom. The answer, right in the margin, with the exact line it came from."],
-  ["uses", "Lecture notes. Your lease. Work docs. Anything."],
-  ["honest", "And if it's not in there? It tells you. No made-up answers."],
-  ["cta", "Try it with your own docs. Link's below!"],
+  ["pain", "Exam in three days. Fifty pages of notes. Where do you even start?"],
+  ["meet", "So, meet Marginalia! And your new study buddy."],
+  ["cards", "Drop in your notes, and the flashcards make themselves."],
+  ["session", "Then study together. Get one wrong? It explains why."],
+  ["exam", "Practice exams. Your weak topics. Even your own study music."],
+  ["cta", "Study smarter, with your own notes. Link's below!"],
 ];
 
 const OUT = new URL("../public/marginalia/vo/", import.meta.url);
