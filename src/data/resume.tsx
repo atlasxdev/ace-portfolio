@@ -194,8 +194,8 @@ export const DATA = {
       technologies: ["Next.js", "TypeScript", "Supabase", "pgvector", "Google Gemini", "TanStack Query", "Zod"],
       image: "",
       video: {
-        src: "/projects/marginalia-demo.mp4",
-        poster: "/projects/marginalia-demo.jpg",
+        src: "/projects/marginalia-study.mp4",
+        poster: "/projects/marginalia-study.jpg",
         duration: 28,
         uploadDate: "2026-10-13",
         shows: "an exam three days away and the notes piling up; Mochi, the pixel study buddy, popping in; a PDF of lecture notes turning into flashcards; a study session where Mochi slumps at a wrong answer and the card flips to an explanation; and a practice exam score, the weak topics and a study playlist.",
