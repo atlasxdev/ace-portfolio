@@ -53,11 +53,13 @@ export function PersonSchema() {
   };
 
   // WebSite is what Google reads for the site name shown above the result.
+  // No domain in alternateName: Google treats it as a candidate and was
+  // showing "aceguevarra.xyz" instead of the name.
   const website = {
     "@type": "WebSite",
     name: DATA.name,
-    alternateName: ["AG", "aceguevarra.xyz"],
-    url: DATA.url,
+    alternateName: "AG",
+    url: `${DATA.url}/`,
   };
 
   const profile = {
