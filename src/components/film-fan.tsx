@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
-import { cn } from "@/lib/utils";
 import { ProjectVideo } from "@/components/project-video";
+import { cn } from "@/lib/utils";
 
 export type Film = {
   title: string;
@@ -61,6 +61,7 @@ export function FilmFan({ films }: { films: Film[] }) {
           const n = (i - active + films.length) % films.length; // 0 = front
           const side = place(n, films.length - 1);
           const front = n === 0;
+          const back = !front && side === BACK;
           return (
             <div
               key={f.title}
@@ -69,13 +70,13 @@ export function FilmFan({ films }: { films: Film[] }) {
               className={cn(
                 "absolute top-1/2 transition-[left,width,transform,opacity] duration-500 ease-[cubic-bezier(.2,.8,.2,1)] motion-reduce:transition-none",
                 front ? "w-[64%] md:w-[38%]" : "w-[44%] md:w-[26%]",
+                back && "mt-group",
               )}
               style={{
                 left: `${front ? FRONT.left : side.left}%`,
                 zIndex: front ? FRONT.z : side.z,
                 transform: `translate(-50%, ${front ? -50 : -50 - side.lift}%) rotate(${front ? 0 : side.rotate}deg)`,
-              }}
-            >
+              }}>
               {front ? (
                 <div className="shadow-2xl shadow-black/15 rounded-lg">
                   <ProjectVideo key={f.src} src={f.src} poster={f.poster} title={f.title} />
@@ -85,8 +86,7 @@ export function FilmFan({ films }: { films: Film[] }) {
                   type="button"
                   onClick={() => setActive(i)}
                   aria-label={`Show the ${f.title} film`}
-                  className="group block w-full overflow-hidden rounded-lg border border-rule bg-muted shadow-xl shadow-black/10 transition-transform duration-300 hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground"
-                >
+                  className="group block w-full overflow-hidden rounded-lg border border-rule bg-muted shadow-xl shadow-black/10 transition-transform duration-300 hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground">
                   {/* eslint-disable-next-line @next/next/no-img-element -- a poster behind the front card; next/image adds nothing here */}
                   <img
                     src={f.poster}
@@ -106,13 +106,16 @@ export function FilmFan({ films }: { films: Film[] }) {
         <h3 className="text-h3 font-semibold tracking-[-0.01em]">{film.title}</h3>
         <p className="mt-2 text-body-sm leading-5 text-muted-foreground">{film.blurb}</p>
         {/* Same height with or without a link, so swapping films doesn't shift the page. */}
-        {!film.link && <span className="label mt-4 inline-block invisible" aria-hidden>&nbsp;</span>}
+        {!film.link && (
+          <span className="label mt-4 inline-block invisible" aria-hidden>
+            &nbsp;
+          </span>
+        )}
         {film.link && (
           <Link
             href={film.link.href}
             {...(external ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-            className="label group mt-4 inline-flex items-center gap-1 text-ink-faint transition-colors hover:text-foreground"
-          >
+            className="label group mt-4 inline-flex items-center gap-1 text-ink-faint transition-colors hover:text-foreground">
             {film.link.type}
             <ArrowUpRight
               className="size-3.5 transition-transform group-hover:-translate-y-px group-hover:translate-x-px"
