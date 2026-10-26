@@ -29,8 +29,10 @@ export const TECH_BAND: Tech[] = [
 ];
 
 /**
- * The homepage shortlist as four folders, grouped by what each tool is for.
- * Every TECH_BAND entry appears exactly once.
+ * The homepage shortlist as two folders, so it sits on one row: what the
+ * product is built on, and what automates and checks it. Every TECH_BAND entry
+ * appears exactly once, ordered so the first five (the ones fanned) are the
+ * most telling.
  */
 const band = (...names: string[]) => names.map((n) => {
   const t = TECH_BAND.find((x) => x.name === n);
@@ -39,10 +41,14 @@ const band = (...names: string[]) => names.map((n) => {
 });
 
 export const TECH_FOLDERS: { group: string; items: Tech[] }[] = [
-  { group: "Frontend", items: band("TypeScript", "JavaScript", "React", "Next.js", "Tailwind CSS", "TanStack Query") },
-  { group: "Backend & Data", items: band("Supabase", "PostgreSQL", "MySQL", "Vercel", "Azure") },
-  { group: "AI & Automation", items: band("Anthropic", "MCP", "n8n") },
-  { group: "Testing & Tooling", items: band("Vitest", "Cypress", "Postman", "Git") },
+  {
+    group: "Product engineering",
+    items: band("React", "Next.js", "TypeScript", "Supabase", "PostgreSQL", "JavaScript", "Tailwind CSS", "TanStack Query", "MySQL", "Vercel", "Azure"),
+  },
+  {
+    group: "AI, automation & testing",
+    items: band("Anthropic", "MCP", "n8n", "Vitest", "Cypress", "Postman", "Git"),
+  },
 ];
 
 export const CAPABILITIES: string[][] = [
