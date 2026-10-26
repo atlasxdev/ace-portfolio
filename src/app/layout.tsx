@@ -6,6 +6,7 @@ import { DeferredExtras } from "@/components/deferred-extras";
 import { SiteSidebar } from "@/components/site-sidebar";
 import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { WheelGlide } from "@/components/wheel-glide";
 import { DATA } from "@/data/resume";
 import { clashDisplay, geist, geistMono } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
@@ -128,6 +129,7 @@ export default function RootLayout({
               {/* Chat and pet, loaded after first paint. Inside
                   the provider: the chat offers the contact form mid-chat. */}
               <DeferredExtras />
+              <WheelGlide />
             </ContactDialogProvider>
 
             {/* Outside the providers: neither renders anything, and neither
