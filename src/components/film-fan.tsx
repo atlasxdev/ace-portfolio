@@ -352,9 +352,9 @@ export function FilmFan({ films }: { films: Film[] }) {
             className="absolute inset-0 origin-bottom cursor-pointer rounded-[12px_12px_16px_16px] border border-white/20 bg-[#3b6fb6] bg-[linear-gradient(165deg,rgb(255_255_255/0.08),rgb(0_0_0/0.1))] text-left shadow-[inset_0_1px_0_rgb(255_255_255/0.22),0_10px_16px_-10px_rgb(0_0_0/0.4)] outline-offset-4 focus-visible:outline-2 focus-visible:outline-foreground">
             <span aria-hidden className="absolute top-4 left-1/2 h-[3px] w-8 -translate-x-1/2 rounded-full bg-black/15" />
             <span className="absolute bottom-5 left-6 text-white">
-              <span className="block font-display text-[22px] leading-none font-semibold tracking-[-0.02em]">Launch films</span>
+              <span className="block font-display text-[22px] leading-none font-semibold tracking-[-0.02em]">Shipped and in use</span>
               <span className="mt-1.5 block text-[13px] text-white/70">
-                {open ? "Pick one to watch" : `${films.length} projects, tap to open`}
+                {open ? "Click a card to watch its demo" : `${films.length} projects inside`}
               </span>
             </span>
           </motion.button>
