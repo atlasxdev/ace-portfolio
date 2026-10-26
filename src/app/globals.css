@@ -244,6 +244,15 @@
     scroll-behavior: smooth;
   }
 
+  /* Things thrown or flown across the page (the Approach cards, the project
+     cards leaving the folder) may pass the screen edge; they never widen the
+     page or let it scroll sideways. clip, not hidden, so nothing becomes a
+     scroll container and sticky positioning still works. */
+  html,
+  body {
+    overflow-x: clip;
+  }
+
   @media (prefers-reduced-motion: reduce) {
     html {
       scroll-behavior: auto;
