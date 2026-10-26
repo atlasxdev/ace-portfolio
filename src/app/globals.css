@@ -401,6 +401,29 @@
       background-color 0.2s ease;
   }
 
+  /* --- Certificate (certifications) ---------------------------------------
+     Dark paper in both themes, so the issuers' white wordmarks hold. A faint
+     lattice of fine diagonal lines gives it the printed-security look. */
+  .cert {
+    --cert-gold: #c9a45c;
+    background:
+      repeating-linear-gradient(45deg, rgb(255 255 255 / 0.018) 0 1px, transparent 1px 7px),
+      repeating-linear-gradient(-45deg, rgb(255 255 255 / 0.018) 0 1px, transparent 1px 7px),
+      radial-gradient(120% 90% at 50% 0%, #24221e, #121110 70%);
+  }
+  .cert-frame {
+    border: 1px solid color-mix(in srgb, var(--cert-gold) 55%, transparent);
+  }
+  .cert-frame-inner {
+    border: 1px solid color-mix(in srgb, var(--cert-gold) 22%, transparent);
+  }
+  .cert-gold {
+    color: var(--cert-gold);
+  }
+  .cert-rule {
+    border-color: color-mix(in srgb, var(--cert-gold) 35%, transparent);
+  }
+
   /* --- Icon folder (tech stacks) -------------------------------------------
      The fan springs out on hover or tap. Tiles get their own compositor layer
      so moving them never repaints the folder. The front pocket stays put: it
