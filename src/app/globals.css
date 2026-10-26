@@ -402,29 +402,21 @@
   }
 
   /* --- Icon folder (tech stacks) -------------------------------------------
-     The fan springs out on hover or tap, and the front pocket dips so the
-     logos read as rising out of it. */
-  .folder-tile {
-    transition:
-      transform 0.45s var(--ease-snappy),
-      opacity 0.3s ease;
-  }
+     The fan springs out on hover or tap. Tiles get their own compositor layer
+     so moving them never repaints the folder. The front pocket stays put: it
+     blurs what is behind it, and moving a backdrop-filter re-blurs every
+     frame, which is what made the hover stutter. */
+  .folder-tile,
   .folder-lift {
     transition:
       transform 0.45s var(--ease-snappy),
       opacity 0.3s ease;
-  }
-  .folder-front {
-    transition: transform 0.45s var(--ease-spring);
-  }
-  .folder[data-wide] .folder-front {
-    transform: translateY(6px);
+    will-change: transform;
   }
 
   @media (prefers-reduced-motion: reduce) {
     .folder-tile,
-    .folder-lift,
-    .folder-front {
+    .folder-lift {
       transition: none;
     }
   }

@@ -131,7 +131,12 @@ export function IconFolder({ title, items }: { title: string; items: Tech[] }) {
           return (
             <div
               key={tech.logo}
-              className="folder-tile absolute left-1/2 [backface-visibility:hidden]"
+              // The hover target: it holds still while the logo inside lifts, so the
+              // lift can never pull the logo out from under the pointer and
+              // flicker the hover off and on.
+              onPointerEnter={(e) => e.pointerType === "mouse" && setHi(i)}
+              onPointerLeave={() => setHi((h) => (h === i ? null : h))}
+              className="folder-tile pointer-events-auto absolute left-1/2 [backface-visibility:hidden]"
               style={{
                 top: 26,
                 width: TILE,
@@ -145,9 +150,7 @@ export function IconFolder({ title, items }: { title: string; items: Tech[] }) {
                 transitionDelay: wide ? `${i * 0.03}s` : shown ? `${0.15 + i * 0.05}s` : "0s",
               }}>
               <div
-                className="folder-lift pointer-events-auto relative size-full"
-                onPointerEnter={(e) => e.pointerType === "mouse" && setHi(i)}
-                onPointerLeave={() => setHi((h) => (h === i ? null : h))}
+                className="folder-lift pointer-events-none relative size-full"
                 style={{
                   transform:
                     hi === i ? `translateY(-20px) rotate(${-rot}deg) scale(1.08)` : hi !== null ? "scale(.96)" : "none",
