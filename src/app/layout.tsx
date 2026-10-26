@@ -8,7 +8,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { WheelGlide } from "@/components/wheel-glide";
 import { DATA } from "@/data/resume";
-import { clashDisplay, geist, geistMono } from "@/lib/fonts";
+import { clashDisplay, geist, geistMono, marker } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import type { Metadata } from "next";
 import "./globals.css";
@@ -102,7 +102,8 @@ export default function RootLayout({
           "min-h-screen bg-background font-sans antialiased",
           geist.variable,
           geistMono.variable,
-          clashDisplay.variable
+          clashDisplay.variable,
+          marker.variable
         )}
       >
         {/* Dark is the design's primary register, but a visitor whose OS says

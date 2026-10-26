@@ -30,3 +30,14 @@ export const clashDisplay = localFont({
   weight: "600",
   display: "swap",
 });
+
+// Permanent Marker (OFL), self-hosted like the rest. Only the handwritten
+// label on the Projects folder uses it, so it never preloads.
+export const marker = localFont({
+  src: "../fonts/PermanentMarker-latin.woff2",
+  // Not --font-marker, so globals.css can map that to the `font-marker` utility.
+  variable: "--font-permanent-marker",
+  weight: "400",
+  display: "swap",
+  preload: false,
+});
