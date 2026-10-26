@@ -89,10 +89,11 @@ function Dial({ step, onSelect, play }: { step: number; onSelect: (i: number) =>
 
   return (
     <div className="relative mx-auto aspect-square w-[280px] md:w-[360px] lg:w-[420px]">
-      {/* Drafting grid, reaching past the ring and fading out beyond it. */}
+      {/* Drafting grid, reaching past the ring and fading out beyond it; less
+          far on phones, where the ring nearly fills the width. */}
       <div
         aria-hidden
-        className="absolute -inset-[30%] rounded-full [background-image:linear-gradient(color-mix(in_srgb,var(--foreground)_7%,transparent)_1px,transparent_1px),linear-gradient(90deg,color-mix(in_srgb,var(--foreground)_7%,transparent)_1px,transparent_1px)] [background-position:center] [background-size:3.125%_3.125%] [mask-image:radial-gradient(circle,#000_38%,transparent_70%)]"
+        className="absolute -inset-[12%] rounded-full md:-inset-[30%] [background-image:linear-gradient(color-mix(in_srgb,var(--foreground)_7%,transparent)_1px,transparent_1px),linear-gradient(90deg,color-mix(in_srgb,var(--foreground)_7%,transparent)_1px,transparent_1px)] [background-position:center] [background-size:3.125%_3.125%] [mask-image:radial-gradient(circle,#000_38%,transparent_70%)]"
       />
 
       <svg aria-hidden viewBox={`0 0 ${SIZE} ${SIZE}`} className="absolute inset-0 size-full overflow-visible" fill="none">
