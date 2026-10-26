@@ -6,6 +6,7 @@ import { useTheme } from "next-themes";
 import { useSyncExternalStore } from "react";
 import { flushSync } from "react-dom";
 
+import { BOUNCY, SNAPPY } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 const OPTIONS: { value: string; label: string; icon: LucideIcon }[] = [
@@ -88,7 +89,7 @@ export function ModeToggle({ className }: { className?: string }) {
                 layoutId="mode-toggle-pill"
                 aria-hidden
                 className="absolute inset-0 rounded-full bg-foreground/10"
-                transition={reduced ? { duration: 0 } : { type: "spring", stiffness: 500, damping: 34 }}
+                transition={reduced ? { duration: 0 } : SNAPPY}
               />
             )}
             <motion.span
@@ -97,7 +98,7 @@ export function ModeToggle({ className }: { className?: string }) {
               initial={false}
               animate={{ rotate: active && !reduced ? (SPIN[value] ?? 0) : 0 }}
               whileTap={reduced ? undefined : { scale: 0.8 }}
-              transition={{ type: "spring", stiffness: 300, damping: 18 }}>
+              transition={BOUNCY}>
               <Icon className="size-3.5" />
             </motion.span>
           </button>

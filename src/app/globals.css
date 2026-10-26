@@ -111,14 +111,16 @@
 :root {
   --radius: 0.875rem;
 
-  /* The site'''s easing curve, matching EASE in lib/motion.ts so the CSS
-     transitions and the Framer springs share one shape.
+  /* The site'''s springs for CSS transitions, sampled from the same model as
+     SPRING and SNAPPY in lib/motion.ts (0.3s perceived, bounce 0 and 0.15), so
+     CSS and Framer motion share one feel. Each settles in ~450ms: pair them
+     with a 0.45s duration.
 
-     This was referenced by .glass-hover but never declared. An undefined
-     var() invalidates the whole transition shorthand at computed-value time,
-     so every glass card'''s hover — the 2px lift, the border and the ground —
-     was snapping instantly rather than easing. */
-  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
+     --ease-spring was referenced by .glass-hover but never declared. An
+     undefined var() invalidates the whole transition shorthand at
+     computed-value time, so every glass card'''s hover was snapping instantly. */
+  --ease-spring: linear(0, 0.047, 0.145, 0.266, 0.383, 0.495, 0.591, 0.674, 0.741, 0.798, 0.843, 0.878, 0.905, 0.927, 0.944, 0.958, 0.968, 0.975, 0.981, 0.986, 0.989, 0.992, 0.994, 0.995, 0.997, 0.997, 0.998, 0.999, 1);
+  --ease-snappy: linear(0, 0.045, 0.145, 0.268, 0.396, 0.52, 0.627, 0.718, 0.792, 0.853, 0.899, 0.933, 0.959, 0.977, 0.989, 0.997, 1.001, 1.004, 1.005, 1.006, 1.006, 1.005, 1.004, 1.003, 1.003, 1.002, 1.002, 1.001, 1);
 
   /* Light-mode greys run darker than a straight inversion of dark mode: the
      body face is light-weight, so mid-grey on off-white read washed out.
@@ -394,7 +396,7 @@
 
   .glass-hover {
     transition:
-      transform 0.25s var(--ease-spring),
+      transform 0.45s var(--ease-snappy),
       border-color 0.2s ease,
       background-color 0.2s ease;
   }

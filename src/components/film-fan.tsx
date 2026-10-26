@@ -68,7 +68,7 @@ export function FilmFan({ films }: { films: Film[] }) {
               data-project={f.title}
               data-film
               className={cn(
-                "absolute top-1/2 transition-[left,width,transform,opacity] duration-500 ease-[cubic-bezier(.2,.8,.2,1)] motion-reduce:transition-none",
+                "absolute top-1/2 transition-[left,width,transform,opacity] duration-[450ms] ease-(--ease-snappy) motion-reduce:transition-none",
                 front ? "w-[64%] md:w-[38%]" : "w-[44%] md:w-[26%]",
                 back && "mt-group",
               )}
@@ -86,7 +86,7 @@ export function FilmFan({ films }: { films: Film[] }) {
                   type="button"
                   onClick={() => setActive(i)}
                   aria-label={`Show the ${f.title} film`}
-                  className="group block w-full overflow-hidden rounded-lg border border-rule bg-muted shadow-xl shadow-black/10 transition-transform duration-300 hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground">
+                  className="group block w-full overflow-hidden rounded-lg border border-rule bg-muted shadow-xl shadow-black/10 transition-transform duration-[450ms] ease-(--ease-snappy) hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-foreground">
                   {/* eslint-disable-next-line @next/next/no-img-element -- a poster behind the front card; next/image adds nothing here */}
                   <img
                     src={f.poster}

@@ -33,7 +33,7 @@ import { TECH_BAND } from "@/data/stacks";
 import { OPEN_CHAT_EVENT, sendChatState, showOnPage, type ChatState } from "@/lib/chat-events";
 import { findChatProject } from "@/lib/chat-projects";
 import { keepOpenForPet, togglePet } from "@/lib/pet-store";
-import { CARD_STATE, EASE } from "@/lib/motion";
+import { CARD_STATE, SPRING } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { SHOW_FILM, SWING_MS } from "@/components/film-fan";
 
@@ -712,7 +712,7 @@ export default function Chatbot({ openOnMount = false }: { openOnMount?: boolean
             initial={{ opacity: 0, y: reduced ? 0 : 12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: reduced ? 0 : 12 }}
-            transition={{ duration: 0.25, ease: EASE }}
+            transition={SPRING}
             className="fixed right-4 bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex h-12 cursor-pointer items-center gap-2.5 rounded-full border border-foreground/12 bg-card/90 pr-5 pl-3.5 text-body text-foreground shadow-[0_16px_40px_-16px_rgb(0_0_0/0.6)] backdrop-blur-xl lg:hidden">
             <AgFace />
             Ask Ag
@@ -878,7 +878,7 @@ function AssistantMessage({
         <motion.div
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25, ease: EASE }}
+          transition={SPRING}
           className="flex flex-col gap-3">
           {projects.length > 0 && (
             <div className="-mx-4 flex snap-x scroll-px-4 gap-2 overflow-x-auto px-4 pb-1 md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 md:pb-0">

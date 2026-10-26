@@ -5,6 +5,8 @@ import Image from "next/image";
 import { ArrowUpRight } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
 
+import { SNAPPY } from "@/lib/motion";
+
 import { DATA } from "@/data/resume";
 
 /**
@@ -80,7 +82,7 @@ export function CertificationsSection() {
               transition={
                 reduced
                   ? { duration: 0 }
-                  : { type: "spring", stiffness: 260, damping: 28 }
+                  : SNAPPY
               }
               style={{ zIndex: 10 - dist }}
               className="absolute rounded-2xl"
