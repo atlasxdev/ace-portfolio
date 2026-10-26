@@ -4,7 +4,7 @@ import { BreadcrumbJsonLd, pageMetadata } from "@/lib/seo";
 import { DATA } from "@/data/resume";
 import { STACK_GROUPS } from "@/data/stacks";
 import { Reveal } from "@/components/motion/reveal";
-import { TechGrid } from "@/components/tech-tile";
+import { IconFolder } from "@/components/icon-folder";
 
 const DESCRIPTION =
   "Everything I build with, grouped by what it's for — languages, frontend, backend, AI engineering, automation, cloud, testing, and the integrations shipped to production.";
@@ -32,15 +32,10 @@ export default function TechStacksPage() {
         </Reveal>
       </section>
 
-      <div className="flex flex-col gap-3 pb-16">
+      <div className="grid grid-cols-1 gap-x-6 gap-y-10 pb-16 md:grid-cols-2">
         {STACK_GROUPS.map((group, i) => (
-          <Reveal
-            key={group.group}
-            delay={Math.min(i * 0.04, 0.2)}
-            className="glass p-group"
-          >
-            <h2 className="label mb-4 text-ink-faint">{group.group}</h2>
-            <TechGrid items={group.items} />
+          <Reveal key={group.group} delay={Math.min(i * 0.04, 0.2)}>
+            <IconFolder title={group.group} items={group.items} />
           </Reveal>
         ))}
       </div>

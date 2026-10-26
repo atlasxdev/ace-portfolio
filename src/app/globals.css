@@ -401,6 +401,34 @@
       background-color 0.2s ease;
   }
 
+  /* --- Icon folder (tech stacks) -------------------------------------------
+     The fan springs out on hover or tap, and the front pocket dips so the
+     logos read as rising out of it. */
+  .folder-tile {
+    transition:
+      transform 0.45s var(--ease-snappy),
+      opacity 0.3s ease;
+  }
+  .folder-lift {
+    transition:
+      transform 0.45s var(--ease-snappy),
+      opacity 0.3s ease;
+  }
+  .folder-front {
+    transition: transform 0.45s var(--ease-spring);
+  }
+  .folder[data-wide] .folder-front {
+    transform: translateY(6px);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .folder-tile,
+    .folder-lift,
+    .folder-front {
+      transition: none;
+    }
+  }
+
   .glass-hover:hover {
     transform: translateY(-2px);
     border-color: color-mix(in srgb, var(--foreground) 22%, transparent);
