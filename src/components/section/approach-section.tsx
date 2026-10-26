@@ -88,7 +88,7 @@ function Dial({ step, onSelect, play }: { step: number; onSelect: (i: number) =>
   const on = play || reduced;
 
   return (
-    <div className="relative mx-auto aspect-square w-[230px] md:w-[300px] lg:w-[340px]">
+    <div className="relative mx-auto aspect-square w-[280px] md:w-[360px] lg:w-[420px]">
       {/* Drafting grid, reaching past the ring and fading out beyond it. */}
       <div
         aria-hidden
@@ -150,8 +150,8 @@ function Dial({ step, onSelect, play }: { step: number; onSelect: (i: number) =>
           on a circle its corners poke out past the rim. */}
       <div className="glass absolute top-1/2 left-1/2 grid size-[39%] -translate-x-1/2 -translate-y-1/2 place-items-center overflow-hidden rounded-full text-center">
         <div>
-          <span className="label text-[9.5px] text-ink-faint">Lifecycle</span>
-          <p className="mt-1 font-display text-[12.5px] leading-[1.1] font-semibold tracking-[-0.02em] md:text-[15px] lg:text-[17px]">
+          <span className="label text-[10px] text-ink-faint md:text-[11px]">Lifecycle</span>
+          <p className="mt-1 font-display text-[15px] leading-[1.1] font-semibold tracking-[-0.02em] md:text-[19px] lg:text-[22px]">
             Ship, learn,
             <br />
             repeat
@@ -169,7 +169,7 @@ function Dial({ step, onSelect, play }: { step: number; onSelect: (i: number) =>
             aria-current={step === i ? "step" : undefined}
             onClick={() => onSelect(i)}
             className={cn(
-              "absolute z-10 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-[11px] outline-offset-2 transition-transform duration-300 ease-(--ease-snappy) focus-visible:outline-2 focus-visible:outline-foreground lg:rounded-[14px]",
+              "absolute z-10 -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-[12px] outline-offset-2 transition-transform duration-300 ease-(--ease-snappy) focus-visible:outline-2 focus-visible:outline-foreground md:rounded-[14px] lg:rounded-[16px]",
               // The current stage stands a little proud of the ring.
               step === i ? "scale-110 shadow-[0_8px_24px_-8px_var(--step)]" : "hover:scale-105",
             )}
@@ -177,8 +177,8 @@ function Dial({ step, onSelect, play }: { step: number; onSelect: (i: number) =>
             <StageIcon
               i={i}
               reached={i <= step}
-              className="size-10 rounded-[11px] lg:size-12 lg:rounded-[14px]"
-              glyph="size-5 lg:size-6"
+              className="size-11 rounded-[12px] md:size-12 md:rounded-[14px] lg:size-14 lg:rounded-[16px]"
+              glyph="size-5 md:size-6 lg:size-7"
             />
           </button>
         );
@@ -188,7 +188,7 @@ function Dial({ step, onSelect, play }: { step: number; onSelect: (i: number) =>
         aria-hidden
         initial={false}
         animate={{ opacity: step === LAST ? 1 : 0 }}
-        className="label absolute hidden -translate-x-[70%] -translate-y-full text-[9.5px] whitespace-nowrap text-ink-faint md:block"
+        className="label absolute hidden -translate-x-[70%] -translate-y-full text-[10.5px] whitespace-nowrap text-ink-faint md:block"
         style={{ left: pct(LOOP_NOTE[0]), top: pct(LOOP_NOTE[1]) }}>
         ↺ Next iteration
       </motion.span>
@@ -259,7 +259,7 @@ export function ApproachSection() {
         else return;
         e.preventDefault();
       }}
-      className="flex flex-col items-center gap-group lg:grid lg:grid-cols-[340px_minmax(0,520px)] lg:justify-center lg:gap-14">
+      className="flex flex-col items-center gap-group lg:grid lg:grid-cols-[420px_minmax(0,520px)] lg:justify-center lg:gap-14">
       <Reveal kind="fade">
         <Dial step={step} onSelect={go} play={inView} />
       </Reveal>
