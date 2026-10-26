@@ -2,8 +2,9 @@
 
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
+import { FilmPlayer } from "@/components/film-player";
 import { ProjectVideo } from "@/components/project-video";
 import { cn } from "@/lib/utils";
 
@@ -41,6 +42,9 @@ export const SWING_MS = 500;
 
 export function FilmFan({ films }: { films: Film[] }) {
   const [active, setActive] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  /** The front card, which the full-size player grows from and returns to. */
+  const frontCard = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const show = (e: Event) => {
@@ -82,8 +86,15 @@ export function FilmFan({ films }: { films: Film[] }) {
                 transform: `translate(-50%, ${front ? -50 : -50 - side.lift}%) rotate(${front ? 0 : side.rotate}deg)`,
               }}>
               {front ? (
-                <div className="shadow-2xl shadow-black/15 rounded-lg">
-                  <ProjectVideo key={f.src} src={f.src} poster={f.poster} title={f.title} />
+                <div ref={frontCard} className="shadow-2xl shadow-black/15 rounded-lg">
+                  <ProjectVideo
+                    key={f.src}
+                    src={f.src}
+                    poster={f.poster}
+                    title={f.title}
+                    onExpand={() => setPlaying(true)}
+                    suspended={playing}
+                  />
                 </div>
               ) : (
                 <button
@@ -104,6 +115,16 @@ export function FilmFan({ films }: { films: Film[] }) {
           );
         })}
       </div>
+
+      {playing && (
+        <FilmPlayer
+          films={films}
+          index={active}
+          onIndex={setActive}
+          origin={() => frontCard.current?.getBoundingClientRect() ?? null}
+          onClosed={() => setPlaying(false)}
+        />
+      )}
 
       {/* The front film's caption. */}
       <div className="mx-auto mt-group max-w-[60ch] text-center" aria-live="polite">

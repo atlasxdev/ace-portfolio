@@ -1,10 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
-import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { Maximize2, Play, Volume2, VolumeX, XIcon } from "lucide-react";
-
-import { Dialog, DialogOverlay, DialogPortal, DialogTitle } from "@/components/ui/dialog";
+import { Maximize2, Play, Volume2, VolumeX } from "lucide-react";
 
 const REDUCED = "(prefers-reduced-motion: reduce)";
 function subscribeReduced(onChange: () => void) {
@@ -17,7 +14,7 @@ function subscribeReduced(onChange: () => void) {
  * Phones get a 540p copy (`<name>-540p.mp4`, made by the /video render
  * scripts): the 1080p master is full-range yuvj420p, which many phone decoders
  * hand to software, and it's far more pixels than the card shows. The
- * full-size dialog always plays the master.
+ * full-size player always plays the master.
  */
 const PHONE = "(max-width: 767px)";
 const mobileSrc = (src: string) => src.replace(/\.mp4$/, "-540p.mp4");
@@ -33,22 +30,36 @@ const CONTROL =
  * never starts on its own: the poster shows with a play button instead.
  * Browsers block autoplay with sound, so audio is opt-in.
  *
- * Expand opens the film in a dialog over a blurred page, from the start and
- * with sound, since opening it is the visitor asking to watch. The inline copy
- * pauses meanwhile and picks up again on close.
+ * Expand hands off to the full-size player (see FilmPlayer). The inline copy
+ * pauses while that's open and picks up again on close.
  */
-export function ProjectVideo({ src, poster, title }: { src: string; poster: string; title: string }) {
+export function ProjectVideo({
+  src,
+  poster,
+  title,
+  onExpand,
+  suspended = false,
+}: {
+  src: string;
+  poster: string;
+  title: string;
+  onExpand: () => void;
+  /** The full-size player is open: stay paused. */
+  suspended?: boolean;
+}) {
   const ref = useRef<HTMLVideoElement>(null);
-  const resumeInline = useRef(false);
   const [muted, setMuted] = useState(true);
   const [started, setStarted] = useState(false);
-  const [open, setOpen] = useState(false);
   const reduced = useSyncExternalStore(subscribeReduced, () => window.matchMedia(REDUCED).matches, () => false);
   const still = reduced && !started;
 
   useEffect(() => {
     const video = ref.current;
-    if (!video || reduced || open) return;
+    if (!video || reduced) return;
+    if (suspended) {
+      video.pause();
+      return;
+    }
     const io = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) video.play().catch(() => {});
@@ -58,7 +69,7 @@ export function ProjectVideo({ src, poster, title }: { src: string; poster: stri
     );
     io.observe(video);
     return () => io.disconnect();
-  }, [reduced, open]);
+  }, [reduced, suspended]);
 
   function start() {
     setStarted(true);
@@ -71,16 +82,6 @@ export function ProjectVideo({ src, poster, title }: { src: string; poster: stri
     video.muted = !muted;
     setMuted(!muted);
     if (video.paused) start();
-  }
-
-  function onOpenChange(next: boolean) {
-    const video = ref.current;
-    if (next && video) {
-      resumeInline.current = !video.paused;
-      video.pause();
-    }
-    if (!next && video && resumeInline.current) video.play().catch(() => {});
-    setOpen(next);
   }
 
   return (
@@ -117,26 +118,10 @@ export function ProjectVideo({ src, poster, title }: { src: string; poster: stri
             {muted ? <VolumeX className="size-4" aria-hidden /> : <Volume2 className="size-4" aria-hidden />}
           </button>
         )}
-        <button type="button" onClick={() => onOpenChange(true)} aria-label={`Watch the ${title} film full size`} className={CONTROL}>
+        <button type="button" onClick={onExpand} aria-label={`Watch the ${title} film full size`} className={CONTROL}>
           <Maximize2 className="size-4" aria-hidden />
         </button>
       </div>
-
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogPortal>
-          <DialogOverlay className="bg-black/55 backdrop-blur-md" />
-          <DialogPrimitive.Content
-            aria-describedby={undefined}
-            className="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 fixed top-1/2 left-1/2 z-[60] w-[min(92vw,calc(82dvh*16/9))] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-lg bg-black shadow-2xl duration-200 focus:outline-none"
-          >
-            <DialogTitle className="sr-only">{title}</DialogTitle>
-            <video src={src} poster={poster} autoPlay controls playsInline className="block aspect-video w-full" />
-            <DialogPrimitive.Close aria-label="Close" className={`absolute top-3 right-3 ${CONTROL}`}>
-              <XIcon className="size-4" aria-hidden />
-            </DialogPrimitive.Close>
-          </DialogPrimitive.Content>
-        </DialogPortal>
-      </Dialog>
     </div>
   );
 }
