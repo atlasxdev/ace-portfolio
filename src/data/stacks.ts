@@ -28,6 +28,23 @@ export const TECH_BAND: Tech[] = [
   { name: "TanStack Query", logo: "tanstack-query" },
 ];
 
+/**
+ * The homepage shortlist as four folders, grouped by what each tool is for.
+ * Every TECH_BAND entry appears exactly once.
+ */
+const band = (...names: string[]) => names.map((n) => {
+  const t = TECH_BAND.find((x) => x.name === n);
+  if (!t) throw new Error(`Not in TECH_BAND: ${n}`);
+  return t;
+});
+
+export const TECH_FOLDERS: { group: string; items: Tech[] }[] = [
+  { group: "Frontend", items: band("TypeScript", "JavaScript", "React", "Next.js", "Tailwind CSS", "TanStack Query") },
+  { group: "Backend & Data", items: band("Supabase", "PostgreSQL", "MySQL", "Vercel", "Azure") },
+  { group: "AI & Automation", items: band("Anthropic", "MCP", "n8n") },
+  { group: "Testing & Tooling", items: band("Vitest", "Cypress", "Postman", "Git") },
+];
+
 export const CAPABILITIES: string[][] = [
   [
     "Full-stack product development",

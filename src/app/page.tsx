@@ -5,6 +5,7 @@ import Link from "next/link";
 
 import { BrandLogo } from "@/components/brand-logo";
 import { HeroPortrait } from "@/components/hero-portrait";
+import { IconFolder } from "@/components/icon-folder";
 import { Reveal } from "@/components/motion/reveal";
 import { PersonSchema } from "@/components/person-schema";
 import { ApproachSection } from "@/components/section/approach-section";
@@ -14,11 +15,10 @@ import { ProjectFilms } from "@/components/section/project-films";
 import { RecognitionSection } from "@/components/section/recognition-section";
 import { ItemList, ItemRow, SectionLink, SectionRow } from "@/components/section/section-row";
 import { ExperienceSection } from "@/components/section/work-section";
-import { TechGrid } from "@/components/tech-tile";
 import { Button } from "@/components/ui/button";
 import { DATA } from "@/data/resume";
 import { section } from "@/data/sections";
-import { CAPABILITIES, TECH_BAND } from "@/data/stacks";
+import { CAPABILITIES, TECH_BAND, TECH_FOLDERS } from "@/data/stacks";
 import { LOGOS } from "@/lib/logos";
 
 /** The stack at a glance, in the hero; the full set is under Capabilities. */
@@ -142,12 +142,15 @@ export default function Page() {
         label={section("capabilities").label}
         action={<SectionLink href="/tech-stacks">View all tech stacks</SectionLink>}
         id="capabilities">
-        <Reveal className="glass p-group">
-          <h2 className="label mb-4 text-ink-faint">Tools I work with</h2>
-          <TechGrid items={TECH_BAND} />
-        </Reveal>
+        <div className="grid grid-cols-1 gap-x-6 gap-y-10 md:grid-cols-2">
+          {TECH_FOLDERS.map((folder, i) => (
+            <Reveal key={folder.group} delay={Math.min(i * 0.04, 0.12)}>
+              <IconFolder title={folder.group} items={folder.items} />
+            </Reveal>
+          ))}
+        </div>
 
-        <div className="mt-6 grid gap-6 md:grid-cols-2">
+        <div className="mt-12 grid gap-6 md:grid-cols-2">
           {CAPABILITIES.map((column, i) => (
             <Reveal key={i} delay={0.05 + i * 0.08}>
               <h2 className="label mb-4 text-ink-faint">{i === 0 ? "What I do" : <span aria-hidden>&nbsp;</span>}</h2>
