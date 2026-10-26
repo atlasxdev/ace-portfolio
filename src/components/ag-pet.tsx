@@ -11,7 +11,6 @@ import {
   useTransform,
   type AnimationPlaybackControls,
   type MotionValue,
-  type TargetAndTransition,
 } from "motion/react";
 import { useTheme } from "next-themes";
 import { usePathname } from "next/navigation";
@@ -130,54 +129,54 @@ const REACTION_SOUNDS: Record<Reaction, PetSound | null> = {
 type Mood = "content" | "annoyed" | "full";
 type Perch = { el: Element; dx: number };
 
-/** How the body moves for each reaction; squash and stretch pivot on the feet. */
-const REACTIONS: Record<Reaction, TargetAndTransition> = {
+/*
+ * How the body moves for each reaction, as physics rather than a script: each
+ * reaction is a push (a velocity) on one or more parts of the body, or a
+ * starting pose, and a spring returns it to rest. A lightly damped spring
+ * (high bounce) rings on by itself, so a shake is a real wobble that dies
+ * away, and a squash overshoots into the stretch after it. Springs are
+ * Apple's model: a perceived duration and a bounce. Squash and stretch pivot
+ * on the feet.
+ */
+type BodyPart = "x" | "y" | "rotate" | "scaleX" | "scaleY";
+type Kick = {
+  /** Roughly how far the push carries it (px, degrees, or scale), and which way. */
+  push?: number;
+  /** A pose to start from, released to spring back to rest. */
+  from?: number;
+  duration: number;
+  bounce: number;
+};
+type ReactionMove = { delay?: number; parts: Partial<Record<BodyPart, Kick>> };
+
+/** The velocity that carries a spring about `reach` before it turns back. */
+const shove = (reach: number, duration: number) => (reach * 2 * Math.PI * 1.15) / duration;
+
+const REACTIONS: Record<Reaction, ReactionMove> = {
+  // Pressed down, then hops: the squash rebounds into a stretch on its own.
   pet: {
-    scaleY: [1, 0.8, 1.12, 1],
-    scaleX: [1, 1.12, 0.92, 1],
-    y: [0, 0, -18, 0],
-    transition: { duration: 0.6, times: [0, 0.2, 0.55, 1] },
+    parts: {
+      scaleY: { push: -0.2, duration: 0.45, bounce: 0.55 },
+      scaleX: { push: 0.12, duration: 0.45, bounce: 0.55 },
+      y: { push: -18, duration: 0.5, bounce: 0.3 },
+    },
   },
-  feed: {
-    scaleY: [1, 0.9, 1, 0.9, 1, 0.9, 1],
-    scaleX: [1, 1.06, 1, 1.06, 1, 1.06, 1],
-    transition: { duration: 1.1, delay: 0.3 },
-  },
-  mute: { rotate: [0, -12, 12, -9, 9, 0], transition: { duration: 0.55 } },
-  unmute: { y: [0, -10, 0], rotate: [0, 6, 0], transition: { duration: 0.4 } },
-  bye: { rotate: [0, -14, 14, -14, 14, 0], transition: { duration: 0.6 } },
-  wave: {
-    rotate: [0, -10, 10, -10, 10, 0],
-    y: [0, -8, 0, -8, 0, 0],
-    transition: { duration: 0.8 },
-  },
-  land: {
-    scaleY: [0.78, 1.06, 1],
-    scaleX: [1.15, 0.97, 1],
-    transition: { duration: 0.3 },
-  },
-  huff: {
-    scale: [1, 1.12, 1.12, 1],
-    x: [0, -3, 3, -3, 3, 0],
-    transition: { duration: 0.6 },
-  },
-  refuse: {
-    rotate: [0, -14, 14, -10, 10, 0],
-    transition: { duration: 0.5, delay: 0.3 },
-  },
-  hic: { y: [0, -12, 0], scaleY: [1, 1.15, 1], transition: { duration: 0.28 } },
-  startle: {
-    y: [0, -22, 0],
-    scaleY: [1, 1.2, 1],
-    transition: { duration: 0.35 },
-  },
-  nod: { y: [0, 4, 0], transition: { duration: 0.25 } },
-  shake: { rotate: [0, -8, 8, -6, 6, 0], transition: { duration: 0.5 } },
-  yawn: {
-    scaleY: [1, 1.14, 1.14, 1],
-    scaleX: [1, 0.94, 0.94, 1],
-    transition: { duration: 1.3, times: [0, 0.35, 0.7, 1] },
-  },
+  // Chewing: a springy squash that keeps going for a few bites.
+  feed: { delay: 0.3, parts: { scaleY: { push: -0.1, duration: 0.3, bounce: 0.85 }, scaleX: { push: 0.06, duration: 0.3, bounce: 0.85 } } },
+  mute: { parts: { rotate: { push: -12, duration: 0.35, bounce: 0.7 } } },
+  unmute: { parts: { y: { push: -10, duration: 0.4, bounce: 0.3 }, rotate: { push: 6, duration: 0.4, bounce: 0.4 } } },
+  bye: { parts: { rotate: { push: -14, duration: 0.4, bounce: 0.75 } } },
+  wave: { parts: { rotate: { push: -10, duration: 0.4, bounce: 0.75 }, y: { push: -8, duration: 0.3, bounce: 0.6 } } },
+  // Lands squashed, and the spring stands it back up with a little stretch.
+  land: { parts: { scaleY: { from: 0.78, duration: 0.3, bounce: 0.45 }, scaleX: { from: 1.15, duration: 0.3, bounce: 0.45 } } },
+  huff: { parts: { x: { push: -3, duration: 0.15, bounce: 0.8 }, scaleY: { push: 0.12, duration: 0.6, bounce: 0.2 }, scaleX: { push: 0.12, duration: 0.6, bounce: 0.2 } } },
+  refuse: { delay: 0.3, parts: { rotate: { push: -14, duration: 0.35, bounce: 0.7 } } },
+  hic: { parts: { y: { push: -12, duration: 0.25, bounce: 0.35 }, scaleY: { push: 0.15, duration: 0.25, bounce: 0.35 } } },
+  startle: { parts: { y: { push: -22, duration: 0.35, bounce: 0.3 }, scaleY: { push: 0.2, duration: 0.35, bounce: 0.35 } } },
+  nod: { parts: { y: { push: 4, duration: 0.25, bounce: 0.2 } } },
+  shake: { parts: { rotate: { push: -8, duration: 0.3, bounce: 0.7 } } },
+  // A slow, long stretch.
+  yawn: { parts: { scaleY: { push: 0.14, duration: 1.2, bounce: 0.1 }, scaleX: { push: -0.06, duration: 1.2, bounce: 0.1 } } },
 };
 
 const PET_SPREE = { count: 5, window: 6_000, cooldown: 8_000 };
@@ -354,6 +353,14 @@ function Ag() {
   } | null>(null);
   const react = (kind: Reaction, sound?: PetSound | null) =>
     setReaction((r) => ({ kind, id: (r?.id ?? 0) + 1, sound }));
+  /** The body the reactions push around; each part rests at 0 (or 1 for scale). */
+  const body = {
+    x: useMotionValue(0),
+    y: useMotionValue(0),
+    rotate: useMotionValue(0),
+    scaleX: useMotionValue(1),
+    scaleY: useMotionValue(1),
+  };
   /** When Ag last made a sound, so a remark that comes with one doesn't also chirp. */
   const lastSound = useRef(0);
   const play = (sound: PetSound) => {
@@ -957,6 +964,37 @@ function Ag() {
     return () => clearTimeout(t);
   }, [happy]);
 
+  // Each reaction pushes the body and lets springs bring it back, starting
+  // from wherever the last one left it, so quick reactions blend into each
+  // other instead of restarting.
+  useEffect(() => {
+    if (!reaction || reduced) return;
+    const move = REACTIONS[reaction.kind];
+    const runs = (Object.keys(move.parts) as BodyPart[]).map((part) => {
+      const kick = move.parts[part]!;
+      const mv = body[part];
+      const rest = part === "scaleX" || part === "scaleY" ? 1 : 0;
+      if (kick.from !== undefined) mv.set(kick.from);
+      // Motion skips a spring whose start and end match, push or no push, so a
+      // part at rest is nudged a hair off it first.
+      else if (mv.get() === rest) mv.set(rest + Math.sign(kick.push ?? 1) * 1e-3);
+      // Apple's duration and bounce, as the stiffness and damping Motion's own
+      // visualDuration would give: given as physics so the push is kept.
+      const stiffness = (2 * Math.PI / (kick.duration * 1.2)) ** 2;
+      return animate(mv, rest, {
+        type: "spring",
+        stiffness,
+        damping: 2 * Math.max(0.05, 1 - kick.bounce) * Math.sqrt(stiffness),
+        restDelta: 0.0005,
+        velocity: kick.push ? shove(kick.push, kick.duration) + mv.getVelocity() : mv.getVelocity(),
+        delay: move.delay ?? 0,
+      });
+    });
+    return () => runs.forEach((r) => r.stop());
+    // The body's values are stable; a reaction is identified by its id.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reaction?.id, reduced]);
+
   // Every reaction, every move and every remark has a sound.
   useEffect(() => {
     if (!reaction) return;
@@ -1256,12 +1294,10 @@ function Ag() {
               className="block"
               style={{ transformOrigin: "50% 100%" }}
               animate={mood === "full" && !reduced ? { scaleX: 1.2, scaleY: 0.92 } : { scaleX: 1, scaleY: 1 }}
-              transition={{ type: "spring", stiffness: 260, damping: 14 }}>
+              transition={{ type: "spring", visualDuration: 0.4, bounce: 0.45 }}>
               <motion.span
-                key={reaction?.id ?? 0}
                 className="block"
-                style={{ transformOrigin: "50% 100%" }}
-                animate={kind && !reduced ? REACTIONS[kind] : undefined}>
+                style={{ transformOrigin: "50% 100%", ...body }}>
                 <svg
                   width={WIDTH}
                   height={HEIGHT}
