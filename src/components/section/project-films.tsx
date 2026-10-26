@@ -10,7 +10,7 @@ import { FilmFan, type Film } from "@/components/film-fan";
  */
 const FILMS: Film[] = DATA.projects.flatMap((p) =>
   p.video
-    ? [{ title: p.title, src: p.video.src, poster: p.video.poster, blurb: p.video.blurb, link: p.links[0] }]
+    ? [{ title: p.title, src: p.video.src, poster: p.video.poster, blurb: p.video.blurb, link: p.links[0], duration: p.video.duration }]
     : [],
 );
 
