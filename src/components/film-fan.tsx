@@ -51,6 +51,9 @@ export function FilmFan({ films }: { films: Film[] }) {
     return () => window.removeEventListener(SHOW_FILM, show);
   }, [films]);
   const film = films[active];
+  // The raised back card pokes up above the rest, so the whole fan drops by
+  // half of that to sit centred in the stage rather than top-heavy.
+  const top = (films.length - 1) % 2 === 1 ? "55%" : "50%";
   const external = film.link?.href.startsWith("http");
 
   return (
@@ -68,11 +71,12 @@ export function FilmFan({ films }: { films: Film[] }) {
               data-project={f.title}
               data-film
               className={cn(
-                "absolute top-1/2 transition-[left,width,transform,opacity] duration-[450ms] ease-(--ease-snappy) motion-reduce:transition-none",
+                "absolute transition-[left,width,transform,opacity] duration-[450ms] ease-(--ease-snappy) motion-reduce:transition-none",
                 front ? "w-[64%] md:w-[38%]" : "w-[44%] md:w-[26%]",
                 back && "mt-group",
               )}
               style={{
+                top,
                 left: `${front ? FRONT.left : side.left}%`,
                 zIndex: front ? FRONT.z : side.z,
                 transform: `translate(-50%, ${front ? -50 : -50 - side.lift}%) rotate(${front ? 0 : side.rotate}deg)`,

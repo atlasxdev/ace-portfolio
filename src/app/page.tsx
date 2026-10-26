@@ -111,7 +111,8 @@ export default function Page() {
         action={<SectionLink href="/projects">View all projects</SectionLink>}
         id="projects"
         ruleOnLoad
-        className="pt-entry">
+        // Even above and below, so the films sit centred between the rules.
+        className="pt-entry pb-entry">
         <ProjectFilms />
       </SectionRow>
 
