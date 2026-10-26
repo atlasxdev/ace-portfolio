@@ -15,11 +15,11 @@ import { DATA } from "@/data/resume";
  * keys) brings it forward. Each card carries its own details and Verify link —
  * a certification is a claim someone else can verify.
  *
- * Each card is drawn as the certificate itself: landscape, a gold double rule
- * for a frame, the issuer's mark at the head, the recipient and course in the
- * middle, and the date and issuer signed off on lines either side of a foil
- * seal. The paper is dark in both themes: most issuer marks are white-only
- * wordmarks (Codebility, freeCodeCamp, MongoDB) that vanish on a light sheet.
+ * Each card is laid out like the certificate it stands for, and no more:
+ * landscape, one hairline inset frame, the issuer's mark at the head, the
+ * course as the headline, and the issuer and date on a rule at the foot. The
+ * plate is dark in both themes: most issuer marks are white-only wordmarks
+ * (Codebility, freeCodeCamp, MongoDB) that vanish on a light ground.
  *
  * Offsets are percentages of the card's own width. Phones get a tighter fan so
  * the outer cards stay inside the gutter.
@@ -39,30 +39,6 @@ function useIsDesktop() {
     return () => mq.removeEventListener("change", update);
   }, []);
   return desktop;
-}
-
-/** A foil seal: a scalloped rosette with a check, in the frame's gold. */
-function Seal() {
-  const points = Array.from({ length: 24 }, (_, i) => {
-    const a = (i / 24) * Math.PI * 2;
-    const r = i % 2 ? 21 : 24;
-    // Rounded so the server and browser agree to the last digit.
-    return `${Math.round((24 + r * Math.cos(a)) * 100) / 100},${Math.round((24 + r * Math.sin(a)) * 100) / 100}`;
-  }).join(" ");
-  return (
-    <svg aria-hidden viewBox="0 0 48 48" className="size-7 shrink-0 drop-shadow-[0_2px_4px_rgb(0_0_0/0.5)] md:size-12">
-      <defs>
-        <linearGradient id="cert-foil" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#f1d79a" />
-          <stop offset=".5" stopColor="#c69a4c" />
-          <stop offset="1" stopColor="#8f6a2c" />
-        </linearGradient>
-      </defs>
-      <polygon points={points} fill="url(#cert-foil)" />
-      <circle cx="24" cy="24" r="15.5" fill="none" stroke="#7a5822" strokeOpacity=".55" strokeWidth=".8" />
-      <path d="M17.5 24.5l4.5 4.5 8.5-9.5" fill="none" stroke="#5b3f12" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" />
-    </svg>
-  );
 }
 
 export function CertificationsSection() {
@@ -110,72 +86,65 @@ export function CertificationsSection() {
                   : SNAPPY
               }
               style={{ zIndex: 10 - dist }}
-              className="absolute rounded-[6px]"
+              className="absolute rounded-xl"
             >
               <div
-                className={`cert relative h-[198px] w-[280px] overflow-hidden rounded-[6px] shadow-[0_24px_50px_-20px_rgb(0_0_0/0.7)] transition-[filter] duration-300 md:h-[297px] md:w-[420px] ${
-                  d === 0 ? "" : "brightness-[0.6] hover:brightness-90"
+                className={`relative h-[198px] w-[280px] overflow-hidden rounded-xl border border-white/10 bg-[#141414] shadow-xl transition-[filter] duration-300 md:h-[297px] md:w-[420px] dark:shadow-black ${
+                  d === 0 ? "" : "brightness-75 hover:brightness-100"
                 }`}
               >
-                {/* The double rule every certificate is framed by. */}
-                <div aria-hidden className="cert-frame pointer-events-none absolute inset-[6px] rounded-[3px] md:inset-[10px]" />
-                <div aria-hidden className="cert-frame-inner pointer-events-none absolute inset-[9px] rounded-[2px] md:inset-[15px]" />
+                {/* One hairline inset frame: the only nod to the printed sheet. */}
+                <div aria-hidden className="pointer-events-none absolute inset-2 rounded-lg border border-white/[0.07] md:inset-3" />
 
-                <div className="relative flex h-full flex-col items-center px-5 pt-4 pb-3 text-center md:px-10 md:pt-8 md:pb-6">
-                  {c.logoUrl ? (
-                    <div className="relative h-4 w-20 md:h-7 md:w-32">
-                      <Image src={c.logoUrl} alt="" fill sizes="(min-width: 768px) 128px, 80px" className="object-contain" />
-                    </div>
-                  ) : (
-                    <span className="font-display text-sm font-semibold text-white/70">{c.issuer}</span>
-                  )}
+                <div className="relative flex h-full flex-col p-5 md:p-9">
+                  <div className="flex items-start justify-between gap-4">
+                    {c.logoUrl ? (
+                      <div className="relative h-5 w-24 md:h-7 md:w-32">
+                        <Image
+                          src={c.logoUrl}
+                          alt=""
+                          fill
+                          sizes="(min-width: 768px) 128px, 96px"
+                          className="object-contain object-left"
+                        />
+                      </div>
+                    ) : (
+                      <span className="font-display text-sm font-semibold text-white/70">{c.issuer}</span>
+                    )}
+                    <span className="text-[10px] text-white/40 md:text-[12px]">Certificate</span>
+                  </div>
 
-                  <p className="cert-gold mt-2 text-[7px] font-medium tracking-[0.28em] uppercase md:mt-4 md:text-[10px]">
-                    Certificate of completion
-                  </p>
-                  <p className="mt-2.5 hidden text-[11px] text-white/45 italic md:block">This certifies that</p>
-                  <p className="mt-1.5 font-display text-[16px] leading-tight font-semibold tracking-[-0.02em] text-white md:mt-1 md:text-[26px]">
-                    {DATA.name}
-                  </p>
-                  <p className="mt-1.5 hidden text-[11px] text-white/45 italic md:block">has completed</p>
-                  <p className="mt-0.5 line-clamp-2 max-w-[30ch] text-[9px] leading-snug font-semibold text-white/90 md:mt-1 md:text-[15px]">
-                    {c.title}
-                  </p>
+                  <div className="mt-auto">
+                    <p className="text-[10px] text-white/45 md:text-[12px]">Awarded to {DATA.name}</p>
+                    <p className="mt-1 line-clamp-2 font-display text-[17px] leading-tight font-semibold tracking-[-0.02em] text-white md:mt-1.5 md:text-[26px]">
+                      {c.title}
+                    </p>
+                  </div>
 
-                  <div className="mt-auto flex w-full items-end justify-between gap-2">
-                    {/* Signed off on lines either side of the seal, as a certificate is. */}
-                    <div className="min-w-0 flex-1 text-left">
-                      <p className="truncate text-[7px] text-white/80 md:text-[11px]">{c.date}</p>
-                      <p className="cert-rule mt-0.5 border-t pt-0.5 text-[6px] tracking-[0.18em] text-white/40 uppercase md:mt-1 md:pt-1 md:text-[8.5px]">
-                        Date
-                      </p>
-                    </div>
-                    <Seal />
-                    <div className="min-w-0 flex-1 text-right">
-                      {c.credentialUrl ? (
-                        <a
-                          href={c.credentialUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          aria-label={`Verify ${c.title}`}
-                          tabIndex={d === 0 ? 0 : -1}
-                          className={`group/verify relative z-10 inline-flex items-center gap-0.5 text-[7px] text-white/80 transition-colors hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:gap-1 md:text-[11px] ${
-                            d === 0 ? "" : "pointer-events-none"
-                          }`}
-                        >
-                          Verify
-                          <ArrowUpRight
-                            className="size-2 transition-transform group-hover/verify:-translate-y-px group-hover/verify:translate-x-px md:size-3"
-                            aria-hidden
-                          />
-                        </a>
-                      ) : (
-                        <p className="text-[7px] text-white/50 md:text-[11px]">On request</p>
-                      )}
-                      <p className="cert-rule mt-0.5 truncate border-t pt-0.5 text-[6px] tracking-[0.18em] text-white/40 uppercase md:mt-1 md:pt-1 md:text-[8.5px]">
-                        {c.issuer}
-                      </p>
-                    </div>
+                  <div className="mt-4 flex items-center justify-between gap-3 border-t border-white/10 pt-3 md:mt-6 md:pt-4">
+                    <p className="truncate text-[10px] text-white/55 md:text-[12.5px]">
+                      {c.issuer}, {c.date}
+                    </p>
+                    {c.credentialUrl ? (
+                      <a
+                        href={c.credentialUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Verify ${c.title}`}
+                        tabIndex={d === 0 ? 0 : -1}
+                        className={`group/verify relative z-10 inline-flex shrink-0 items-center gap-1 rounded-full border border-white/15 px-2.5 py-1 text-[10px] text-white/80 transition-colors hover:border-white/40 hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white md:px-3 md:text-[12px] ${
+                          d === 0 ? "" : "pointer-events-none"
+                        }`}
+                      >
+                        Verify
+                        <ArrowUpRight
+                          className="size-2.5 transition-transform group-hover/verify:-translate-y-px group-hover/verify:translate-x-px md:size-3"
+                          aria-hidden
+                        />
+                      </a>
+                    ) : (
+                      <span className="shrink-0 text-[10px] text-white/40 md:text-[12px]">On request</span>
+                    )}
                   </div>
                 </div>
 
@@ -187,7 +156,7 @@ export function CertificationsSection() {
                   aria-pressed={d === 0}
                   tabIndex={d === 0 ? 0 : -1}
                   onClick={() => setActive(i)}
-                  className="absolute inset-0 rounded-[6px] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
+                  className="absolute inset-0 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-foreground"
                 />
               </div>
             </motion.div>
