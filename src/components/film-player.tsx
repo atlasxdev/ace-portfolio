@@ -7,7 +7,15 @@ import Link from "next/link";
 import { useRef, useState } from "react";
 
 import type { Film } from "@/components/film-fan";
-import { SNAPPY, SPRING } from "@/lib/motion";
+import { SPRING } from "@/lib/motion";
+
+/*
+ * Phones get the 540p copy (`<name>-540p.mp4`, made by the /video render
+ * scripts): the 1080p master is full-range yuvj420p, which many phone decoders
+ * hand to software, and the frame on a phone is far smaller than 1080p anyway.
+ */
+const PHONE = "(max-width: 767px)";
+const phoneSrc = (src: string) => src.replace(/.mp4$/, "-540p.mp4");
 
 const CONTROL =
   "grid size-10 cursor-pointer place-items-center rounded-full bg-white/10 text-white backdrop-blur transition-colors hover:bg-white/20 disabled:pointer-events-none disabled:opacity-30 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white";
@@ -47,7 +55,9 @@ export function FilmPlayer({
   const scale = useMotionValue(1);
   const fade = useMotionValue(0);
   const closing = useRef(false);
-  const [dir, setDir] = useState(1);
+  /** The film only mounts once the frame has finished growing, so decoding
+   *  never competes with the opening animation for the same frames. */
+  const [ready, setReady] = useState(false);
   const film = films[index];
   const external = film.link?.href.startsWith("http");
 
@@ -77,7 +87,9 @@ export function FilmPlayer({
       scale.set(t.scale);
       animate(x, 0, SPRING);
       animate(y, 0, SPRING);
-      animate(scale, 1, SPRING);
+      animate(scale, 1, SPRING).then(() => setReady(true));
+    } else {
+      setReady(true);
     }
     animate(fade, 1, { duration: reduced ? 0 : 0.2 });
   };
@@ -97,14 +109,15 @@ export function FilmPlayer({
 
   const go = (to: number) => {
     if (to < 0 || to >= films.length || to === index) return;
-    setDir(to > index ? 1 : -1);
     onIndex(to);
   };
 
   return (
     <DialogPrimitive.Root open onOpenChange={(next) => !next && close()}>
       <DialogPrimitive.Portal>
-        <motion.div aria-hidden style={{ opacity: fade }} className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-md" />
+        {/* Solid, not blurred: a backdrop blur over the whole page, fading in,
+            is re-rendered every frame and was what made opening stutter. */}
+        <motion.div aria-hidden style={{ opacity: fade }} className="fixed inset-0 z-[60] bg-black/90" />
         <DialogPrimitive.Content
           aria-describedby={undefined}
           onKeyDown={(e) => {
@@ -133,27 +146,33 @@ export function FilmPlayer({
               ref={attach}
               style={{ x, y, scale }}
               className="relative aspect-video w-full overflow-hidden rounded-xl bg-black shadow-2xl">
-              <AnimatePresence mode="popLayout" initial={false} custom={dir}>
-                <motion.video
+              {/* While growing it is just the poster, already loaded from the
+                  card; between films a quick cross-fade, one film at a time. */}
+              <AnimatePresence initial={false}>
+                <motion.div
                   key={film.src}
-                  src={film.src}
-                  poster={film.poster}
-                  autoPlay
-                  controls
-                  playsInline
-                  aria-label={`${film.title}: launch film`}
-                  custom={dir}
-                  variants={{
-                    in: (d: number) => ({ opacity: 0, x: reduced ? 0 : `${d * 8}%` }),
-                    shown: { opacity: 1, x: 0 },
-                    out: (d: number) => ({ opacity: 0, x: reduced ? 0 : `${d * -8}%` }),
-                  }}
-                  initial="in"
-                  animate="shown"
-                  exit="out"
-                  transition={reduced ? { duration: 0 } : SNAPPY}
-                  className="absolute inset-0 size-full"
-                />
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: reduced ? 0 : 0.15 }}
+                  className="absolute inset-0">
+                  {ready ? (
+                    <video
+                      poster={film.poster}
+                      autoPlay
+                      controls
+                      playsInline
+                      preload="auto"
+                      aria-label={`${film.title}: launch film`}
+                      className="size-full">
+                      <source src={phoneSrc(film.src)} type="video/mp4" media={PHONE} />
+                      <source src={film.src} type="video/mp4" />
+                    </video>
+                  ) : (
+                    // eslint-disable-next-line @next/next/no-img-element -- the card's own poster, already cached
+                    <img src={film.poster} alt="" className="size-full object-cover" />
+                  )}
+                </motion.div>
               </AnimatePresence>
             </motion.div>
 

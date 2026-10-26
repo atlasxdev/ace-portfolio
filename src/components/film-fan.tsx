@@ -12,6 +12,7 @@ import { Play } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import { FilmPlayer } from "@/components/film-player";
+import { SNAPPY } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 export type Film = {
@@ -171,7 +172,7 @@ function Print({
     <motion.div
       data-project={film.title}
       data-film
-      className="absolute top-0 left-0"
+      className="absolute top-0 left-0 will-change-transform"
       style={{
         width: w,
         height: h,
@@ -204,14 +205,14 @@ function Print({
           ref={imageRef}
           initial={false}
           animate={{ y: lifted ? -14 : 0, scale: lifted ? 1.03 : 1 }}
-          transition={reduced ? { duration: 0 } : { type: "spring", stiffness: 260, damping: 24 }}
+          transition={reduced ? { duration: 0 } : SNAPPY}
           className="pointer-events-none relative size-full overflow-hidden rounded-md bg-neutral-900 shadow-[0_2px_6px_rgb(0_0_0/0.2),0_24px_48px_-16px_rgb(0_0_0/0.6)] ring-1 ring-black/10 dark:ring-white/10">
           {/* eslint-disable-next-line @next/next/no-img-element -- a card in a fan; next/image adds nothing here */}
           <img src={film.poster} alt="" draggable={false} loading="lazy" className="size-full object-cover" />
           {/* The title, on the corner the cards above it leave uncovered. */}
           <span
             className={cn(
-              "absolute max-w-[70%] truncate rounded-full bg-black/60 px-3 py-1 text-[12.5px] leading-4 font-medium text-white backdrop-blur-md",
+              "absolute max-w-[70%] truncate rounded-full bg-black/70 px-3 py-1 text-[12.5px] leading-4 font-medium text-white",
               slot.tag === "left" ? "left-3" : "right-3",
               scene.edge === "top" ? "top-3" : "bottom-3",
             )}>
@@ -259,8 +260,10 @@ export function FilmFan({ films }: { films: Film[] }) {
 
   const scene = width && width < 640 ? COMPACT : WIDE;
   const scale = width ? Math.min(width / scene.w, 1.1) : 1;
-  const progress = useSpring(0, { stiffness: 90, damping: 23, restDelta: 0.0002 });
-  const peek = useSpring(0, { stiffness: 130, damping: 25 });
+  // Apple's spring model, as everywhere else on the site: the whole flight
+  // in under half a second with a touch of overshoot, and a quick peek.
+  const progress = useSpring(0, { visualDuration: 0.45, bounce: 0.12, restDelta: 0.0002 });
+  const peek = useSpring(0, { visualDuration: 0.25, bounce: 0 });
   const [hovered, setHovered] = useState(false);
   const drop = useTransform(progress, (p) => folderDrop(scene, p));
 
@@ -299,7 +302,7 @@ export function FilmFan({ films }: { films: Film[] }) {
   }, [films]);
 
   const f = scene.folder;
-  const flap = { type: "spring", stiffness: 110, damping: 23 } as const;
+  const flap = SNAPPY;
 
   return (
     <div ref={stage} className="relative w-full" style={{ height: scene.h * scale }}>
