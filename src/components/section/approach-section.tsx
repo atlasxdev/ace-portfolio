@@ -1,13 +1,13 @@
 "use client";
 
-import { motion, useInView, useReducedMotion, type PanInfo } from "motion/react";
+import { AnimatePresence, motion, useInView, useReducedMotion, type PanInfo } from "motion/react";
 import { ArrowLeft, ArrowRight, FolderCog, PhoneCall, RotateCcw, Rocket, ScanEye, Waypoints } from "lucide-react";
 import { useRef, useState } from "react";
 
 import { Reveal } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
 import { APPROACH } from "@/data/approach";
-import { EASE, SNAPPY, inViewOnce } from "@/lib/motion";
+import { SNAPPY, SPRING, inViewOnce } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 /**
@@ -40,9 +40,8 @@ const LAST = APPROACH.length - 1;
 const SIZE = 340;
 const C = SIZE / 2;
 const R = 124;
-/** Node radius in the same space, plus clearance, sets where each arc stops. */
-const NODE = 24;
-const ARC_GAP = ((NODE + 7) / R) * (180 / Math.PI);
+/** The progress stroke, in the same space. */
+const STROKE = 9;
 
 const rad = (d: number) => (d * Math.PI) / 180;
 /** Rounded: Node and the browser disagree in the last float digit of the trig,
@@ -54,129 +53,108 @@ const at = (r: number, deg: number) =>
 const angle = (i: number) => -90 + (360 / APPROACH.length) * i;
 const pct = (v: number) => `${(v / SIZE) * 100}%`;
 
+/** Each segment runs node to node; the nodes sit over its ends. */
 const ARCS = APPROACH.map((_, i) => {
-  const a1 = angle(i) + ARC_GAP;
-  const a2 = angle(i + 1) - ARC_GAP;
-  const [x1, y1] = at(R, a1);
-  const [x2, y2] = at(R, a2);
-  // Chevron at the arc's end, opening back along the tangent.
-  const [ax, ay] = [x2, y2];
-  const t = a2 + 90;
-  const k = 5;
-  const back = [round(-Math.cos(rad(t)) * k), round(-Math.sin(rad(t)) * k)];
-  const side = [round(Math.cos(rad(a2)) * k * 0.8), round(Math.sin(rad(a2)) * k * 0.8)];
-  return {
-    d: `M${x1} ${y1} A${R} ${R} 0 0 1 ${x2} ${y2}`,
-    head: `M${ax + back[0] + side[0]} ${ay + back[1] + side[1]} L${ax} ${ay} L${ax + back[0] - side[0]} ${ay + back[1] - side[1]}`,
-    loop: i === LAST,
-  };
+  const [x1, y1] = at(R, angle(i));
+  const [x2, y2] = at(R, angle(i + 1));
+  return { d: `M${x1} ${y1} A${R} ${R} 0 0 1 ${x2} ${y2}`, loop: i === LAST };
 });
 
-/** Tick marks on an outer scale, a longer one every fifth. */
-const TICKS = Array.from({ length: 60 }, (_, i) => {
-  const long = i % 12 === 0;
-  const [x1, y1] = at(R + 16, i * 6 - 90);
-  const [x2, y2] = at(R + 16 + (long ? 7 : 3), i * 6 - 90);
-  return { x1, y1, x2, y2, long };
-});
+const LOOP_NOTE = at(R + 30, -126);
 
-const LOOP_NOTE = at(R + 34, -126);
-
+/**
+ * The ring is the walk's progress, drawn like Apple's Activity rings: a quiet
+ * track, and a thick stroke that grows step by step in each stage's hue. The
+ * centre names the step you're on.
+ */
 function Dial({ step, onSelect, play }: { step: number; onSelect: (i: number) => void; play: boolean }) {
   const reduced = useReducedMotion() ?? false;
   const on = play || reduced;
+  const grow = reduced ? { duration: 0 } : SPRING;
 
   return (
     <div className="relative mx-auto aspect-square w-[230px] md:w-[300px] lg:w-[340px]">
-      {/* Drafting grid, reaching past the ring and fading out beyond it. */}
-      <div
-        aria-hidden
-        className="absolute -inset-[30%] rounded-full [background-image:linear-gradient(color-mix(in_srgb,var(--foreground)_7%,transparent)_1px,transparent_1px),linear-gradient(90deg,color-mix(in_srgb,var(--foreground)_7%,transparent)_1px,transparent_1px)] [background-position:center] [background-size:3.125%_3.125%] [mask-image:radial-gradient(circle,#000_38%,transparent_70%)]"
-      />
-
       <svg aria-hidden viewBox={`0 0 ${SIZE} ${SIZE}`} className="absolute inset-0 size-full overflow-visible" fill="none">
-        <circle cx={C} cy={C} r={R} className="stroke-rule" strokeWidth={1} vectorEffect="non-scaling-stroke" />
-        {TICKS.map(({ long, ...line }, i) => (
-          <line
-            key={i}
-            {...line}
-            className={long ? "stroke-foreground/30" : "stroke-foreground/14"}
-            strokeWidth={1}
-            vectorEffect="non-scaling-stroke"
-          />
-        ))}
+        <circle cx={C} cy={C} r={R} className="stroke-foreground/8" strokeWidth={STROKE} />
 
         {ARCS.map((arc, i) => {
-          // Arc i leads into step i + 1, so it's drawn once that step is
-          // reached; the return arc only on the last step.
+          // Segment i leads into step i + 1, so it fills once that step is
+          // reached; the return segment only on the last step.
           const drawn = on && (arc.loop ? step === LAST : step > i);
-          const transition = reduced ? { duration: 0 } : { duration: 0.35, ease: EASE };
-          return (
-            <g key={i} stroke={hue(i)} strokeLinecap="round" strokeLinejoin="round">
-              {/* Solid arcs draw on; the dashed return can't (pathLength and a
-                  dash pattern both drive stroke-dasharray), so it fades in. */}
-              {arc.loop ? (
-                <motion.path
-                  d={arc.d}
-                  strokeWidth={1.5}
-                  strokeDasharray="3 4"
-                  initial={false}
-                  animate={{ opacity: drawn ? 0.7 : 0 }}
-                  transition={transition}
-                />
-              ) : (
-                <motion.path
-                  d={arc.d}
-                  strokeWidth={step === i + 1 ? 2 : 1.5}
-                  initial={false}
-                  animate={{ pathLength: drawn ? 1 : 0, opacity: drawn ? 0.85 : 0 }}
-                  transition={transition}
-                />
-              )}
-              <motion.path
-                d={arc.head}
-                strokeWidth={1.5}
-                initial={false}
-                animate={{ opacity: drawn ? 1 : 0 }}
-                transition={reduced ? { duration: 0 } : { duration: 0.15, ease: EASE, delay: drawn ? 0.25 : 0 }}
-              />
-            </g>
+          return arc.loop ? (
+            // pathLength and a dash pattern both drive stroke-dasharray, so
+            // the dashed return fades in instead of drawing.
+            <motion.path
+              key={i}
+              d={arc.d}
+              stroke={hue(i)}
+              strokeWidth={STROKE / 2.5}
+              strokeLinecap="round"
+              strokeDasharray="2 7"
+              initial={false}
+              animate={{ opacity: drawn ? 0.9 : 0 }}
+              transition={grow}
+            />
+          ) : (
+            <motion.path
+              key={i}
+              d={arc.d}
+              stroke={hue(i)}
+              strokeWidth={STROKE}
+              strokeLinecap="round"
+              initial={false}
+              animate={{ pathLength: drawn ? 1 : 0, opacity: drawn ? 1 : 0 }}
+              transition={{ ...grow, opacity: { duration: 0.1 } }}
+            />
           );
         })}
       </svg>
 
-      {/* overflow-hidden: .glass's top-sheen ::before is a rounded rect, and
-          on a circle its corners poke out past the rim. */}
-      <div className="glass absolute top-1/2 left-1/2 grid size-[39%] -translate-x-1/2 -translate-y-1/2 place-items-center overflow-hidden rounded-full text-center">
-        <div>
-          <span className="label text-[9.5px] text-ink-faint">Lifecycle</span>
-          <p className="mt-1 font-display text-[12.5px] leading-[1.1] font-semibold tracking-[-0.02em] md:text-[15px] lg:text-[17px]">
-            Ship, learn,
-            <br />
-            repeat
-          </p>
-        </div>
+      <div className="absolute inset-0 grid place-items-center text-center" aria-hidden>
+        <AnimatePresence mode="popLayout" initial={false}>
+          <motion.div
+            key={step}
+            initial={{ opacity: 0, y: reduced ? 0 : 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: reduced ? 0 : -8 }}
+            transition={grow}>
+            <p className="text-[11px] text-ink-faint tabular-nums md:text-body-sm">
+              Step {step + 1} of {APPROACH.length}
+            </p>
+            <p className="mt-0.5 font-display text-[20px] leading-tight font-semibold tracking-[-0.02em] md:text-[24px] lg:text-[28px]">
+              {APPROACH[step].stage}
+            </p>
+          </motion.div>
+        </AnimatePresence>
       </div>
 
       {APPROACH.map((s, i) => {
         const Icon = ICONS[i];
         const [x, y] = at(R, angle(i));
         return (
-          <button
+          <motion.button
             key={s.title}
             type="button"
             aria-label={`Step ${i + 1}: ${s.title}`}
             aria-current={step === i ? "step" : undefined}
-            data-active={step === i || undefined}
             onClick={() => onSelect(i)}
-            className={cn(
-              "step-badge absolute z-10 grid size-10 -translate-x-1/2 -translate-y-1/2 cursor-pointer place-items-center rounded-full outline-offset-2 transition-opacity duration-300 focus-visible:outline-2 focus-visible:outline-(--step) lg:size-12",
-              // Steps not yet reached sit back until the walk gets to them.
-              i > step && "opacity-55 hover:opacity-100",
-            )}
-            style={{ left: pct(x), top: pct(y), "--step": hue(i) } as React.CSSProperties}>
-            <Icon className="size-4 lg:size-[18px]" strokeWidth={1.75} />
-          </button>
+            initial={false}
+            animate={{ scale: step === i ? 1.15 : 1 }}
+            whileTap={reduced ? undefined : { scale: 0.92 }}
+            transition={reduced ? { duration: 0 } : SNAPPY}
+            // Solid behind the tinted badge, so the ring doesn't show through.
+            className="absolute z-10 size-10 cursor-pointer rounded-full bg-background outline-offset-2 focus-visible:outline-2 focus-visible:outline-(--step) lg:size-12"
+            style={{ left: pct(x), top: pct(y), x: "-50%", y: "-50%", "--step": hue(i) } as React.CSSProperties}>
+            <span
+              data-active={step === i || undefined}
+              className={cn(
+                "step-badge grid size-full place-items-center rounded-full transition-opacity duration-300",
+                // Steps not yet reached sit back until the walk gets to them.
+                i > step && "opacity-50",
+              )}>
+              <Icon className="size-4 lg:size-[18px]" strokeWidth={1.75} />
+            </span>
+          </motion.button>
         );
       })}
 
@@ -184,13 +162,14 @@ function Dial({ step, onSelect, play }: { step: number; onSelect: (i: number) =>
         aria-hidden
         initial={false}
         animate={{ opacity: step === LAST ? 1 : 0 }}
-        className="label absolute hidden -translate-x-[70%] -translate-y-full text-[9.5px] whitespace-nowrap text-ink-faint md:block"
+        className="absolute hidden -translate-x-[70%] -translate-y-full text-body-sm whitespace-nowrap text-ink-faint md:block"
         style={{ left: pct(LOOP_NOTE[0]), top: pct(LOOP_NOTE[1]) }}>
-        ↺ Next iteration
+        ↺ Back to the start
       </motion.span>
     </div>
   );
 }
+
 
 /** A swipe this far, or this fast, turns the card. */
 const SWIPE_PX = 60;
