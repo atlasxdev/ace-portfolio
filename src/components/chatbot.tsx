@@ -448,7 +448,7 @@ export default function Chatbot({ openOnMount = false }: { openOnMount?: boolean
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  transition={{ duration: 0.2 }}
+                  transition={SPRING}
                   className="fixed inset-0 z-[60] hidden bg-black/55 backdrop-blur-[2px] lg:block"
                 />
               </DialogPrimitive.Overlay>
@@ -916,7 +916,7 @@ function AssistantMessage({
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ duration: 0.25, delay: 0.1 }}
+          transition={{ ...SPRING, delay: 0.1 }}
           className="-mx-4 flex gap-2 overflow-x-auto px-4 md:mx-0 md:flex-wrap md:overflow-visible md:px-0">
           {message.followUps.map((q) => (
             <button

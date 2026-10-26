@@ -7,7 +7,7 @@ import { useRef, useState } from "react";
 import { Reveal } from "@/components/motion/reveal";
 import { Button } from "@/components/ui/button";
 import { APPROACH } from "@/data/approach";
-import { EASE, SNAPPY, inViewOnce } from "@/lib/motion";
+import { SNAPPY, SPRING, inViewOnce } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 /**
@@ -112,7 +112,7 @@ function Dial({ step, onSelect, play }: { step: number; onSelect: (i: number) =>
           // Arc i leads into step i + 1, so it's drawn once that step is
           // reached; the return arc only on the last step.
           const drawn = on && (arc.loop ? step === LAST : step > i);
-          const transition = reduced ? { duration: 0 } : { duration: 0.35, ease: EASE };
+          const transition = reduced ? { duration: 0 } : SPRING;
           return (
             <g key={i} stroke={hue(i)} strokeLinecap="round" strokeLinejoin="round">
               {/* Solid arcs draw on; the dashed return can't (pathLength and a
@@ -140,7 +140,7 @@ function Dial({ step, onSelect, play }: { step: number; onSelect: (i: number) =>
                 strokeWidth={1.5}
                 initial={false}
                 animate={{ opacity: drawn ? 1 : 0 }}
-                transition={reduced ? { duration: 0 } : { duration: 0.15, ease: EASE, delay: drawn ? 0.25 : 0 }}
+                transition={reduced ? { duration: 0 } : { ...SPRING, delay: drawn ? 0.2 : 0 }}
               />
             </g>
           );
@@ -288,7 +288,7 @@ export function ApproachSection() {
                   // Passed steps wait off to the left, later ones to the right, so a
                   // card always enters from the side it's coming from.
                   animate={{ opacity: here ? 1 : 0, x: here ? 0 : i < step ? -28 : 28 }}
-                  transition={here ? slide : reduced ? { duration: 0 } : { duration: 0.15 }}
+                  transition={reduced ? { duration: 0 } : here ? slide : SPRING}
                   style={{ "--step": hue(i) } as React.CSSProperties}
                   className={cn("col-start-1 row-start-1 select-none", !here && "pointer-events-none")}>
                   <StageIcon i={i} reached className="size-12 rounded-[14px]" glyph="size-6" />

@@ -91,14 +91,14 @@ export function FilmPlayer({
     } else {
       setReady(true);
     }
-    animate(fade, 1, { duration: reduced ? 0 : 0.2 });
+    animate(fade, 1, reduced ? { duration: 0 } : SPRING);
   };
 
   const close = async () => {
     if (closing.current) return;
     closing.current = true;
     const to = origin();
-    const runs = [animate(fade, 0, { duration: reduced ? 0 : 0.22 })];
+    const runs = [animate(fade, 0, reduced ? { duration: 0 } : SPRING)];
     if (to && !reduced) {
       const t = over(boxOf(to));
       runs.push(animate(x, t.x, SPRING), animate(y, t.y, SPRING), animate(scale, t.scale, SPRING));
@@ -154,7 +154,7 @@ export function FilmPlayer({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  transition={{ duration: reduced ? 0 : 0.15 }}
+                  transition={reduced ? { duration: 0 } : SPRING}
                   className="absolute inset-0">
                   {ready ? (
                     <video

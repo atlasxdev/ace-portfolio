@@ -1,8 +1,10 @@
 import type { Transition } from "motion/react";
 
 /**
- * One source of truth for the site's motion: the chat panel and the
- * approach diagram. Content no longer animates in on scroll (see
+ * One source of truth for the site's motion. Everything that moves in
+ * answer to the visitor springs: these for Motion, and the matching linear()
+ * curves in globals.css for CSS transitions, which are also the default for
+ * every transition on the site. Content no longer animates in on scroll (see
  * <Reveal>); only `transform` and `opacity` are animated, so every frame stays
  * on the compositor.
  *
@@ -22,8 +24,12 @@ export const SNAPPY: Transition = { type: "spring", visualDuration: 0.3, bounce:
 /** SwiftUI `.bouncy`: for a press that should spring back. Use sparingly. */
 export const BOUNCY: Transition = { type: "spring", visualDuration: 0.35, bounce: 0.3 };
 
-/** Custom eased curve, kept for drawn paths where a spring has nothing to carry. */
-export const EASE = [0.22, 1, 0.36, 1] as const;
+/**
+ * The spring as a CSS easing (the linear() curve in globals.css), for the
+ * Web Animations API, which can't take a Motion spring. It settles in 0.45s.
+ */
+export const springEasing = () =>
+  getComputedStyle(document.documentElement).getPropertyValue("--ease-spring").trim() || "ease-out";
 
 /** The chat panel opening and closing. */
 export const CARD_STATE: Transition = SPRING;

@@ -1,6 +1,9 @@
 "use client";
 
+import { animate } from "motion/react";
 import { useEffect } from "react";
+
+import { SPRING } from "@/lib/motion";
 
 /**
  * Mouse-wheel scrolling that glides to a stop the way iOS momentum does,
@@ -17,7 +20,12 @@ import { useEffect } from "react";
  * (Δ·(1-R)), so a notch still travels as far as it natively would; it just
  * arrives smoothly. R is between UIKit's .normal (0.998, a flick) and .fast
  * (0.99), as a notch is a short, deliberate move rather than a throw.
+ *
+ * Links to a section on the same page spring there too, rather than taking
+ * the browser's fixed smooth-scroll curve, and land where the section's
+ * scroll-margin says.
  */
+const JUMP = { ...SPRING, visualDuration: 0.6 };
 const R = 0.996;
 /** A trackpad gesture is assumed to continue this long after its last event. */
 const GESTURE_MS = 400;
@@ -86,6 +94,7 @@ export function WheelGlide() {
     };
 
     const onWheel = (e: WheelEvent) => {
+      jump?.stop();
       if (e.defaultPrevented || e.ctrlKey || e.shiftKey || reduced.matches) return;
       if (!isMouseWheel(e)) {
         trackpadUntil = e.timeStamp + GESTURE_MS;
@@ -106,10 +115,41 @@ export function WheelGlide() {
       v += dy * (1 - R);
     };
 
+    let jump: ReturnType<typeof animate> | null = null;
+    const onClick = (e: MouseEvent) => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || reduced.matches) return;
+      const link = (e.target as Element | null)?.closest?.("a[href*=\"#\"]") as HTMLAnchorElement | null;
+      if (!link || link.target === "_blank") return;
+      const url = new URL(link.href, location.href);
+      if (url.pathname !== location.pathname || url.search !== location.search || !url.hash) return;
+      const el = document.getElementById(decodeURIComponent(url.hash.slice(1)));
+      if (!el) return;
+      e.preventDefault();
+      stop();
+      jump?.stop();
+      const margin = parseFloat(getComputedStyle(el).scrollMarginTop) || 0;
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const to = Math.min(Math.max(el.getBoundingClientRect().top + window.scrollY - margin, 0), max);
+      history.pushState(null, "", url.hash);
+      jump = animate(window.scrollY, to, {
+        ...JUMP,
+        onUpdate: (v) => window.scrollTo({ top: v, behavior: "instant" }),
+      });
+    };
+    // A wheel or a keypress mid-jump hands the page back.
+    const cancelJump = () => jump?.stop();
+
     window.addEventListener("wheel", onWheel, { passive: false });
+    document.addEventListener("click", onClick);
+    window.addEventListener("keydown", cancelJump);
+    window.addEventListener("touchstart", cancelJump, { passive: true });
     return () => {
       window.removeEventListener("wheel", onWheel);
+      document.removeEventListener("click", onClick);
+      window.removeEventListener("keydown", cancelJump);
+      window.removeEventListener("touchstart", cancelJump);
       cancelAnimationFrame(raf);
+      jump?.stop();
     };
   }, []);
 

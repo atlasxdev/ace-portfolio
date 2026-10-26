@@ -6,7 +6,7 @@ import { useTheme } from "next-themes";
 import { useSyncExternalStore } from "react";
 import { flushSync } from "react-dom";
 
-import { BOUNCY, SNAPPY } from "@/lib/motion";
+import { BOUNCY, SNAPPY, springEasing } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 const OPTIONS: { value: string; label: string; icon: LucideIcon }[] = [
@@ -59,7 +59,7 @@ export function ModeToggle({ className }: { className?: string }) {
     transition.ready.then(() => {
       document.documentElement.animate(
         { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] },
-        { duration: 560, easing: "cubic-bezier(0.22, 1, 0.36, 1)", pseudoElement: "::view-transition-new(root)" },
+        { duration: 450, easing: springEasing(), pseudoElement: "::view-transition-new(root)" },
       );
     });
   };
