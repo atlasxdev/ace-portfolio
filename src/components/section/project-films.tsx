@@ -3,10 +3,10 @@ import { FilmFan, type Film } from "@/components/film-fan";
 
 /**
  * The homepage's Projects section: launch films for the projects that have
- * one (`DATA.projects[].video`, built in /video with Remotion), shown as a
- * fan. The front film plays, the rest are posters tilted behind it, and
- * picking one swings it to the front. Only the front card ever loads video.
- * The full list lives on /projects.
+ * one (`DATA.projects[].video`, built in /video with Remotion), as prints in
+ * a folder that fan out when it scrolls into view. A print opens its film in
+ * the full-size player; nothing loads video until then. The full list lives
+ * on /projects.
  */
 const FILMS: Film[] = DATA.projects.flatMap((p) =>
   p.video
